@@ -56,16 +56,19 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 /* ─────────── NAV ─────────── */
 .nav{
   position:fixed; top:0; left:0; right:0; z-index:60;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px var(--pad);
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+  padding:10px var(--pad);
   background:color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter:blur(10px);
 }
 .nav__name{ display:flex; align-items:center }
 .logo{ width:18px; height:18px; display:block }
-.nav__links{ display:flex; gap:18px; font-size:var(--t-s) }
-.nav__links a{ color:var(--mute) }
-.nav__links a:hover{ color:var(--ink) }
+.nav__links{ display:flex; gap:2px; font-size:var(--t-s); justify-self:center }
+.nav__links a{
+  color:var(--mute); padding:7px 14px; border-radius:999px;
+  transition:background-color .18s ease, color .18s ease;
+}
+.nav__links a:hover{ color:var(--ink); background:color-mix(in srgb, var(--ink) 6%, transparent) }
 
 /* ─────────── HERO ─────────── */
 .hero{
