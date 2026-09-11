@@ -66,31 +66,33 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
    over a shorter band, so the blur ramps instead of cutting off */
 .pblur{
   position:fixed; top:0; left:0; right:0; z-index:55; pointer-events:none;
-  height:clamp(84px, 11vh, 130px);
+  height:clamp(130px, 19vh, 230px);
 }
 .pblur i{ position:absolute; inset:0; display:block }
-.pblur i:nth-child(1){ backdrop-filter:blur(.4px);  -webkit-backdrop-filter:blur(.4px);
+.pblur i:nth-child(1){ backdrop-filter:blur(1px);  -webkit-backdrop-filter:blur(1px);
   -webkit-mask:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%);
           mask:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%) }
-.pblur i:nth-child(2){ backdrop-filter:blur(.8px);  -webkit-backdrop-filter:blur(.8px);
+.pblur i:nth-child(2){ backdrop-filter:blur(2px);  -webkit-backdrop-filter:blur(2px);
   -webkit-mask:linear-gradient(to bottom,#000 0%,#000 54%,transparent 84%);
           mask:linear-gradient(to bottom,#000 0%,#000 54%,transparent 84%) }
-.pblur i:nth-child(3){ backdrop-filter:blur(1.6px); -webkit-backdrop-filter:blur(1.6px);
+.pblur i:nth-child(3){ backdrop-filter:blur(4px);  -webkit-backdrop-filter:blur(4px);
   -webkit-mask:linear-gradient(to bottom,#000 0%,#000 40%,transparent 70%);
           mask:linear-gradient(to bottom,#000 0%,#000 40%,transparent 70%) }
-.pblur i:nth-child(4){ backdrop-filter:blur(3px);   -webkit-backdrop-filter:blur(3px);
+.pblur i:nth-child(4){ backdrop-filter:blur(9px);  -webkit-backdrop-filter:blur(9px);
   -webkit-mask:linear-gradient(to bottom,#000 0%,#000 28%,transparent 56%);
           mask:linear-gradient(to bottom,#000 0%,#000 28%,transparent 56%) }
-.pblur i:nth-child(5){ backdrop-filter:blur(6px);   -webkit-backdrop-filter:blur(6px);
+.pblur i:nth-child(5){ backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
   -webkit-mask:linear-gradient(to bottom,#000 0%,#000 17%,transparent 42%);
           mask:linear-gradient(to bottom,#000 0%,#000 17%,transparent 42%) }
-.pblur i:nth-child(6){ backdrop-filter:blur(12px);  -webkit-backdrop-filter:blur(12px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 8%,transparent 27%);
-          mask:linear-gradient(to bottom,#000 0%,#000 8%,transparent 27%) }
+.pblur i:nth-child(6){ backdrop-filter:blur(44px); -webkit-backdrop-filter:blur(44px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 9%,transparent 30%);
+          mask:linear-gradient(to bottom,#000 0%,#000 9%,transparent 30%) }
 .pblur .tint{
   background:linear-gradient(to bottom,
     var(--bg) 0%,
-    color-mix(in srgb, var(--bg) 55%, transparent) 45%,
+    var(--bg) 22%,
+    color-mix(in srgb, var(--bg) 72%, transparent) 46%,
+    color-mix(in srgb, var(--bg) 28%, transparent) 72%,
     transparent 100%);
 }
 .nav__name{ display:flex; align-items:center }
