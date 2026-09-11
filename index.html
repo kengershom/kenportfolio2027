@@ -642,9 +642,12 @@ const PROJECTS = [
    static HTML file can't do. */
 const SPOTIFY = {
   profile: "https://open.spotify.com/user/9v2xtjc3ygbylr7z5jh9wcn7e",
-  url:  "https://open.spotify.com/playlist/3fj1M85qRAJL6zT3wQOgre",
-  note: "<b>Workbench noise.</b> What's on while I model. I keep the playlist current \u2014 it's curated, not a live feed, so it won't claim I'm listening to anything at 3am.",
-  kind: "Playlist, updated when it gets stale"
+  // Spotify's On Repeat: rebuilt automatically from what you've actually
+  // been playing over the last ~30 days. Verified it renders for
+  // logged-out visitors, which personalised playlists don't always do.
+  url:  "https://open.spotify.com/playlist/37i9dQZF1EptQHOJegqo6A",
+  note: "<b>Workbench noise.</b> What's actually been on while I model. Spotify rebuilds this from whatever I've had on repeat for the past month, so it keeps itself honest \u2014 I don't get to curate it.",
+  kind: "On Repeat \u2014 rebuilt by Spotify, not by me"
 };
 
 const UPDATES = [
