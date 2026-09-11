@@ -16,6 +16,8 @@
   --mute:    #6E6E69;
   --line:    #E2E2DE;
   --live:    #1F9D55;
+  --accent:  #D2440C;
+  --accent-d:#B03708;
 
   --pad:     clamp(18px, 4vw, 48px);
   --radius:  10px;
@@ -62,13 +64,22 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   backdrop-filter:blur(10px);
 }
 .nav__name{ display:flex; align-items:center }
-.logo{ width:18px; height:18px; display:block }
+.logo{ width:13.5px; height:13.5px; display:block }
 .nav__links{ display:flex; gap:2px; font-size:var(--t-s); justify-self:center }
 .nav__links a{
   color:var(--mute); padding:7px 14px; border-radius:999px;
   transition:background-color .18s ease, color .18s ease;
 }
 .nav__links a:hover{ color:var(--ink); background:color-mix(in srgb, var(--ink) 6%, transparent) }
+.nav__cta{
+  justify-self:end; display:inline-flex; align-items:center; gap:6px;
+  background:var(--accent); color:#fff; font-size:var(--t-s); font-weight:500;
+  padding:8px 16px; border-radius:999px; white-space:nowrap;
+  transition:background-color .18s ease;
+}
+.nav__cta:hover{ background:var(--accent-d) }
+.nav__cta .arw{ transition:transform .18s ease }
+.nav__cta:hover .arw{ transform:translate(1px,-1px) }
 
 /* ─────────── HERO ─────────── */
 .hero{
@@ -259,6 +270,10 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
   .grid--3{ grid-template-columns:repeat(2,1fr) }
   .hero h1{ max-width:none }
 }
+@media (max-width:620px){
+  .nav__links a{ padding:6px 9px }
+  .nav__cta{ padding:7px 13px }
+}
 @media (max-width:520px){
   .grid--2,.grid--3{ grid-template-columns:1fr }
   .nav__links a:nth-child(n+4){ display:none }
@@ -285,6 +300,7 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
     <a href="#about">About</a>
     <a href="mailto:hello@example.com">Email</a>
   </div>
+  <a class="nav__cta" href="mailto:hello@example.com">Let&rsquo;s talk <span class="arw">&#8599;</span></a>
 </nav>
 
 <main>
