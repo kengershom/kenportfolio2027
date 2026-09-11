@@ -28,7 +28,14 @@
   --t-l:  clamp(1.1rem, 1.8vw, 1.4rem);
   --t-xl: clamp(2rem, 4.4vw, 3.25rem);
   --t-hero: clamp(2.5rem, 7.4vw, 6.5rem);
+
+  /* strong custom curves — the built-in CSS easings are too weak */
+  --ease-out:    cubic-bezier(.23,1,.32,1);
+  --ease-in-out: cubic-bezier(.77,0,.175,1);
 }
+
+/* hover is a lie on touch devices — tap fires it. Gate every hover
+   visual behind a real pointer. */
 
 *,*::before,*::after{ box-sizing:border-box }
 html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth }
@@ -40,9 +47,19 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
+/* Reduced motion means fewer and gentler animations, not zero:
+   movement goes, opacity/colour stays so state changes stay legible. */
 @media (prefers-reduced-motion:reduce){
   html{ scroll-behavior:auto }
-  *,*::before,*::after{ animation:none !important; transition:none !important }
+  *,*::before,*::after{
+    animation:none !important;
+    transition-property:opacity,color,background-color,border-color,
+                        text-decoration-color,filter !important;
+    transition-duration:.15s !important;
+    transition-delay:0ms !important;
+  }
+  .hero h1 .ln i,.hero__foot{ transform:none !important; opacity:1 !important }
+  .reveal{ opacity:1 !important; transform:none !important }
 }
 
 a{ color:inherit; text-decoration:none }
@@ -95,24 +112,39 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
     color-mix(in srgb, var(--bg) 28%, transparent) 72%,
     transparent 100%);
 }
-.nav__name{ display:flex; align-items:center }
+.nav__name{
+  display:flex; align-items:center; color:var(--ink);
+  transition:color .18s ease, transform .16s var(--ease-out);
+}
+/* the logo is fill="currentColor", so colour inherits straight through */
+@media (hover:hover) and (pointer:fine){
+  .nav__name:hover{ color:var(--accent) }
+}
+.nav__name:active{ transform:scale(.94) }
 .logo{ width:13.5px; height:13.5px; display:block }
 .nav__links{ display:flex; gap:2px; font-size:var(--t-s); justify-self:center }
 .nav__links a{
   color:var(--mute); padding:7px 14px; border-radius:999px;
-  transition:background-color .18s ease, color .18s ease;
+  transition:background-color .18s ease, color .18s ease,
+             transform .16s var(--ease-out);
 }
-.nav__links a:hover{ color:var(--ink); background:color-mix(in srgb, var(--ink) 6%, transparent) }
+@media (hover:hover) and (pointer:fine){
+  .nav__links a:hover{ color:var(--ink); background:color-mix(in srgb, var(--ink) 6%, transparent) }
+}
+.nav__links a:active{ transform:scale(.96) }
 .nav__cta{
   justify-self:end; display:inline-flex; align-items:center; gap:6px;
   background:var(--accent); color:#fff; font-size:var(--t-s); font-weight:500;
   padding:8px 16px; border-radius:999px; white-space:nowrap;
-  transition:background-color .18s ease;
+  transition:background-color .18s ease, transform .16s var(--ease-out);
 }
-.nav__cta:hover{ background:var(--accent-d) }
-.nav__cta .arw{ display:inline-block }
-.nav__cta:hover .arw{ animation:flip .55s cubic-bezier(.4,0,.2,1) }
-@keyframes flip{ from{ transform:rotateY(0) } to{ transform:rotateY(360deg) } }
+.nav__cta .arw{ display:inline-block; transition:transform .2s var(--ease-out) }
+@media (hover:hover) and (pointer:fine){
+  .nav__cta:hover{ background:var(--accent-d) }
+  /* the arrow points where the click goes — a 360° spin says nothing */
+  .nav__cta:hover .arw{ transform:translate(2px,-2px) }
+}
+.nav__cta:active{ transform:scale(.97) }
 
 /* ─────────── HERO ─────────── */
 .hero{
@@ -163,21 +195,32 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 .track{ display:flex; gap:14px; width:max-content; animation:slide 52s linear infinite }
 .marquee--rev .track{ animation-direction:reverse; animation-duration:64s }
 @keyframes slide{ from{ transform:translateX(0) } to{ transform:translateX(calc(-50% - 7px)) } }
-.marquee:hover .track,.marquee:focus-within .track{ animation-play-state:paused }
+.marquee:focus-within .track{ animation-play-state:paused }
+@media (hover:hover) and (pointer:fine){
+  .marquee:hover .track{ animation-play-state:paused }
+}
 @media (prefers-reduced-motion:reduce){
   .marquee{ overflow-x:auto; scrollbar-width:none }
   .marquee::before,.marquee::after{ display:none }
   .track{ animation:none }
 }
 
-.tile{ display:block; flex:0 0 auto; width:clamp(200px,26vw,340px) }
+.tile{
+  display:block; flex:0 0 auto; width:clamp(200px,26vw,340px);
+  transition:transform .16s var(--ease-out);
+}
+.tile:active{ transform:scale(.985) }
 .tile .shot{ margin-bottom:8px }
 .tile__cap{
   display:flex; justify-content:space-between; gap:12px;
   font-size:var(--t-s); color:var(--mute);
 }
-.tile:hover .tile__cap b,.tile:focus-visible .tile__cap b{ color:var(--ink) }
-.tile__cap b{ font-weight:500; color:#2a2a27; transition:color .15s }
+.tile:focus-visible .tile__cap b{ color:var(--ink) }
+.tile__cap b{ font-weight:500; color:#2a2a27; transition:color .15s ease }
+@media (hover:hover) and (pointer:fine){
+  .tile:hover .tile__cap b{ color:var(--ink) }
+  .tile:hover .shot img{ transform:scale(1.035) }
+}
 
 /* ─────────── IMAGE PLATES ─────────── */
 .shot{
@@ -193,7 +236,10 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   font-size:var(--t-xs); color:#A9A9A3; text-align:center; padding:10px 16px;
   letter-spacing:.02em; max-width:90%;
 }
-.shot img{ width:100%; height:100%; object-fit:cover; display:block }
+.shot img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform .45s var(--ease-out);
+}
 .shot--wide{ aspect-ratio:16/9 }
 .shot--sq{ aspect-ratio:1/1 }
 .shot--tall{ aspect-ratio:3/4 }
@@ -213,7 +259,13 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   gap:clamp(12px,3vw,40px); align-items:baseline;
   border-top:1px solid var(--line); padding:clamp(16px,2.4vw,26px) 0;
 }
-.idx a:hover{ padding-left:12px; transition:padding .2s cubic-bezier(.2,.8,.3,1) }
+/* was: transition declared inside :hover (so it snapped back on exit)
+   and animating padding (layout+paint). transform is GPU-only. */
+.idx a{ transition:transform .24s var(--ease-out) }
+@media (hover:hover) and (pointer:fine){
+  .idx a:hover{ transform:translateX(12px) }
+}
+.idx a:active{ transform:translateX(12px) scale(.995) }
 .idx h3{ font-size:clamp(1.3rem,3vw,2.1rem); font-weight:500; letter-spacing:-0.04em }
 .idx p{ font-size:var(--t-s); color:var(--mute); margin:0; max-width:44ch }
 .idx time{ font-size:var(--t-s); color:var(--mute); text-align:right }
@@ -228,9 +280,19 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 .feed time{ font-size:var(--t-s); color:var(--mute); padding-top:.15em }
 .feed h3{ font-size:var(--t-l); font-weight:500; letter-spacing:-0.025em; margin-bottom:.4em; line-height:1.15 }
 .feed p{ font-size:var(--t-s); color:var(--mute); max-width:60ch; margin:0 }
-.feed .arrow{ font-size:var(--t-s); color:var(--mute); text-align:right }
-.feed a:hover .arrow{ color:var(--ink) }
-.feed a:hover h3{ text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px }
+.feed .arrow{
+  font-size:var(--t-s); color:var(--mute); text-align:right;
+  transition:color .18s ease, transform .2s var(--ease-out);
+}
+.feed h3{
+  text-decoration:underline; text-decoration-color:transparent;
+  text-underline-offset:3px; text-decoration-thickness:1px;
+  transition:text-decoration-color .22s ease;
+}
+@media (hover:hover) and (pointer:fine){
+  .feed a:hover .arrow{ color:var(--ink); transform:translate(2px,-2px) }
+  .feed a:hover h3{ text-decoration-color:currentColor }
+}
 
 /* about */
 .about{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:clamp(24px,6vw,80px); align-items:start }
@@ -244,22 +306,37 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 .mailto{
   display:inline-block; font-size:clamp(1.75rem,7vw,4.5rem); font-weight:500;
   letter-spacing:-0.05em; line-height:1; word-break:break-word;
+  text-decoration:underline; text-decoration-color:transparent;
+  text-underline-offset:.1em; text-decoration-thickness:.04em;
+  transition:text-decoration-color .3s ease, transform .16s var(--ease-out);
 }
-.mailto:hover{ text-decoration:underline; text-underline-offset:.1em; text-decoration-thickness:.04em }
+@media (hover:hover) and (pointer:fine){
+  .mailto:hover{ text-decoration-color:currentColor }
+}
+.mailto:active{ transform:scale(.99) }
 footer{
   border-top:1px solid var(--line); padding:16px 0 clamp(28px,5vh,56px);
   display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between;
   font-size:var(--t-s); color:var(--mute); margin-top:clamp(40px,7vh,80px);
 }
 footer nav{ display:flex; gap:16px }
-footer nav a:hover{ color:var(--ink) }
+footer nav a{ transition:color .18s ease }
+@media (hover:hover) and (pointer:fine){
+  footer nav a:hover{ color:var(--ink) }
+}
 
 /* ─────────── CASE STUDY ─────────── */
 #detail{ display:none }
 body.is-detail #index{ display:none }
 body.is-detail #detail{ display:block }
-.back{ display:inline-block; font-size:var(--t-s); color:var(--mute); padding:90px 0 0 }
-.back:hover{ color:var(--ink) }
+.back{
+  display:inline-block; font-size:var(--t-s); color:var(--mute); padding:90px 0 0;
+  transition:color .18s ease, transform .2s var(--ease-out);
+}
+@media (hover:hover) and (pointer:fine){
+  .back:hover{ color:var(--ink); transform:translateX(-3px) }
+}
+.back:active{ transform:translateX(-3px) scale(.98) }
 
 .cs__head{ padding-block:clamp(28px,6vh,64px) clamp(24px,4vh,48px) }
 .cs__head h1{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.045em; line-height:.98; max-width:16ch; margin-bottom:.35em }
@@ -290,8 +367,60 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
   display:flex; justify-content:space-between; align-items:baseline; gap:20px;
 }
 .next span{ font-size:var(--t-s); color:var(--mute) }
-.next a{ font-size:clamp(1.2rem,3vw,2rem); font-weight:500; letter-spacing:-0.04em }
-.next a:hover{ text-decoration:underline; text-underline-offset:3px }
+.next a{
+  font-size:clamp(1.2rem,3vw,2rem); font-weight:500; letter-spacing:-0.04em;
+  text-decoration:underline; text-decoration-color:transparent; text-underline-offset:3px;
+  transition:text-decoration-color .22s ease, transform .16s var(--ease-out);
+}
+@media (hover:hover) and (pointer:fine){
+  .next a:hover{ text-decoration-color:currentColor }
+}
+.next a:active{ transform:scale(.985) }
+
+/* ─────────── LISTENING ─────────── */
+.listen{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(24px,6vw,80px); align-items:start;
+}
+.listen__card{
+  position:relative; border-radius:12px; overflow:hidden;  /* 12px = Spotify's own card radius */
+  background:var(--card);
+}
+/* same inset hairline as the image plates, so the player reads as a
+   sibling of the workbench tiles rather than a pasted-in widget */
+.listen__card::after{
+  content:""; position:absolute; inset:0; border-radius:12px;
+  box-shadow:inset 0 0 0 1px var(--line); pointer-events:none;
+}
+.listen__card iframe{ display:block; border:0; width:100% }
+.listen__note{ font-size:var(--t-s); color:var(--mute); max-width:40ch }
+.listen__note b{ font-weight:500; color:var(--ink) }
+.listen__out{
+  display:inline-flex; align-items:center; gap:5px; margin-top:14px;
+  font-size:var(--t-s); color:var(--mute);
+  transition:color .18s ease, transform .2s var(--ease-out);
+}
+.listen__out .arw{ display:inline-block; transition:transform .2s var(--ease-out) }
+@media (hover:hover) and (pointer:fine){
+  .listen__out:hover{ color:var(--ink) }
+  .listen__out:hover .arw{ transform:translate(2px,-2px) }
+}
+.listen__out:active{ transform:scale(.98) }
+
+/* ─────────── REVEAL ON SCROLL ─────────── */
+/* transform + opacity only, so it stays on the GPU. Fires once. */
+/* the transition lives on .in, not .reveal — so tagging an element that is
+   already painted snaps it to the hidden state instead of animating it out */
+.reveal{ opacity:0; transform:translateY(12px) }
+.reveal.in{
+  opacity:1; transform:none;
+  transition:opacity .45s var(--ease-out), transform .45s var(--ease-out);
+}
+
+/* index ⇄ case study is a hard display swap; a short blurred crossfade
+   keeps it from reading as a broken repaint */
+main{ transition:opacity .16s var(--ease-out), filter .16s var(--ease-out) }
+main.swapping{ opacity:0; filter:blur(3px) }
 
 /* ─────────── RESPONSIVE ─────────── */
 @media (max-width:780px){
@@ -299,7 +428,7 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
   .idx p{ display:none }
   .feed article{ grid-template-columns:minmax(0,1fr) 1.5rem }
   .feed time{ grid-column:1/-1; padding-top:0 }
-  .about{ grid-template-columns:1fr }
+  .about,.listen{ grid-template-columns:1fr }
   .grid--3{ grid-template-columns:repeat(2,1fr) }
   .hero h1{ max-width:none }
 }
@@ -396,6 +525,20 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
     </div>
   </section>
 
+  <!-- ══════════ LISTENING ══════════ -->
+  <section class="sec wrap" id="listening">
+    <div class="sec__head"><span>Listening</span><span id="listenKind"></span></div>
+    <div class="listen">
+      <div class="listen__card" id="listenSlot"></div>
+      <div>
+        <p class="listen__note" id="listenNote"></p>
+        <a class="listen__out" id="listenOut" target="_blank" rel="noopener">
+          Open in Spotify <span class="arw">&#8599;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ══════════ CONTACT ══════════ -->
   <section class="sec wrap" id="contact">
     <div class="sec__head"><span>Say hello</span></div>
@@ -482,6 +625,17 @@ const PROJECTS = [
   }
 ];
 
+/* Paste the share link of whatever you want on the page — playlist,
+   album, artist or a single track. In Spotify: right-click → Share →
+   Copy link. This is a curated embed, not a live now-playing feed:
+   showing real-time playback needs a server to hold your Spotify
+   client secret, which a static HTML file can't do. */
+const SPOTIFY = {
+  url:  "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M",
+  note: "<b>Workbench noise.</b> What's on while I model. I keep the playlist current \u2014 it's curated, not a live feed, so it won't claim I'm listening to anything at 3am.",
+  kind: "Playlist, updated when it gets stale"
+};
+
 const UPDATES = [
   { date:"Sep 2026", title:"Portfolio, version one",
     text:"Put this site together. Three case studies up, more to follow as I get clearance to share them.",
@@ -547,6 +701,30 @@ document.getElementById("feedList").innerHTML = UPDATES.map(u => {
     : inner;
 }).join("");
 
+/* --- listening --- */
+function spotifyEmbed(url){
+  const m = String(url).match(
+    /open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album|track|artist|show|episode)\/([A-Za-z0-9]+)/
+  );
+  // no theme param: Spotify renders this card dark either way and the
+  // iframe is cross-origin, so its interior can't be restyled from here
+  return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator` : "";
+}
+
+(function renderSpotify(){
+  const src  = spotifyEmbed(SPOTIFY.url);
+  const slot = document.getElementById("listenSlot");
+  const sec  = document.getElementById("listening");
+  if(!src){ sec.remove(); return; }   // bad link: drop the section, don't ship a broken frame
+  // no `autoplay` in allow — nothing on a portfolio should start making noise
+  slot.innerHTML = `<iframe src="${esc(src)}" height="152" loading="lazy"
+      title="Spotify player" allow="clipboard-write; encrypted-media; picture-in-picture"
+      allowfullscreen></iframe>`;
+  document.getElementById("listenNote").innerHTML = SPOTIFY.note;
+  document.getElementById("listenKind").textContent = SPOTIFY.kind;
+  document.getElementById("listenOut").href = SPOTIFY.url;
+})();
+
 /* --- case study --- */
 const detail = document.getElementById("detail");
 
@@ -579,14 +757,52 @@ function renderProject(p, i){
     </nav>`;
 }
 
-function route(){
-  const slug = decodeURIComponent(location.hash.replace("#",""));
-  const i = PROJECTS.findIndex(p => p.slug === slug);
+/* --- reveal on scroll ---
+   Stagger stays at 55ms and caps out after six items: long cascades
+   read as lag, not polish. Never blocks interaction. */
+const REVEAL_SEL = ".sec__head, .idx > a, .feed > *, .about > div, .about > dl,"
+                 + " .listen > *, .mailto, footer, .cs__head, .facts, .chapter, .next";
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+let io = null;
+function initReveal(scope){
+  // no observer, no reveal — never leave content stuck at opacity 0
+  if(reduceMotion.matches || !("IntersectionObserver" in window)) return;
+  if(!io) io = new IntersectionObserver(es => {
+    for(const e of es) if(e.isIntersecting){
+      io.unobserve(e.target);
+      e.target.classList.add("in");
+    }
+    // fire just BEFORE the element enters view, so a fast scroll lands on
+    // content that is already fading in rather than on empty space
+  }, { rootMargin:"0px 0px 10% 0px", threshold:0 });
+
+  const groups = new Map();
+  for(const el of scope.querySelectorAll(REVEAL_SEL)){
+    if(el.classList.contains("reveal")) continue;
+    el.classList.add("reveal");
+    const g = groups.get(el.parentElement) || [];
+    g.push(el);
+    groups.set(el.parentElement, g);
+  }
+  for(const g of groups.values()){
+    g.forEach((el, i) => {
+      el.style.transitionDelay = Math.min(i, 4) * 55 + "ms";
+      io.observe(el);
+    });
+  }
+}
+
+/* --- case study --- */
+function applyRoute(slug, i){
   if(i > -1){
     document.body.classList.add("is-detail");
     renderProject(PROJECTS[i], i);
     document.title = `${PROJECTS[i].title} — Ken`;
-    window.scrollTo(0,0);
+    initReveal(detail);   // before scrollTo — that forces a style flush
+    // instant, not smooth: the crossfade already covers the swap, and a
+    // 1s glide would outlast it and race the reveal observer
+    window.scrollTo({ top:0, behavior:"instant" });
   } else {
     const wasDetail = document.body.classList.contains("is-detail");
     document.body.classList.remove("is-detail");
@@ -594,12 +810,34 @@ function route(){
     if(slug && document.getElementById(slug)){
       document.getElementById(slug).scrollIntoView();
     } else if(wasDetail){
-      window.scrollTo(0,0);
+      window.scrollTo({ top:0, behavior:"instant" });
     }
   }
 }
+
+const main = document.querySelector("main");
+let booted = false;
+
+function route(){
+  const slug = decodeURIComponent(location.hash.replace("#",""));
+  const i = PROJECTS.findIndex(p => p.slug === slug);
+  const changesView = (i > -1) !== document.body.classList.contains("is-detail");
+
+  // only crossfade on an actual view swap — in-page anchors just scroll
+  if(!booted || !changesView || reduceMotion.matches){
+    booted = true;
+    applyRoute(slug, i);
+    return;
+  }
+  main.classList.add("swapping");
+  setTimeout(() => {
+    applyRoute(slug, i);
+    main.classList.remove("swapping");
+  }, 160);
+}
 addEventListener("hashchange", route);
 route();
+initReveal(document.getElementById("index"));
 </script>
 </body>
 </html>
