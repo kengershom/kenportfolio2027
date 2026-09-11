@@ -60,8 +60,38 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   position:fixed; top:0; left:0; right:0; z-index:60;
   display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
   padding:10px var(--pad);
-  background:color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter:blur(10px);
+}
+
+/* progressive blur veil — stacked backdrop layers, each blurring more
+   over a shorter band, so the blur ramps instead of cutting off */
+.pblur{
+  position:fixed; top:0; left:0; right:0; z-index:55; pointer-events:none;
+  height:clamp(84px, 11vh, 130px);
+}
+.pblur i{ position:absolute; inset:0; display:block }
+.pblur i:nth-child(1){ backdrop-filter:blur(.4px);  -webkit-backdrop-filter:blur(.4px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%);
+          mask:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%) }
+.pblur i:nth-child(2){ backdrop-filter:blur(.8px);  -webkit-backdrop-filter:blur(.8px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 54%,transparent 84%);
+          mask:linear-gradient(to bottom,#000 0%,#000 54%,transparent 84%) }
+.pblur i:nth-child(3){ backdrop-filter:blur(1.6px); -webkit-backdrop-filter:blur(1.6px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 40%,transparent 70%);
+          mask:linear-gradient(to bottom,#000 0%,#000 40%,transparent 70%) }
+.pblur i:nth-child(4){ backdrop-filter:blur(3px);   -webkit-backdrop-filter:blur(3px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 28%,transparent 56%);
+          mask:linear-gradient(to bottom,#000 0%,#000 28%,transparent 56%) }
+.pblur i:nth-child(5){ backdrop-filter:blur(6px);   -webkit-backdrop-filter:blur(6px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 17%,transparent 42%);
+          mask:linear-gradient(to bottom,#000 0%,#000 17%,transparent 42%) }
+.pblur i:nth-child(6){ backdrop-filter:blur(12px);  -webkit-backdrop-filter:blur(12px);
+  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 8%,transparent 27%);
+          mask:linear-gradient(to bottom,#000 0%,#000 8%,transparent 27%) }
+.pblur .tint{
+  background:linear-gradient(to bottom,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 45%,
+    transparent 100%);
 }
 .nav__name{ display:flex; align-items:center }
 .logo{ width:13.5px; height:13.5px; display:block }
@@ -283,6 +313,10 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
 </style>
 </head>
 <body>
+
+<div class="pblur" aria-hidden="true">
+  <i></i><i></i><i></i><i></i><i></i><i></i><i class="tint"></i>
+</div>
 
 <nav class="nav">
   <a class="nav__name" href="#" aria-label="Ken — home">
