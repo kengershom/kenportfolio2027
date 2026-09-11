@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<!-- Lenis: inertial smooth scroll. defer, so a slow CDN never delays the
+     inline renderer below; if it fails to load the site falls back to
+     native scrolling and nothing else breaks. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.css">
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
 <style>
 :root{
   --bg:      #F3F3F1;
@@ -393,6 +398,9 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
   box-shadow:inset 0 0 0 1px var(--line); pointer-events:none;
 }
 .listen__card iframe{ display:block; border:0; width:100% }
+/* Lenis blanket-disables pointer events on iframes so they can't swallow
+   wheel events. The player is the one iframe that has to stay clickable. */
+html.lenis.lenis-smooth .listen__card iframe{ pointer-events:auto }
 .listen__note{ font-size:var(--t-s); color:var(--mute); max-width:40ch }
 .listen__note b{ font-weight:500; color:var(--ink) }
 .listen__out{
@@ -625,13 +633,16 @@ const PROJECTS = [
   }
 ];
 
-/* Paste the share link of whatever you want on the page — playlist,
-   album, artist or a single track. In Spotify: right-click → Share →
-   Copy link. This is a curated embed, not a live now-playing feed:
-   showing real-time playback needs a server to hold your Spotify
-   client secret, which a static HTML file can't do. */
+/* `url` is what the player shows. Spotify can embed a playlist, album,
+   track, artist, show or episode — NOT a user profile, so a /user/ link
+   can't go here (open.spotify.com/embed/user/... is a 404).
+   `profile` is just the link-out under the player.
+   This is a curated embed, not a live now-playing feed: real-time
+   playback needs a server to hold your Spotify client secret, which a
+   static HTML file can't do. */
 const SPOTIFY = {
-  url:  "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M",
+  profile: "https://open.spotify.com/user/9v2xtjc3ygbylr7z5jh9wcn7e",
+  url:  "https://open.spotify.com/playlist/3fj1M85qRAJL6zT3wQOgre",
   note: "<b>Workbench noise.</b> What's on while I model. I keep the playlist current \u2014 it's curated, not a live feed, so it won't claim I'm listening to anything at 3am.",
   kind: "Playlist, updated when it gets stale"
 };
@@ -716,13 +727,16 @@ function spotifyEmbed(url){
   const slot = document.getElementById("listenSlot");
   const sec  = document.getElementById("listening");
   if(!src){ sec.remove(); return; }   // bad link: drop the section, don't ship a broken frame
+  const out  = document.getElementById("listenOut");
   // no `autoplay` in allow — nothing on a portfolio should start making noise
   slot.innerHTML = `<iframe src="${esc(src)}" height="152" loading="lazy"
       title="Spotify player" allow="clipboard-write; encrypted-media; picture-in-picture"
       allowfullscreen></iframe>`;
   document.getElementById("listenNote").innerHTML = SPOTIFY.note;
   document.getElementById("listenKind").textContent = SPOTIFY.kind;
-  document.getElementById("listenOut").href = SPOTIFY.url;
+  // prefer the profile so the link-out goes to everything, not one playlist
+  out.href = SPOTIFY.profile || SPOTIFY.url;
+  out.firstChild.textContent = SPOTIFY.profile ? "Follow me on Spotify " : "Open in Spotify ";
 })();
 
 /* --- case study --- */
@@ -764,6 +778,42 @@ const REVEAL_SEL = ".sec__head, .idx > a, .feed > *, .about > div, .about > dl,"
                  + " .listen > *, .mailto, footer, .cs__head, .facts, .chapter, .next";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
+/* --- smooth scrolling (Lenis) ---
+   Every scroll the site performs goes through these two helpers, so the
+   page behaves identically whether Lenis loaded or not. */
+let lenis = null;
+const scrollToTop = () => lenis
+  ? lenis.scrollTo(0, { immediate:true })
+  : window.scrollTo({ top:0, behavior:"instant" });
+const scrollToEl = el => lenis ? lenis.scrollTo(el) : el.scrollIntoView();
+
+function initLenis(){
+  if(reduceMotion.matches || typeof Lenis === "undefined") return;
+  lenis = new Lenis();
+  // CSS scroll-behavior:smooth would fight Lenis over the same scroll
+  document.documentElement.style.scrollBehavior = "auto";
+  (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })();
+
+  // Anchor clicks jump instantly unless we take them over: the browser
+  // moves the scroll position before hashchange ever fires.
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if(!a || !lenis) return;
+    const id = a.getAttribute("href").slice(1);
+    if(!id) return;                           // href="#" — let the router handle it
+    const el = document.getElementById(id);
+    if(!el) return;                           // a project slug, not a section
+    e.preventDefault();
+    history.pushState(null, "", "#" + id);
+    scrollToEl(el);
+  });
+}
+if(document.readyState === "loading"){
+  addEventListener("DOMContentLoaded", initLenis);   // defer'd Lenis lands first
+} else {
+  initLenis();
+}
+
 let io = null;
 function initReveal(scope){
   // no observer, no reveal — never leave content stuck at opacity 0
@@ -799,18 +849,18 @@ function applyRoute(slug, i){
     document.body.classList.add("is-detail");
     renderProject(PROJECTS[i], i);
     document.title = `${PROJECTS[i].title} — Ken`;
-    initReveal(detail);   // before scrollTo — that forces a style flush
+    initReveal(detail);   // before scrolling — that forces a style flush
     // instant, not smooth: the crossfade already covers the swap, and a
     // 1s glide would outlast it and race the reveal observer
-    window.scrollTo({ top:0, behavior:"instant" });
+    scrollToTop();
   } else {
     const wasDetail = document.body.classList.contains("is-detail");
     document.body.classList.remove("is-detail");
     document.title = "Ken — Industrial Design";
     if(slug && document.getElementById(slug)){
-      document.getElementById(slug).scrollIntoView();
+      scrollToEl(document.getElementById(slug));
     } else if(wasDetail){
-      window.scrollTo({ top:0, behavior:"instant" });
+      scrollToTop();
     }
   }
 }
