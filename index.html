@@ -16,8 +16,8 @@
   --mute:    #6E6E69;
   --line:    #E2E2DE;
   --live:    #1F9D55;
-  --accent:  #D2440C;
-  --accent-d:#B03708;
+  --accent:  #FF6200;
+  --accent-d:#E05600;
 
   --pad:     clamp(18px, 4vw, 48px);
   --radius:  10px;
@@ -78,8 +78,9 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   transition:background-color .18s ease;
 }
 .nav__cta:hover{ background:var(--accent-d) }
-.nav__cta .arw{ transition:transform .18s ease }
-.nav__cta:hover .arw{ transform:translate(1px,-1px) }
+.nav__cta .arw{ display:inline-block }
+.nav__cta:hover .arw{ animation:flip .55s cubic-bezier(.4,0,.2,1) }
+@keyframes flip{ from{ transform:rotateY(0) } to{ transform:rotateY(360deg) } }
 
 /* ─────────── HERO ─────────── */
 .hero{
