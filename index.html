@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ken — Industrial Design</title>
+<meta name="description" content="Industrial design for energy hardware. Batteries, fast chargers, and the parts people actually touch. Based in Bangalore.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:      #F3F3F1;
+  --card:    #FFFFFF;
+  --ink:     #000000;
+  --mute:    #6E6E69;
+  --line:    #E2E2DE;
+  --live:    #1F9D55;
+
+  --pad:     clamp(18px, 4vw, 48px);
+  --radius:  10px;
+
+  --t-xs: 0.75rem;
+  --t-s:  0.875rem;
+  --t-m:  1rem;
+  --t-l:  clamp(1.1rem, 1.8vw, 1.4rem);
+  --t-xl: clamp(2rem, 4.4vw, 3.25rem);
+  --t-hero: clamp(2.5rem, 7.4vw, 6.5rem);
+}
+
+*,*::before,*::after{ box-sizing:border-box }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth }
+
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Instrument Sans",system-ui,sans-serif;
+  font-size:var(--t-m); line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto }
+  *,*::before,*::after{ animation:none !important; transition:none !important }
+}
+
+a{ color:inherit; text-decoration:none }
+h1,h2,h3{ margin:0; font-weight:500; letter-spacing:-0.035em; line-height:1 }
+p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
+:focus-visible{ outline:2px solid var(--ink); outline-offset:4px; border-radius:2px }
+::selection{ background:var(--ink); color:var(--bg) }
+
+.wrap{ padding-inline:var(--pad) }
+.measure{ max-width:58ch }
+.mute{ color:var(--mute) }
+
+/* ─────────── NAV ─────────── */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:60;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px var(--pad);
+  background:color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter:blur(10px);
+}
+.nav__name{ font-size:var(--t-s); font-weight:600; letter-spacing:-0.01em }
+.nav__links{ display:flex; gap:18px; font-size:var(--t-s) }
+.nav__links a{ color:var(--mute) }
+.nav__links a:hover{ color:var(--ink) }
+
+/* ─────────── HERO ─────────── */
+.hero{
+  min-height:100svh; display:flex; flex-direction:column; justify-content:flex-end;
+  padding-bottom:clamp(28px,6vh,64px); padding-top:120px;
+}
+.hero h1{
+  font-size:var(--t-hero); font-weight:500;
+  letter-spacing:-0.05em; line-height:.94; max-width:16ch;
+  margin-bottom:clamp(24px,4vh,44px);
+}
+.hero h1 .ln{ display:block; overflow:hidden }
+.hero h1 .ln i{ display:block; font-style:normal }
+.hero__foot{
+  display:flex; flex-wrap:wrap; gap:clamp(18px,5vw,64px);
+  align-items:flex-end; justify-content:space-between;
+  border-top:1px solid var(--line); padding-top:18px;
+}
+.hero__sub{ font-size:var(--t-l); max-width:30ch; letter-spacing:-0.015em; line-height:1.3 }
+.status{ display:inline-flex; align-items:center; gap:8px; font-size:var(--t-s); color:var(--mute); white-space:nowrap }
+.status::before{
+  content:""; width:7px; height:7px; border-radius:50%; background:var(--live);
+  box-shadow:0 0 0 0 rgba(31,157,85,.45); animation:pulse 2.6s ease-out infinite;
+}
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(31,157,85,.45)} 70%,100%{box-shadow:0 0 0 9px rgba(31,157,85,0)} }
+
+@keyframes riseIn{ from{ transform:translateY(105%) } to{ transform:translateY(0) } }
+.hero h1 .ln i{ animation:riseIn .78s cubic-bezier(.16,.9,.26,1) both }
+.hero h1 .ln:nth-child(1) i{ animation-delay:.05s }
+.hero h1 .ln:nth-child(2) i{ animation-delay:.13s }
+.hero h1 .ln:nth-child(3) i{ animation-delay:.21s }
+@keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
+.hero__foot{ animation:fadeIn .7s .45s both }
+
+/* ─────────── WORKBENCH / MARQUEE ─────────── */
+.bench{ padding-block:clamp(40px,8vh,90px) }
+.bench__label{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:var(--t-s); color:var(--mute); margin-bottom:20px;
+}
+.marquee{ position:relative; overflow:hidden; margin-bottom:14px }
+.marquee::before,.marquee::after{
+  content:""; position:absolute; top:0; bottom:0; width:8vw; z-index:3; pointer-events:none;
+}
+.marquee::before{ left:0;  background:linear-gradient(90deg,var(--bg),transparent) }
+.marquee::after{ right:0; background:linear-gradient(270deg,var(--bg),transparent) }
+
+.track{ display:flex; gap:14px; width:max-content; animation:slide 52s linear infinite }
+.marquee--rev .track{ animation-direction:reverse; animation-duration:64s }
+@keyframes slide{ from{ transform:translateX(0) } to{ transform:translateX(calc(-50% - 7px)) } }
+.marquee:hover .track,.marquee:focus-within .track{ animation-play-state:paused }
+@media (prefers-reduced-motion:reduce){
+  .marquee{ overflow-x:auto; scrollbar-width:none }
+  .marquee::before,.marquee::after{ display:none }
+  .track{ animation:none }
+}
+
+.tile{ display:block; flex:0 0 auto; width:clamp(200px,26vw,340px) }
+.tile .shot{ margin-bottom:8px }
+.tile__cap{
+  display:flex; justify-content:space-between; gap:12px;
+  font-size:var(--t-s); color:var(--mute);
+}
+.tile:hover .tile__cap b,.tile:focus-visible .tile__cap b{ color:var(--ink) }
+.tile__cap b{ font-weight:500; color:#2a2a27; transition:color .15s }
+
+/* ─────────── IMAGE PLATES ─────────── */
+.shot{
+  position:relative; width:100%; aspect-ratio:4/3;
+  background:var(--card); border-radius:var(--radius); overflow:hidden;
+  display:grid; place-items:center;
+}
+.shot::after{
+  content:""; position:absolute; inset:0; border-radius:var(--radius);
+  box-shadow:inset 0 0 0 1px var(--line); pointer-events:none;
+}
+.shot span{
+  font-size:var(--t-xs); color:#A9A9A3; text-align:center; padding:10px 16px;
+  letter-spacing:.02em; max-width:90%;
+}
+.shot img{ width:100%; height:100%; object-fit:cover; display:block }
+.shot--wide{ aspect-ratio:16/9 }
+.shot--sq{ aspect-ratio:1/1 }
+.shot--tall{ aspect-ratio:3/4 }
+
+/* ─────────── SECTIONS ─────────── */
+.sec{ padding-block:clamp(56px,10vh,130px) }
+.sec__head{
+  display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+  font-size:var(--t-s); color:var(--mute);
+  border-top:1px solid var(--line); padding-top:14px; margin-bottom:clamp(24px,4vh,48px);
+}
+
+/* work index rows */
+.idx{ border-bottom:1px solid var(--line) }
+.idx a{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 5rem;
+  gap:clamp(12px,3vw,40px); align-items:baseline;
+  border-top:1px solid var(--line); padding:clamp(16px,2.4vw,26px) 0;
+}
+.idx a:hover{ padding-left:12px; transition:padding .2s cubic-bezier(.2,.8,.3,1) }
+.idx h3{ font-size:clamp(1.3rem,3vw,2.1rem); font-weight:500; letter-spacing:-0.04em }
+.idx p{ font-size:var(--t-s); color:var(--mute); margin:0; max-width:44ch }
+.idx time{ font-size:var(--t-s); color:var(--mute); text-align:right }
+
+/* updates */
+.feed{ border-bottom:1px solid var(--line) }
+.feed article{
+  display:grid; grid-template-columns:7.5rem minmax(0,1fr) 1.5rem;
+  gap:clamp(12px,3vw,36px); align-items:start;
+  border-top:1px solid var(--line); padding:clamp(16px,2.2vw,24px) 0;
+}
+.feed time{ font-size:var(--t-s); color:var(--mute); padding-top:.15em }
+.feed h3{ font-size:var(--t-l); font-weight:500; letter-spacing:-0.025em; margin-bottom:.4em; line-height:1.15 }
+.feed p{ font-size:var(--t-s); color:var(--mute); max-width:60ch; margin:0 }
+.feed .arrow{ font-size:var(--t-s); color:var(--mute); text-align:right }
+.feed a:hover .arrow{ color:var(--ink) }
+.feed a:hover h3{ text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px }
+
+/* about */
+.about{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:clamp(24px,6vw,80px); align-items:start }
+.about__lead{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.04em; line-height:1.06; margin-bottom:.7em; max-width:18ch }
+.kv{ margin:0; border-top:1px solid var(--line) }
+.kv > div{ display:flex; gap:20px; border-bottom:1px solid var(--line); padding:10px 0 11px }
+.kv dt{ flex:0 0 6.5rem; font-size:var(--t-s); color:var(--mute) }
+.kv dd{ margin:0; font-size:var(--t-s) }
+
+/* contact + footer */
+.mailto{
+  display:inline-block; font-size:clamp(1.75rem,7vw,4.5rem); font-weight:500;
+  letter-spacing:-0.05em; line-height:1; word-break:break-word;
+}
+.mailto:hover{ text-decoration:underline; text-underline-offset:.1em; text-decoration-thickness:.04em }
+footer{
+  border-top:1px solid var(--line); padding:16px 0 clamp(28px,5vh,56px);
+  display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between;
+  font-size:var(--t-s); color:var(--mute); margin-top:clamp(40px,7vh,80px);
+}
+footer nav{ display:flex; gap:16px }
+footer nav a:hover{ color:var(--ink) }
+
+/* ─────────── CASE STUDY ─────────── */
+#detail{ display:none }
+body.is-detail #index{ display:none }
+body.is-detail #detail{ display:block }
+.back{ display:inline-block; font-size:var(--t-s); color:var(--mute); padding:90px 0 0 }
+.back:hover{ color:var(--ink) }
+
+.cs__head{ padding-block:clamp(28px,6vh,64px) clamp(24px,4vh,48px) }
+.cs__head h1{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.045em; line-height:.98; max-width:16ch; margin-bottom:.35em }
+.cs__head p{ font-size:var(--t-l); max-width:36ch; line-height:1.3; letter-spacing:-0.015em; color:var(--mute) }
+
+.facts{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  margin:clamp(28px,5vh,56px) 0 clamp(36px,7vh,80px);
+}
+.facts > div{ padding:12px 18px 14px; border-right:1px solid var(--line) }
+.facts > div:last-child{ border-right:0 }
+.facts dt{ font-size:var(--t-xs); color:var(--mute); margin-bottom:3px }
+.facts dd{ margin:0; font-size:var(--t-s) }
+
+.chapter{ margin-bottom:clamp(44px,9vh,110px) }
+.chapter__label{ font-size:var(--t-s); color:var(--mute); border-top:1px solid var(--line); padding-top:12px; margin-bottom:16px }
+.chapter h2{ font-size:clamp(1.35rem,3vw,2rem); font-weight:500; letter-spacing:-0.035em; margin-bottom:.6em }
+.chapter .body{ max-width:58ch; color:#232320 }
+.grid{ display:grid; gap:14px; margin-top:28px }
+.grid--2{ grid-template-columns:repeat(2,1fr) }
+.grid--3{ grid-template-columns:repeat(3,1fr) }
+figure{ margin:0 }
+figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
+
+.next{
+  border-top:1px solid var(--line); padding:16px 0 clamp(48px,8vh,96px);
+  display:flex; justify-content:space-between; align-items:baseline; gap:20px;
+}
+.next span{ font-size:var(--t-s); color:var(--mute) }
+.next a{ font-size:clamp(1.2rem,3vw,2rem); font-weight:500; letter-spacing:-0.04em }
+.next a:hover{ text-decoration:underline; text-underline-offset:3px }
+
+/* ─────────── RESPONSIVE ─────────── */
+@media (max-width:780px){
+  .idx a{ grid-template-columns:minmax(0,1fr) 4rem }
+  .idx p{ display:none }
+  .feed article{ grid-template-columns:minmax(0,1fr) 1.5rem }
+  .feed time{ grid-column:1/-1; padding-top:0 }
+  .about{ grid-template-columns:1fr }
+  .grid--3{ grid-template-columns:repeat(2,1fr) }
+  .hero h1{ max-width:none }
+}
+@media (max-width:520px){
+  .grid--2,.grid--3{ grid-template-columns:1fr }
+  .nav__links a:nth-child(n+4){ display:none }
+  .facts > div{ border-right:0; border-bottom:1px solid var(--line) }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav__name" href="#">Ken</a>
+  <div class="nav__links">
+    <a href="#work">Work</a>
+    <a href="#updates">Updates</a>
+    <a href="#about">About</a>
+    <a href="mailto:hello@example.com">Email</a>
+  </div>
+</nav>
+
+<main>
+<div id="index">
+
+  <!-- ══════════ HERO ══════════ -->
+  <header class="hero wrap">
+    <h1>
+      <span class="ln"><i>Industrial design</i></span>
+      <span class="ln"><i>for the hardware</i></span>
+      <span class="ln"><i>that moves energy.</i></span>
+    </h1>
+    <div class="hero__foot">
+      <p class="hero__sub">Battery packs, fast chargers, and the parts people actually put their hands on. Bangalore.</p>
+      <span class="status">Open to 2027 roles</span>
+    </div>
+  </header>
+
+  <!-- ══════════ WORKBENCH ══════════ -->
+  <section class="bench">
+    <div class="bench__label wrap"><span>Workbench</span><span id="benchCount"></span></div>
+    <div class="marquee"><div class="track" id="trackA"></div></div>
+    <div class="marquee marquee--rev"><div class="track" id="trackB"></div></div>
+  </section>
+
+  <!-- ══════════ WORK INDEX ══════════ -->
+  <section class="sec wrap" id="work">
+    <div class="sec__head"><span>Selected work</span><span id="workCount"></span></div>
+    <div class="idx" id="workList"></div>
+  </section>
+
+  <!-- ══════════ UPDATES ══════════ -->
+  <section class="sec wrap" id="updates">
+    <div class="sec__head"><span>Updates</span><span>Most recent first</span></div>
+    <div class="feed" id="feedList"></div>
+  </section>
+
+  <!-- ══════════ ABOUT ══════════ -->
+  <section class="sec wrap" id="about">
+    <div class="sec__head"><span>About</span></div>
+    <div class="about">
+      <div>
+        <p class="about__lead">I like problems where the constraint is physical.</p>
+        <div class="measure mute">
+          <p>Heat, tolerance, cost, the width of a hand. I studied product design at MS Ramaiah University and have been at Exponent Energy since 2023, working across EV charging and battery hardware.</p>
+          <p>Most of what I do sits in the gap between what engineering says is possible and what a person will tolerate at 6am in a parking lot. I sketch a lot, build rough physical models early, and would rather test a bad prototype on Tuesday than a good render on Friday.</p>
+        </div>
+      </div>
+      <dl class="kv">
+        <div><dt>Now</dt><dd>Industrial Designer, Exponent Energy</dd></div>
+        <div><dt>Education</dt><dd>B.Des Product Design, MS Ramaiah University</dd></div>
+        <div><dt>Tools</dt><dd>SolidWorks, Rhino, Fusion 360, KeyShot, Figma</dd></div>
+        <div><dt>Making</dt><dd>FDM/SLA, foam, sheet metal, vacuum forming</dd></div>
+        <div><dt>Based</dt><dd>Bangalore, India</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ══════════ CONTACT ══════════ -->
+  <section class="sec wrap" id="contact">
+    <div class="sec__head"><span>Say hello</span></div>
+    <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
+    <footer>
+      <span>© 2026 Ken — Bangalore, India</span>
+      <nav>
+        <a href="#">LinkedIn</a>
+        <a href="#">Instagram</a>
+        <a href="#">Behance</a>
+        <a href="#">CV</a>
+      </nav>
+    </footer>
+  </section>
+
+</div>
+
+<div id="detail" class="wrap"></div>
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   EDIT BELOW. Everything above renders from this data.
+   Swap { label:"..." } for { src:"img/file.jpg", alt:"..." }
+   ══════════════════════════════════════════════════════════════ */
+
+const PROJECTS = [
+  {
+    slug:"project-one",
+    title:"Placeholder — fast-charge connector",
+    year:"2025",
+    premise:"A handheld connector for 1000A charging that stays cool enough to hold and docks one-handed.",
+    facts:{ Role:"Industrial design lead", Duration:"9 months", Team:"2 ID, 4 mech, 1 EE", Status:"In production" },
+    cover:{ label:"COVER — hero shot of the final product" },
+    gallery:[
+      { label:"WALL IMAGE — detail or alt angle" },
+      { label:"WALL IMAGE — in use / in context" }
+    ],
+    chapters:[
+      { label:"Context", title:"Why this was hard",
+        body:["Name the constraint that made this difficult, in plain language. Not \u2018we wanted to improve the experience\u2019 \u2014 something physical. Cable weight. Contact temperature. 40\u00B0C ambient. A cost ceiling per unit.",
+              "Then say who touched it and what they were doing at the time. One paragraph."],
+        shots:[{ label:"CONTEXT \u2014 field photo, teardown, or benchmark", ratio:"wide", cap:"What this shows, and what it changed." }] },
+      { label:"Process", title:"How it got to that shape",
+        body:["This is the section people actually read. Show exploration, not conclusions \u2014 sketch pages, foam models, the grip study, the version that failed the drop test.",
+              "For every image, say what decision came out of it. A process photo with no decision attached is decoration."],
+        shots:[{ label:"SKETCH PAGE", ratio:"sq", cap:"Early form exploration." },
+               { label:"PHYSICAL MODEL", ratio:"sq", cap:"Grip test, round three." },
+               { label:"CAD SECTION", ratio:"sq", cap:"Internal packaging." }] },
+      { label:"Resolution", title:"What shipped",
+        body:["Final form, materials, finish, and the outcome you can measure. Surface temperature under load. Assembly time. Unit cost.",
+              "Close with what you\u2019d do differently. Reviewers trust designers who can critique their own work."],
+        shots:[{ label:"FINAL \u2014 hero render or photography", ratio:"wide", cap:"Final unit." },
+               { label:"DETAIL \u2014 CMF, parting lines, texture", ratio:"wide", cap:"Surface and finish." }] }
+    ]
+  },
+  {
+    slug:"project-two",
+    title:"Placeholder — battery pack enclosure",
+    year:"2024",
+    premise:"Rethinking a modular pack housing so it could be serviced in the field without a lift or a second person.",
+    facts:{ Role:"Industrial designer", Duration:"6 months", Team:"1 ID, 3 mech", Status:"Pilot" },
+    cover:{ label:"COVER — hero shot of the final product" },
+    gallery:[{ label:"WALL IMAGE — detail" },{ label:"WALL IMAGE — context" }],
+    chapters:[
+      { label:"Context", title:"The problem", body:["Replace with the real story."], shots:[{label:"CONTEXT IMAGE",ratio:"wide",cap:"Caption."}] },
+      { label:"Process", title:"Exploration", body:["Replace with the real story."], shots:[{label:"PROCESS",ratio:"sq",cap:"Caption."},{label:"PROCESS",ratio:"sq",cap:"Caption."}] },
+      { label:"Resolution", title:"Outcome", body:["Replace with the real story."], shots:[{label:"FINAL",ratio:"wide",cap:"Caption."}] }
+    ]
+  },
+  {
+    slug:"project-three",
+    title:"Placeholder — self-initiated",
+    year:"2022",
+    premise:"One project that shows range. Something personal, weird, or beautifully made that the day job doesn\u2019t cover.",
+    facts:{ Role:"Solo", Duration:"4 months", Team:"\u2014", Status:"Prototype" },
+    cover:{ label:"COVER — hero shot of the final product" },
+    gallery:[{ label:"WALL IMAGE — detail" },{ label:"WALL IMAGE — process" }],
+    chapters:[
+      { label:"Context", title:"The problem", body:["Replace with the real story."], shots:[{label:"CONTEXT IMAGE",ratio:"wide",cap:"Caption."}] },
+      { label:"Process", title:"Exploration", body:["Replace with the real story."], shots:[{label:"PROCESS",ratio:"sq",cap:"Caption."},{label:"PROCESS",ratio:"sq",cap:"Caption."}] },
+      { label:"Resolution", title:"Outcome", body:["Replace with the real story."], shots:[{label:"FINAL",ratio:"wide",cap:"Caption."}] }
+    ]
+  }
+];
+
+const UPDATES = [
+  { date:"Sep 2026", title:"Portfolio, version one",
+    text:"Put this site together. Three case studies up, more to follow as I get clearance to share them.",
+    href:"" },
+  { date:"Jun 2026", title:"Placeholder — something you shipped",
+    text:"A launch, an award, a talk, a prototype that finally worked. One or two sentences, then link out to the proof.",
+    href:"#" },
+  { date:"Feb 2026", title:"Placeholder — something you made on the side",
+    text:"This feed is the easiest part of the site to keep alive. Add an entry whenever anything happens and the site never looks stale.",
+    href:"#" }
+];
+
+/* ══════════════════════════════════════════════════════════════
+   RENDERING — no need to touch below
+   ══════════════════════════════════════════════════════════════ */
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function shot(o, cls=""){
+  const inner = o.src
+    ? `<img src="${esc(o.src)}" alt="${esc(o.alt||"")}" loading="lazy">`
+    : `<span>${esc(o.label||"IMAGE")}</span>`;
+  return `<div class="shot ${o.ratio?"shot--"+o.ratio:""} ${cls}">${inner}</div>`;
+}
+
+/* --- workbench: flatten every image across all projects --- */
+const wall = PROJECTS.flatMap(p =>
+  [p.cover, ...(p.gallery||[])].map(img => ({ img, p }))
+);
+
+function tile({img,p}){
+  return `<a class="tile" href="#${esc(p.slug)}">
+    ${shot(img)}
+    <div class="tile__cap"><b>${esc(p.title)}</b><span>${esc(p.year)}</span></div>
+  </a>`;
+}
+
+const rowA = wall;
+const rowB = wall.slice().reverse();
+// duplicate each row so the loop is seamless
+document.getElementById("trackA").innerHTML = [...rowA,...rowA].map(tile).join("");
+document.getElementById("trackB").innerHTML = [...rowB,...rowB].map(tile).join("");
+document.getElementById("benchCount").textContent = `${wall.length} images`;
+
+/* --- work index --- */
+document.getElementById("workList").innerHTML = PROJECTS.map(p => `
+  <a href="#${esc(p.slug)}">
+    <h3>${esc(p.title)}</h3>
+    <p>${esc(p.premise)}</p>
+    <time>${esc(p.year)}</time>
+  </a>`).join("");
+document.getElementById("workCount").textContent = `${PROJECTS.length} projects`;
+
+/* --- updates --- */
+document.getElementById("feedList").innerHTML = UPDATES.map(u => {
+  const inner = `<article>
+      <time>${esc(u.date)}</time>
+      <div><h3>${esc(u.title)}</h3><p>${esc(u.text)}</p></div>
+      <span class="arrow">${u.href ? "&#8599;" : ""}</span>
+    </article>`;
+  return u.href
+    ? `<a href="${esc(u.href)}" target="_blank" rel="noopener">${inner}</a>`
+    : inner;
+}).join("");
+
+/* --- case study --- */
+const detail = document.getElementById("detail");
+
+function renderProject(p, i){
+  const next = PROJECTS[(i+1) % PROJECTS.length];
+  detail.innerHTML = `
+    <a class="back" href="#">&larr; Index</a>
+    <header class="cs__head">
+      <h1>${esc(p.title)}</h1>
+      <p>${esc(p.premise)}</p>
+    </header>
+    ${shot(Object.assign({ratio:"wide"}, p.cover))}
+    <dl class="facts">
+      <div><dt>Year</dt><dd>${esc(p.year)}</dd></div>
+      ${Object.entries(p.facts).map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}
+    </dl>
+    ${p.chapters.map(c => `
+      <section class="chapter">
+        <div class="chapter__label">${esc(c.label)}</div>
+        <h2>${esc(c.title)}</h2>
+        <div class="body">${c.body.map(t => `<p>${esc(t)}</p>`).join("")}</div>
+        ${c.shots && c.shots.length ? `
+          <div class="grid grid--${Math.min(c.shots.length,3)}">
+            ${c.shots.map(s => `<figure>${shot(s)}${s.cap?`<figcaption>${esc(s.cap)}</figcaption>`:""}</figure>`).join("")}
+          </div>` : ""}
+      </section>`).join("")}
+    <nav class="next">
+      <span>Next project</span>
+      <a href="#${esc(next.slug)}">${esc(next.title)}</a>
+    </nav>`;
+}
+
+function route(){
+  const slug = decodeURIComponent(location.hash.replace("#",""));
+  const i = PROJECTS.findIndex(p => p.slug === slug);
+  if(i > -1){
+    document.body.classList.add("is-detail");
+    renderProject(PROJECTS[i], i);
+    document.title = `${PROJECTS[i].title} — Ken`;
+    window.scrollTo(0,0);
+  } else {
+    const wasDetail = document.body.classList.contains("is-detail");
+    document.body.classList.remove("is-detail");
+    document.title = "Ken — Industrial Design";
+    if(slug && document.getElementById(slug)){
+      document.getElementById(slug).scrollIntoView();
+    } else if(wasDetail){
+      window.scrollTo(0,0);
+    }
+  }
+}
+addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
