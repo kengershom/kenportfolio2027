@@ -61,7 +61,8 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   background:color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter:blur(10px);
 }
-.nav__name{ font-size:var(--t-s); font-weight:600; letter-spacing:-0.01em }
+.nav__name{ display:flex; align-items:center }
+.logo{ width:18px; height:18px; display:block }
 .nav__links{ display:flex; gap:18px; font-size:var(--t-s) }
 .nav__links a{ color:var(--mute) }
 .nav__links a:hover{ color:var(--ink) }
@@ -265,7 +266,16 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
 <body>
 
 <nav class="nav">
-  <a class="nav__name" href="#">Ken</a>
+  <a class="nav__name" href="#" aria-label="Ken — home">
+    <svg class="logo" viewBox="0 0 790 790" fill="currentColor" aria-hidden="true" focusable="false">
+      <rect width="263.294" height="263.004"/>
+      <rect y="262.706" width="263.294" height="263.004"/>
+      <rect y="525.726" width="263.294" height="263.004"/>
+      <rect x="263.312" y="262.999" width="263.294" height="263.004"/>
+      <rect x="526.581" width="263.294" height="263.004"/>
+      <rect x="526.581" y="526.018" width="263.294" height="263.004"/>
+    </svg>
+  </a>
   <div class="nav__links">
     <a href="#work">Work</a>
     <a href="#updates">Updates</a>
