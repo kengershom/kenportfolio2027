@@ -216,48 +216,6 @@ body.menu-open .sheet__links a:nth-child(3){ transition-delay:.26s }
 @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
 .hero__foot{ animation:fadeIn .7s .45s both }
 
-/* ─────────── WORKBENCH / MARQUEE ─────────── */
-.bench{ padding-block:clamp(40px,8vh,90px) }
-.bench__label{
-  display:flex; justify-content:space-between; align-items:baseline;
-  font-size:var(--t-s); color:var(--mute); margin-bottom:20px;
-}
-.marquee{ position:relative; overflow:hidden; margin-bottom:14px }
-.marquee::before,.marquee::after{
-  content:""; position:absolute; top:0; bottom:0; width:8vw; z-index:3; pointer-events:none;
-}
-.marquee::before{ left:0;  background:linear-gradient(90deg,var(--bg),transparent) }
-.marquee::after{ right:0; background:linear-gradient(270deg,var(--bg),transparent) }
-
-.track{ display:flex; gap:14px; width:max-content; animation:slide 52s linear infinite }
-.marquee--rev .track{ animation-direction:reverse; animation-duration:64s }
-@keyframes slide{ from{ transform:translateX(0) } to{ transform:translateX(calc(-50% - 7px)) } }
-.marquee:focus-within .track{ animation-play-state:paused }
-@media (hover:hover) and (pointer:fine){
-  .marquee:hover .track{ animation-play-state:paused }
-}
-@media (prefers-reduced-motion:reduce){
-  .marquee{ overflow-x:auto; scrollbar-width:none }
-  .marquee::before,.marquee::after{ display:none }
-  .track{ animation:none }
-}
-
-.tile{
-  display:block; flex:0 0 auto; width:clamp(200px,26vw,340px);
-  transition:transform .16s var(--ease-out);
-}
-.tile:active{ transform:scale(.985) }
-.tile .shot{ margin-bottom:8px }
-.tile__cap{
-  display:flex; justify-content:space-between; gap:12px;
-  font-size:var(--t-s); color:var(--mute);
-}
-.tile:focus-visible .tile__cap b{ color:var(--ink) }
-.tile__cap b{ font-weight:500; color:#2a2a27; transition:color .15s ease }
-@media (hover:hover) and (pointer:fine){
-  .tile:hover .tile__cap b{ color:var(--ink) }
-  .tile:hover .shot img{ transform:scale(1.035) }
-}
 
 /* ─────────── IMAGE PLATES ─────────── */
 .shot{
@@ -429,8 +387,8 @@ figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
   position:relative; border-radius:12px; overflow:hidden;  /* 12px = Spotify's own card radius */
   background:var(--card);
 }
-/* same inset hairline as the image plates, so the player reads as a
-   sibling of the workbench tiles rather than a pasted-in widget */
+/* same inset hairline as the image plates, so the player reads as part
+   of the page rather than a pasted-in widget */
 .listen__card::after{
   content:""; position:absolute; inset:0; border-radius:12px;
   box-shadow:inset 0 0 0 1px var(--line); pointer-events:none;
@@ -522,13 +480,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
       <span class="status">Open to 2027 roles</span>
     </div>
   </header>
-
-  <!-- ══════════ WORKBENCH ══════════ -->
-  <section class="bench">
-    <div class="bench__label wrap"><span>Workbench</span><span id="benchCount"></span></div>
-    <div class="marquee"><div class="track" id="trackA"></div></div>
-    <div class="marquee marquee--rev"><div class="track" id="trackB"></div></div>
-  </section>
 
   <!-- ══════════ UPDATES ══════════ -->
   <section class="sec wrap" id="updates">
@@ -726,25 +677,6 @@ function shot(o, cls=""){
     : `<span>${esc(o.label||"IMAGE")}</span>`;
   return `<div class="shot ${o.ratio?"shot--"+o.ratio:""} ${cls}">${inner}</div>`;
 }
-
-/* --- workbench: flatten every image across all projects --- */
-const wall = PROJECTS.flatMap(p =>
-  [p.cover, ...(p.gallery||[])].map(img => ({ img, p }))
-);
-
-function tile({img,p}){
-  return `<a class="tile" href="#${esc(p.slug)}">
-    ${shot(img)}
-    <div class="tile__cap"><b>${esc(p.title)}</b><span>${esc(p.year)}</span></div>
-  </a>`;
-}
-
-const rowA = wall;
-const rowB = wall.slice().reverse();
-// duplicate each row so the loop is seamless
-document.getElementById("trackA").innerHTML = [...rowA,...rowA].map(tile).join("");
-document.getElementById("trackB").innerHTML = [...rowB,...rowB].map(tile).join("");
-document.getElementById("benchCount").textContent = `${wall.length} images`;
 
 /* --- work + play grids --- */
 function card(p){
