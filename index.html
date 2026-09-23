@@ -18,6 +18,7 @@
   --live:    #1F9D55;
   --accent:  #FF6200;
   --accent-d:#E05600;
+  --nav-ink: #777777;
 
   --pad:     clamp(18px, 4vw, 48px);
   --radius:  10px;
@@ -123,7 +124,7 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   /* padding for the tap target, pulled back out by margin so the mark
      itself lines up with the hero panel's edge */
   display:flex; align-items:center; padding:4px; margin:-4px 0 0 -4px;
-  color:#9A9A9A;
+  color:var(--nav-ink);
   transition:color .18s ease, transform .16s var(--ease-out);
 }
 /* the wordmark is fill="currentColor", so colour inherits straight through */
@@ -139,7 +140,7 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   grid-column:1; justify-self:start; display:none;
   align-items:center; justify-content:center;
   width:54px; height:32px; border-radius:999px;
-  background:color-mix(in srgb, var(--ink) 5%, transparent); color:var(--ink);
+  background:color-mix(in srgb, var(--ink) 5%, transparent); color:var(--nav-ink);
   transition:background-color .18s ease, transform .16s var(--ease-out);
 }
 .nav__back svg{ width:17px; height:17px; display:block }
@@ -154,7 +155,7 @@ body.is-sub .nav__name{
 }
 .nav__cta{
   grid-column:3; justify-self:end; display:inline-flex; align-items:center;
-  color:var(--ink); padding:4px; margin:-4px -4px 0 0;
+  color:var(--nav-ink); padding:4px; margin:-4px -4px 0 0;
   background:none; border:0; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 /* a screw turns — the one rotation on this site that means something */
@@ -163,7 +164,7 @@ body.is-sub .nav__name{
   transition:transform .45s var(--ease-out), color .18s ease;
 }
 @media (hover:hover) and (pointer:fine){
-  .nav__cta:hover{ color:var(--accent) }
+  .nav__cta:hover{ color:var(--ink) }
   .nav__cta:hover .screw{ transform:rotate(90deg) }
 }
 .nav__cta:active .screw{ transform:rotate(90deg) scale(.94) }
