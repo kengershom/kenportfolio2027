@@ -257,23 +257,30 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   border-top:1px solid var(--line); padding-top:14px; margin-bottom:clamp(24px,4vh,48px);
 }
 
-/* work index rows */
-.idx{ border-bottom:1px solid var(--line) }
-.idx a{
-  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 5rem;
-  gap:clamp(12px,3vw,40px); align-items:baseline;
-  border-top:1px solid var(--line); padding:clamp(16px,2.4vw,26px) 0;
+/* work grid */
+.pgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(10px,1.4vw,18px) }
+.pcard{ display:block }
+.pcard__frame{
+  position:relative; aspect-ratio:1/1; background:var(--card);
+  border-radius:clamp(10px,1.2vw,16px); overflow:hidden;
+  display:grid; place-items:center; padding:14%;
 }
-/* was: transition declared inside :hover (so it snapped back on exit)
-   and animating padding (layout+paint). transform is GPU-only. */
-.idx a{ transition:transform .24s var(--ease-out) }
+.pcard__frame img{ width:100%; height:100%; object-fit:contain; display:block }
+.pcard__frame span{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.02em }
+.pcard__frame > *{ transition:transform .5s var(--ease-out) }
 @media (hover:hover) and (pointer:fine){
-  .idx a:hover{ transform:translateX(12px) }
+  .pcard:hover .pcard__frame > *{ transform:scale(1.04) }
 }
-.idx a:active{ transform:translateX(12px) scale(.995) }
-.idx h3{ font-size:clamp(1.3rem,3vw,2.1rem); font-weight:500; letter-spacing:-0.04em }
-.idx p{ font-size:var(--t-s); color:var(--mute); margin:0; max-width:44ch }
-.idx time{ font-size:var(--t-s); color:var(--mute); text-align:right }
+.pcard:active .pcard__frame > *{ transform:scale(1.02) }
+/* unreleased work: blurred past recognition, scaled up so no edge shows */
+.pcard.is-locked .pcard__frame > *{ filter:blur(22px); transform:scale(1.14) }
+.pcard.is-locked:hover .pcard__frame > *{ transform:scale(1.14) }
+.pcard__cap{
+  display:flex; justify-content:space-between; gap:12px; align-items:baseline;
+  font-size:var(--t-s); color:var(--mute); padding:11px 2px 0;
+}
+.pcard__cap b{ font-weight:500; color:#2a2a27; transition:color .15s var(--ease-out) }
+.pcard:hover .pcard__cap b{ color:var(--ink) }
 
 /* updates */
 .feed{ border-bottom:1px solid var(--line) }
@@ -432,8 +439,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 /* ─────────── RESPONSIVE ─────────── */
 @media (max-width:780px){
-  .idx a{ grid-template-columns:minmax(0,1fr) 4rem }
-  .idx p{ display:none }
+  .pgrid{ grid-template-columns:repeat(2,1fr) }
   .feed article{ grid-template-columns:minmax(0,1fr) 1.5rem }
   .feed time{ grid-column:1/-1; padding-top:0 }
   .about,.listen{ grid-template-columns:1fr }
@@ -445,7 +451,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
   .nav__cta{ padding:7px 13px }
 }
 @media (max-width:520px){
-  .grid--2,.grid--3{ grid-template-columns:1fr }
+  .grid--2,.grid--3,.pgrid{ grid-template-columns:1fr }
   .nav__links a:nth-child(n+4){ display:none }
   .facts > div{ border-right:0; border-bottom:1px solid var(--line) }
 }
@@ -503,7 +509,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
   <!-- ══════════ WORK INDEX ══════════ -->
   <section class="sec wrap" id="work">
     <div class="sec__head"><span>Selected work</span><span id="workCount"></span></div>
-    <div class="idx" id="workList"></div>
+    <div class="pgrid" id="workList"></div>
   </section>
 
   <!-- ══════════ UPDATES ══════════ -->
@@ -694,13 +700,21 @@ document.getElementById("trackA").innerHTML = [...rowA,...rowA].map(tile).join("
 document.getElementById("trackB").innerHTML = [...rowB,...rowB].map(tile).join("");
 document.getElementById("benchCount").textContent = `${wall.length} images`;
 
-/* --- work index --- */
-document.getElementById("workList").innerHTML = PROJECTS.map(p => `
-  <a href="#${esc(p.slug)}">
-    <h3>${esc(p.title)}</h3>
-    <p>${esc(p.premise)}</p>
-    <time>${esc(p.year)}</time>
-  </a>`).join("");
+/* --- work grid --- */
+document.getElementById("workList").innerHTML = PROJECTS.map(p => {
+  const c = p.cover || {};
+  const art = c.src
+    ? `<img src="${esc(c.src)}" alt="${esc(c.alt || p.title)}" loading="lazy">`
+    : `<span>${esc(c.label || "IMAGE")}</span>`;
+  const cap = p.locked
+    ? `<b>Under wraps</b><span>&#128064;</span>`
+    : `<b>${esc(p.title)}</b><span>${esc(p.year)}</span>`;
+  return `
+  <a class="pcard${p.locked ? " is-locked" : ""}" href="#${esc(p.slug)}">
+    <div class="pcard__frame">${art}</div>
+    <div class="pcard__cap">${cap}</div>
+  </a>`;
+}).join("");
 document.getElementById("workCount").textContent = `${PROJECTS.length} projects`;
 
 /* --- updates --- */
@@ -777,7 +791,7 @@ function renderProject(p, i){
 /* --- reveal on scroll ---
    Stagger stays at 55ms and caps out after six items: long cascades
    read as lag, not polish. Never blocks interaction. */
-const REVEAL_SEL = ".sec__head, .idx > a, .feed > *, .about > div, .about > dl,"
+const REVEAL_SEL = ".sec__head, .pgrid > a, .feed > *, .about > div, .about > dl,"
                  + " .listen > *, .mailto, footer, .cs__head, .facts, .chapter, .next";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
