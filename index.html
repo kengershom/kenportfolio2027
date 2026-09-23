@@ -120,9 +120,10 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 }
 .nav__name{
   grid-column:1; justify-self:start;
-  /* 4px to match the screw button's padding, so both marks sit the
-     same distance from their edge */
-  display:flex; align-items:center; padding:4px; color:#9A9A9A;
+  /* padding for the tap target, pulled back out by margin so the mark
+     itself lines up with the hero panel's edge */
+  display:flex; align-items:center; padding:4px; margin:-4px 0 0 -4px;
+  color:#9A9A9A;
   transition:color .18s ease, transform .16s var(--ease-out);
 }
 /* the wordmark is fill="currentColor", so colour inherits straight through */
@@ -133,7 +134,7 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 .wordmark{ height:14px; width:auto; display:block }
 .nav__cta{
   grid-column:3; justify-self:end; display:inline-flex; align-items:center;
-  color:var(--ink); padding:4px;
+  color:var(--ink); padding:4px; margin:-4px -4px 0 0;
   background:none; border:0; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 /* a screw turns — the one rotation on this site that means something */
@@ -177,9 +178,15 @@ body.menu-open .sheet__links a:nth-child(3){ transition-delay:.26s }
 }
 
 /* ─────────── HERO ─────────── */
+/* --nav-row is the height of the nav's tallest child (the screw button),
+   so the panel can sit exactly one --pad below the bar. */
 .hero{
-  min-height:100svh; display:flex; flex-direction:column; justify-content:flex-end;
-  padding-bottom:clamp(28px,6vh,64px); padding-top:120px;
+  --nav-row:32px;
+  margin:calc(var(--pad) * 2 + var(--nav-row)) var(--pad) var(--pad);
+  min-height:calc(100svh - var(--pad) * 3 - var(--nav-row));
+  display:flex; flex-direction:column; justify-content:flex-end;
+  background:var(--card); border-radius:clamp(20px,2.6vw,40px);
+  padding:var(--pad);
 }
 .hero h1{
   font-size:var(--t-hero); font-weight:500;
@@ -504,7 +511,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
 <div id="index">
 
   <!-- ══════════ HERO ══════════ -->
-  <header class="hero wrap">
+  <header class="hero">
     <h1>
       <span class="ln"><i>Industrial design</i></span>
       <span class="ln"><i>for the hardware</i></span>
