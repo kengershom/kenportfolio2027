@@ -327,13 +327,14 @@ footer nav a{ transition:color .18s ease }
 }
 
 /* ─────────── CASE STUDY ─────────── */
-#detail,#work-page{ display:none }
-body.is-detail #index,body.is-work #index{ display:none }
+#detail,#work-page,#play-page{ display:none }
+body.is-detail #index,body.is-work #index,body.is-play #index{ display:none }
 body.is-detail #detail{ display:block }
 body.is-work #work-page{ display:block }
+body.is-play #play-page{ display:block }
 
-/* work page — grid only, cleared of the fixed nav */
-#work-page{ padding-block:clamp(88px,13vh,150px) clamp(56px,10vh,120px) }
+/* work + play pages — grid only, cleared of the fixed nav */
+#work-page,#play-page{ padding-block:clamp(88px,13vh,150px) clamp(56px,10vh,120px) }
 .back{
   display:inline-block; font-size:var(--t-s); color:var(--mute); padding:90px 0 0;
   transition:color .18s ease, transform .2s var(--ease-out);
@@ -442,7 +443,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
 }
 @media (max-width:520px){
   .grid--2,.grid--3,.pgrid{ grid-template-columns:1fr }
-  .nav__links a:nth-child(n+4){ display:none }
   .facts > div{ border-right:0; border-bottom:1px solid var(--line) }
 }
 </style>
@@ -466,9 +466,8 @@ main.swapping{ opacity:0; filter:blur(3px) }
   </a>
   <div class="nav__links">
     <a href="#work">Work</a>
-    <a href="#updates">Updates</a>
+    <a href="#play">Play</a>
     <a href="#about">About</a>
-    <a href="mailto:hello@example.com">Email</a>
   </div>
   <a class="nav__cta" href="mailto:hello@example.com">Let&rsquo;s talk <span class="arw">&#8599;</span></a>
 </nav>
@@ -559,6 +558,11 @@ main.swapping{ opacity:0; filter:blur(3px) }
   <div class="pgrid" id="workList"></div>
 </div>
 
+<!-- ══════════ PLAY PAGE ══════════ -->
+<div id="play-page" class="wrap">
+  <div class="pgrid" id="playList"></div>
+</div>
+
 <div id="detail" class="wrap"></div>
 </main>
 
@@ -634,7 +638,16 @@ const PROJECTS = [
   { slug:"project-six",   title:"Project six",   year:"2024", cover:{ label:"PROJECT 06 — cover" } },
   { slug:"project-seven", title:"Project seven", year:"2023", cover:{ label:"PROJECT 07 — cover" } },
   { slug:"project-eight", title:"Project eight", year:"2023", cover:{ label:"PROJECT 08 — cover" } },
-  { slug:"project-nine",  title:"Project nine",  year:"2022", cover:{ label:"PROJECT 09 — cover" } }
+  { slug:"project-nine",  title:"Project nine",  year:"2022", cover:{ label:"PROJECT 09 — cover" } },
+
+  /* kind:"play" moves an entry off the Work grid and onto Play —
+     side projects, experiments, things made for their own sake. */
+  { kind:"play", slug:"play-one",   title:"Play one",   year:"2026", cover:{ label:"PLAY 01 — cover" } },
+  { kind:"play", slug:"play-two",   title:"Play two",   year:"2025", cover:{ label:"PLAY 02 — cover" } },
+  { kind:"play", slug:"play-three", title:"Play three", year:"2025", cover:{ label:"PLAY 03 — cover" } },
+  { kind:"play", slug:"play-four",  title:"Play four",  year:"2024", cover:{ label:"PLAY 04 — cover" } },
+  { kind:"play", slug:"play-five",  title:"Play five",  year:"2024", cover:{ label:"PLAY 05 — cover" } },
+  { kind:"play", slug:"play-six",   title:"Play six",   year:"2023", cover:{ label:"PLAY 06 — cover" } }
 ];
 
 /* `url` is what the player shows. Spotify can embed a playlist, album,
@@ -698,8 +711,8 @@ document.getElementById("trackA").innerHTML = [...rowA,...rowA].map(tile).join("
 document.getElementById("trackB").innerHTML = [...rowB,...rowB].map(tile).join("");
 document.getElementById("benchCount").textContent = `${wall.length} images`;
 
-/* --- work grid --- */
-document.getElementById("workList").innerHTML = PROJECTS.map(p => {
+/* --- work + play grids --- */
+function card(p){
   const c = p.cover || {};
   const art = c.src
     ? `<img src="${esc(c.src)}" alt="${esc(c.alt || p.title)}" loading="lazy">`
@@ -710,7 +723,10 @@ document.getElementById("workList").innerHTML = PROJECTS.map(p => {
   <a class="pcard${p.locked ? " is-locked" : ""}" href="#${esc(p.slug)}" aria-label="${esc(label)}">
     <div class="pcard__frame">${art}</div>
   </a>`;
-}).join("");
+}
+const grid = (id, items) => document.getElementById(id).innerHTML = items.map(card).join("");
+grid("workList", PROJECTS.filter(p => p.kind !== "play"));
+grid("playList", PROJECTS.filter(p => p.kind === "play"));
 
 /* --- updates --- */
 document.getElementById("feedList").innerHTML = UPDATES.map(u => {
@@ -823,16 +839,21 @@ function initReveal(scope){
 }
 
 /* --- views: index | work | detail --- */
-const workPage = document.getElementById("work-page");
-const viewOf = (slug, i) => i > -1 ? "detail" : (slug === "work" ? "work" : "index");
+const PAGES = {
+  work: { el: document.getElementById("work-page"), title: "Work — Ken" },
+  play: { el: document.getElementById("play-page"), title: "Play — Ken" }
+};
+const viewOf = (slug, i) => i > -1 ? "detail" : (PAGES[slug] ? slug : "index");
 const currentView = () => document.body.classList.contains("is-detail") ? "detail"
-                        : document.body.classList.contains("is-work") ? "work" : "index";
+                        : document.body.classList.contains("is-work") ? "work"
+                        : document.body.classList.contains("is-play") ? "play" : "index";
 
 function applyRoute(slug, i){
   const view = viewOf(slug, i);
   const wasFullPage = currentView() !== "index";
   document.body.classList.toggle("is-detail", view === "detail");
   document.body.classList.toggle("is-work",   view === "work");
+  document.body.classList.toggle("is-play",   view === "play");
 
   if(view === "detail"){
     renderProject(PROJECTS[i], i);
@@ -841,9 +862,9 @@ function applyRoute(slug, i){
     // instant, not smooth: the crossfade already covers the swap, and a
     // 1s glide would outlast it and race the reveal observer
     scrollToTop();
-  } else if(view === "work"){
-    document.title = "Work — Ken";
-    initReveal(workPage);
+  } else if(PAGES[view]){
+    document.title = PAGES[view].title;
+    initReveal(PAGES[view].el);
     scrollToTop();
   } else {
     document.title = "Ken — Industrial Design";
