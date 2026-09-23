@@ -152,14 +152,18 @@ body.menu-open .nav__cta .screw{ transform:rotate(180deg) }
 
 /* ─────────── MENU SHEET ─────────── */
 .sheet{
-  position:fixed; top:0; left:0; right:0; height:50vh; z-index:58;
-  background:var(--bg); border-bottom:1px solid var(--line);
-  display:flex; align-items:flex-end; padding:var(--pad);
+  position:fixed; inset:0; height:100vh; height:100dvh; z-index:58;
+  background:var(--bg);
+  display:flex; align-items:flex-end;
+  padding:var(--pad) var(--pad) clamp(40px,8vh,90px);
   transform:translateY(-101%); visibility:hidden;
   transition:transform .55s var(--ease-in-out), visibility .55s;
 }
 body.menu-open .sheet{ transform:translateY(0); visibility:visible }
-.sheet__scrim{ position:fixed; inset:0; z-index:57 }
+body.menu-open{ overflow:hidden }
+/* the sheet carries the same links — two sets on screen reads as a bug */
+body.menu-open .nav__links{ opacity:0; pointer-events:none }
+.nav__links{ transition:opacity .3s var(--ease-out) }
 .sheet__links{ display:flex; flex-direction:column; width:100% }
 .sheet__links a{
   font-size:clamp(2.2rem,8vw,5rem); font-weight:500;
@@ -504,15 +508,14 @@ main.swapping{ opacity:0; filter:blur(3px) }
       <mask id="screwSlot">
         <rect width="100" height="100" fill="#000"/>
         <circle cx="50" cy="50" r="46" fill="#fff"/>
-        <rect x="38.5" y="19" width="23" height="62" rx="4.5" fill="#000"/>
-        <rect x="19" y="38.5" width="62" height="23" rx="4.5" fill="#000"/>
+        <rect x="44" y="16" width="12" height="68" rx="2" fill="#000"/>
+        <rect x="16" y="44" width="68" height="12" rx="2" fill="#000"/>
       </mask>
       <rect width="100" height="100" fill="currentColor" mask="url(#screwSlot)"/>
     </svg>
   </button>
 </nav>
 
-<div class="sheet__scrim" hidden></div>
 <div class="sheet" id="menu">
   <nav class="sheet__links" aria-label="Main">
     <a href="#work">Work</a>
@@ -857,16 +860,13 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 /* --- menu sheet --- */
 const menuBtn = document.querySelector(".nav__cta");
-const scrim = document.querySelector(".sheet__scrim");
 function setMenu(open){
   document.body.classList.toggle("menu-open", open);
   menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-  scrim.hidden = !open;             // only catches clicks while open
   if(!open) menuBtn.focus();
 }
 menuBtn.addEventListener("click", () =>
   setMenu(!document.body.classList.contains("menu-open")));
-scrim.addEventListener("click", () => setMenu(false));
 document.querySelector(".sheet").addEventListener("click", e => {
   if(e.target.closest("a")) setMenu(false);
 });
