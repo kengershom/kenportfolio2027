@@ -85,6 +85,9 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   pointer-events:none;
 }
 .nav > *{ pointer-events:auto }
+/* on the homepage the nav sits inside the hero panel, so it clears the
+   panel's own inset as well as its padding */
+body:not(.is-sub) .nav{ padding:calc(var(--pad) * 2) calc(var(--pad) * 2) 0 }
 
 /* progressive blur veil — stacked backdrop layers, each blurring more
    over a shorter band, so the blur ramps instead of cutting off */
@@ -199,12 +202,9 @@ body.menu-open .sheet__links a:nth-child(3){ transition-delay:.26s }
 }
 
 /* ─────────── HERO ─────────── */
-/* --nav-row is the height of the nav's tallest child (the screw button),
-   so the panel can sit exactly one --pad below the bar. */
 .hero{
-  --nav-row:32px;
-  margin:calc(var(--pad) * 2 + var(--nav-row)) var(--pad) var(--pad);
-  min-height:calc(100svh - var(--pad) * 3 - var(--nav-row));
+  margin:var(--pad);
+  min-height:calc(100svh - var(--pad) * 2);
   display:flex; flex-direction:column; justify-content:flex-end;
   background:var(--card); border-radius:clamp(20px,2.6vw,40px);
   padding:var(--pad);
