@@ -133,18 +133,48 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 }
 .nav__links a:active{ transform:scale(.96) }
 .nav__cta{
-  justify-self:end; display:inline-flex; align-items:center; gap:6px;
-  background:var(--accent); color:#fff; font-size:var(--t-s); font-weight:500;
-  padding:8px 16px; border-radius:999px; white-space:nowrap;
-  transition:background-color .18s ease, transform .16s var(--ease-out);
+  justify-self:end; display:inline-flex; align-items:center;
+  color:var(--ink); padding:4px;
+  background:none; border:0; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
-.nav__cta .arw{ display:inline-block; transition:transform .2s var(--ease-out) }
+/* a screw turns — the one rotation on this site that means something */
+.screw{
+  width:24px; height:24px; display:block;
+  transition:transform .45s var(--ease-out), color .18s ease;
+}
 @media (hover:hover) and (pointer:fine){
-  .nav__cta:hover{ background:var(--accent-d) }
-  /* the arrow points where the click goes — a 360° spin says nothing */
-  .nav__cta:hover .arw{ transform:translate(2px,-2px) }
+  .nav__cta:hover{ color:var(--accent) }
+  .nav__cta:hover .screw{ transform:rotate(90deg) }
 }
-.nav__cta:active{ transform:scale(.97) }
+.nav__cta:active .screw{ transform:rotate(90deg) scale(.94) }
+/* driven home while the menu is open */
+body.menu-open .nav__cta .screw{ transform:rotate(180deg) }
+
+/* ─────────── MENU SHEET ─────────── */
+.sheet{
+  position:fixed; top:0; left:0; right:0; height:50vh; z-index:58;
+  background:var(--bg); border-bottom:1px solid var(--line);
+  display:flex; align-items:flex-end; padding:var(--pad);
+  transform:translateY(-101%); visibility:hidden;
+  transition:transform .55s var(--ease-in-out), visibility .55s;
+}
+body.menu-open .sheet{ transform:translateY(0); visibility:visible }
+.sheet__scrim{ position:fixed; inset:0; z-index:57 }
+.sheet__links{ display:flex; flex-direction:column; width:100% }
+.sheet__links a{
+  font-size:clamp(2.2rem,8vw,5rem); font-weight:500;
+  letter-spacing:-0.05em; line-height:1.08; width:max-content;
+  opacity:0; transform:translateY(16px);
+  transition:opacity .4s var(--ease-out), transform .4s var(--ease-out),
+             color .18s ease;
+}
+body.menu-open .sheet__links a{ opacity:1; transform:none }
+body.menu-open .sheet__links a:nth-child(1){ transition-delay:.14s }
+body.menu-open .sheet__links a:nth-child(2){ transition-delay:.20s }
+body.menu-open .sheet__links a:nth-child(3){ transition-delay:.26s }
+@media (hover:hover) and (pointer:fine){
+  .sheet__links a:hover{ color:var(--accent) }
+}
 
 /* ─────────── HERO ─────────── */
 .hero{
@@ -469,8 +499,27 @@ main.swapping{ opacity:0; filter:blur(3px) }
     <a href="#play">Play</a>
     <a href="#about">About</a>
   </div>
-  <a class="nav__cta" href="mailto:hello@example.com">Let&rsquo;s talk <span class="arw">&#8599;</span></a>
+  <button class="nav__cta" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu">
+    <svg class="screw" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <mask id="screwSlot">
+        <rect width="100" height="100" fill="#000"/>
+        <circle cx="50" cy="50" r="46" fill="#fff"/>
+        <rect x="38.5" y="19" width="23" height="62" rx="4.5" fill="#000"/>
+        <rect x="19" y="38.5" width="62" height="23" rx="4.5" fill="#000"/>
+      </mask>
+      <rect width="100" height="100" fill="currentColor" mask="url(#screwSlot)"/>
+    </svg>
+  </button>
 </nav>
+
+<div class="sheet__scrim" hidden></div>
+<div class="sheet" id="menu">
+  <nav class="sheet__links" aria-label="Main">
+    <a href="#work">Work</a>
+    <a href="#play">Play</a>
+    <a href="#about">About</a>
+  </nav>
+</div>
 
 <main>
 <div id="index">
@@ -805,6 +854,25 @@ function renderProject(p, i){
 const REVEAL_SEL = ".sec__head, .pgrid > a, .feed > *, .about > div, .about > dl,"
                  + " .listen > *, .mailto, footer, .cs__head, .facts, .chapter, .next";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+/* --- menu sheet --- */
+const menuBtn = document.querySelector(".nav__cta");
+const scrim = document.querySelector(".sheet__scrim");
+function setMenu(open){
+  document.body.classList.toggle("menu-open", open);
+  menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  scrim.hidden = !open;             // only catches clicks while open
+  if(!open) menuBtn.focus();
+}
+menuBtn.addEventListener("click", () =>
+  setMenu(!document.body.classList.contains("menu-open")));
+scrim.addEventListener("click", () => setMenu(false));
+document.querySelector(".sheet").addEventListener("click", e => {
+  if(e.target.closest("a")) setMenu(false);
+});
+addEventListener("keydown", e => {
+  if(e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false);
+});
 
 const scrollToTop = () => window.scrollTo({ top:0, behavior:"instant" });
 const scrollToEl = el => el.scrollIntoView();
