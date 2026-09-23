@@ -270,12 +270,6 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 /* unreleased work: blurred past recognition, scaled up so no edge shows */
 .pcard.is-locked .pcard__frame > *{ filter:blur(22px); transform:scale(1.14) }
 .pcard.is-locked:hover .pcard__frame > *{ transform:scale(1.14) }
-.pcard__cap{
-  display:flex; justify-content:space-between; gap:12px; align-items:baseline;
-  font-size:var(--t-s); color:var(--mute); padding:11px 2px 0;
-}
-.pcard__cap b{ font-weight:500; color:#2a2a27; transition:color .15s var(--ease-out) }
-.pcard:hover .pcard__cap b{ color:var(--ink) }
 
 /* updates */
 .feed{ border-bottom:1px solid var(--line) }
@@ -631,7 +625,16 @@ const PROJECTS = [
       { label:"Process", title:"Exploration", body:["Replace with the real story."], shots:[{label:"PROCESS",ratio:"sq",cap:"Caption."},{label:"PROCESS",ratio:"sq",cap:"Caption."}] },
       { label:"Resolution", title:"Outcome", body:["Replace with the real story."], shots:[{label:"FINAL",ratio:"wide",cap:"Caption."}] }
     ]
-  }
+  },
+
+  /* Empty slots. Add premise / facts / chapters as each project gets written up —
+     the case study renders whatever is present and skips what isn't. */
+  { slug:"project-four",  title:"Project four",  year:"2025", cover:{ label:"PROJECT 04 — cover" } },
+  { slug:"project-five",  title:"Project five",  year:"2024", cover:{ label:"PROJECT 05 — cover" } },
+  { slug:"project-six",   title:"Project six",   year:"2024", cover:{ label:"PROJECT 06 — cover" } },
+  { slug:"project-seven", title:"Project seven", year:"2023", cover:{ label:"PROJECT 07 — cover" } },
+  { slug:"project-eight", title:"Project eight", year:"2023", cover:{ label:"PROJECT 08 — cover" } },
+  { slug:"project-nine",  title:"Project nine",  year:"2022", cover:{ label:"PROJECT 09 — cover" } }
 ];
 
 /* `url` is what the player shows. Spotify can embed a playlist, album,
@@ -701,13 +704,11 @@ document.getElementById("workList").innerHTML = PROJECTS.map(p => {
   const art = c.src
     ? `<img src="${esc(c.src)}" alt="${esc(c.alt || p.title)}" loading="lazy">`
     : `<span>${esc(c.label || "IMAGE")}</span>`;
-  const cap = p.locked
-    ? `<b>Under wraps</b><span>&#128064;</span>`
-    : `<b>${esc(p.title)}</b><span>${esc(p.year)}</span>`;
+  // no visible caption, so the link carries the name for screen readers
+  const label = p.locked ? "Unreleased project" : `${p.title}, ${p.year}`;
   return `
-  <a class="pcard${p.locked ? " is-locked" : ""}" href="#${esc(p.slug)}">
+  <a class="pcard${p.locked ? " is-locked" : ""}" href="#${esc(p.slug)}" aria-label="${esc(label)}">
     <div class="pcard__frame">${art}</div>
-    <div class="pcard__cap">${cap}</div>
   </a>`;
 }).join("");
 
@@ -759,14 +760,14 @@ function renderProject(p, i){
     <a class="back" href="#">&larr; Index</a>
     <header class="cs__head">
       <h1>${esc(p.title)}</h1>
-      <p>${esc(p.premise)}</p>
+      ${p.premise ? `<p>${esc(p.premise)}</p>` : ""}
     </header>
     ${shot(Object.assign({ratio:"wide"}, p.cover))}
     <dl class="facts">
       <div><dt>Year</dt><dd>${esc(p.year)}</dd></div>
-      ${Object.entries(p.facts).map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}
+      ${Object.entries(p.facts || {}).map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}
     </dl>
-    ${p.chapters.map(c => `
+    ${(p.chapters || []).map(c => `
       <section class="chapter">
         <div class="chapter__label">${esc(c.label)}</div>
         <h2>${esc(c.title)}</h2>
