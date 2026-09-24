@@ -327,6 +327,31 @@ body.menu-open .nav__items a{
 .pcard.is-locked:hover .pcard__frame > *{ transform:scale(1.14) }
 
 /* about */
+/* interests drifting in the page margins — decorative only, so they
+   never take pointer events and never sit above the text */
+#about-page{ position:relative; overflow:hidden }
+.floaters{ position:absolute; inset:0; pointer-events:none; z-index:0 }
+#about-page .sec{ position:relative; z-index:1 }
+.floater{
+  position:absolute; width:clamp(48px,6vw,78px); height:auto;
+  opacity:.85; animation:drift 14s ease-in-out infinite;
+}
+.floater--1{ top:86%; left:54%; --dy:-14px; --r:-6deg; animation-duration:15s }
+.floater--2{ top:25%; right:3%; --dy:12px;  --r:5deg;  animation-duration:18s; animation-delay:-4s }
+.floater--3{ bottom:6%; left:12%; --dy:-11px; --r:3deg;  animation-duration:21s; animation-delay:-9s;
+             width:clamp(72px,9vw,118px) }
+@keyframes drift{
+  0%,100%{ transform:translateY(0) rotate(var(--r)) }
+  50%    { transform:translateY(var(--dy)) rotate(calc(var(--r) * -1)) }
+}
+/* stacked to one column there is no margin to drift in, so they gather
+   in the empty band below the content instead */
+@media (max-width:720px){
+  .floater--1{ top:auto; bottom:3%; left:38%; right:auto }
+  .floater--2{ top:auto; bottom:4%; right:8%;  left:auto }
+  .floater--3{ bottom:3%; left:6% }
+}
+
 .about{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:clamp(24px,5vw,64px); align-items:start }
 .about__photo{
   margin:0; position:relative; aspect-ratio:3/4; overflow:hidden;
@@ -566,6 +591,12 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 <!-- ══════════ ABOUT PAGE ══════════ -->
 <div id="about-page" class="wrap">
+  <!-- interests, drifting in the margins -->
+  <div class="floaters" aria-hidden="true">
+    <img class="floater floater--1" src="img/pentax.png"  alt="">
+    <img class="floater floater--2" src="img/moka.png"    alt="">
+    <img class="floater floater--3" src="img/porsche.png" alt="">
+  </div>
   <section class="sec" id="about">
     <div class="sec__head"><span>About</span></div>
     <div class="about">
