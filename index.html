@@ -366,19 +366,19 @@ body.is-detail #detail{
   display:flex; flex-direction:column; gap:clamp(8px,1vw,14px);
 }
 #detail{ padding-block:clamp(88px,13vh,150px) clamp(40px,7vh,90px) }
-#detail .shot,#detail .grid figure > .shot{ border-radius:var(--panel-r) }
+#detail .shot{ border-radius:var(--panel-r) }
 .cs__block{
   background:var(--card); border-radius:var(--panel-r);
   padding:clamp(30px,5vw,72px) clamp(24px,5vw,64px);
 }
 .cs__intro{ text-align:center }
 .cs__intro h1{
-  font-size:var(--t-xl); font-weight:500; letter-spacing:-0.04em;
-  line-height:1.05; margin-bottom:.4em;
+  font-size:clamp(1rem,2.2vw,1.625rem); font-weight:500; letter-spacing:-0.03em;
+  line-height:1.15; margin-bottom:.5em;
 }
 .cs__meta{ font-size:var(--t-s); color:var(--mute); margin-bottom:1.5em }
 .cs__lead{
-  font-size:var(--t-l); line-height:1.45; letter-spacing:-0.01em;
+  font-size:var(--t-m); line-height:1.5; letter-spacing:0;
   max-width:60ch; margin:0 auto 1.7em; color:#232320;
 }
 .cs__tags{
@@ -398,9 +398,6 @@ body.is-play #play-page{ display:block }
 .chapter__label{ font-size:var(--t-s); color:var(--mute); margin-bottom:16px }
 .chapter h2{ font-size:clamp(1.35rem,3vw,2rem); font-weight:500; letter-spacing:-0.035em; margin-bottom:.6em }
 .chapter .body{ max-width:58ch; color:#232320 }
-.grid{ display:grid; gap:clamp(8px,1vw,14px) }
-.grid--2{ grid-template-columns:repeat(2,1fr) }
-.grid--3{ grid-template-columns:repeat(3,1fr) }
 figure{ margin:0 }
 figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
 
@@ -467,11 +464,10 @@ main.swapping{ opacity:0; filter:blur(3px) }
   .feed article{ grid-template-columns:minmax(0,1fr) 1.5rem }
   .feed time{ grid-column:1/-1; padding-top:0 }
   .about,.listen{ grid-template-columns:1fr }
-  .grid--3{ grid-template-columns:repeat(2,1fr) }
   .hero h1{ max-width:none }
 }
 @media (max-width:520px){
-  .grid--2,.grid--3,.pgrid{ grid-template-columns:1fr }
+  .pgrid{ grid-template-columns:1fr }
   .sheet__links{ grid-template-columns:1fr }
 }
 </style>
@@ -792,10 +788,9 @@ function renderProject(p, i){
       <h2>${esc(c.title)}</h2>
       <div class="body">${c.body.map(t => `<p>${esc(t)}</p>`).join("")}</div>
     </section>
-    ${c.shots && c.shots.length ? `
-      <div class="grid grid--${Math.min(c.shots.length,3)}">
-        ${c.shots.map(s => `<figure>${shot(s)}${s.cap?`<figcaption>${esc(s.cap)}</figcaption>`:""}</figure>`).join("")}
-      </div>` : ""}`).join("");
+    ${(c.shots || []).map(s =>
+      `<figure>${shot(s)}${s.cap?`<figcaption>${esc(s.cap)}</figcaption>`:""}</figure>`
+    ).join("")}`).join("");
 
   detail.innerHTML = `
     ${shot(Object.assign({ratio:"wide"}, p.cover))}
