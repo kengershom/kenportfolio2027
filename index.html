@@ -23,6 +23,7 @@
   --pad:     clamp(18px, 4vw, 48px);
   --radius:  10px;
   --panel-r: clamp(16px, 2vw, 28px);
+  --hero-r:  clamp(20px, 2.6vw, 40px);
 
   --t-xs: 0.75rem;
   --t-s:  0.875rem;
@@ -180,38 +181,48 @@ body.is-sub .nav__name{
 body.menu-open .nav__cta .screw{ transform:rotate(180deg) }
 
 /* ─────────── MENU SHEET ─────────── */
+/* the sheet occupies the hero panel's exact footprint, so opening the
+   menu reads as that rectangle changing its contents rather than a
+   new surface arriving */
 .sheet{
-  position:fixed; inset:0; height:100vh; height:100dvh; z-index:58;
-  background:var(--bg);
-  display:flex; align-items:flex-end;
-  padding:var(--pad) var(--pad) clamp(40px,8vh,90px);
-  transform:translateY(-101%); visibility:hidden;
-  transition:transform .55s var(--ease-in-out), visibility .55s;
+  position:fixed; inset:var(--pad); z-index:58;
+  background:var(--card); border-radius:var(--hero-r);
+  padding:var(--pad);
+  opacity:0; visibility:hidden;
+  transition:opacity .26s var(--ease-out), visibility .26s;
 }
-body.menu-open .sheet{ transform:translateY(0); visibility:visible }
+body.menu-open .sheet{ opacity:1; visibility:visible }
 body.menu-open{ overflow:hidden }
-.sheet__links{ display:flex; flex-direction:column; width:100% }
+.sheet__links{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:clamp(8px,1vw,14px); height:100%;
+}
 .sheet__links a{
-  font-size:clamp(2.2rem,8vw,5rem); font-weight:500;
-  letter-spacing:-0.05em; line-height:1.08; width:max-content;
-  opacity:0; transform:translateY(16px);
-  transition:opacity .4s var(--ease-out), transform .4s var(--ease-out),
-             color .18s ease;
+  display:flex; align-items:flex-end;
+  padding:clamp(18px,2.4vw,34px);
+  background:var(--bg); border-radius:var(--panel-r);
+  font-size:clamp(1.4rem,3.4vw,2.6rem); font-weight:500;
+  letter-spacing:-0.04em; line-height:1;
+  opacity:0;
+  transition:background-color .2s var(--ease-out),
+             transform .2s var(--ease-out),
+             opacity .3s var(--ease-out);
 }
-body.menu-open .sheet__links a{ opacity:1; transform:none }
-body.menu-open .sheet__links a:nth-child(1){ transition-delay:.14s }
-body.menu-open .sheet__links a:nth-child(2){ transition-delay:.20s }
-body.menu-open .sheet__links a:nth-child(3){ transition-delay:.26s }
+body.menu-open .sheet__links a{ opacity:1 }
+body.menu-open .sheet__links a:nth-child(1){ transition-delay:0s,0s,.06s }
+body.menu-open .sheet__links a:nth-child(2){ transition-delay:0s,0s,.11s }
+body.menu-open .sheet__links a:nth-child(3){ transition-delay:0s,0s,.16s }
 @media (hover:hover) and (pointer:fine){
-  .sheet__links a:hover{ color:var(--accent) }
+  .sheet__links a:hover{ background:color-mix(in srgb, var(--ink) 8%, transparent) }
 }
+.sheet__links a:active{ transform:scale(.99) }
 
 /* ─────────── HERO ─────────── */
 .hero{
   margin:var(--pad);
   min-height:calc(100svh - var(--pad) * 2);
   display:flex; flex-direction:column; justify-content:flex-end;
-  background:var(--card); border-radius:clamp(20px,2.6vw,40px);
+  background:var(--card); border-radius:var(--hero-r);
   padding:var(--pad);
 }
 .hero h1{
@@ -461,6 +472,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
 }
 @media (max-width:520px){
   .grid--2,.grid--3,.pgrid{ grid-template-columns:1fr }
+  .sheet__links{ grid-template-columns:1fr }
 }
 </style>
 </head>
