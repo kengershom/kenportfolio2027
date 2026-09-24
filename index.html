@@ -43,11 +43,7 @@ html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth }
 
 body{
   margin:0; background:var(--bg); color:var(--ink);
-  /* Helvetica Neue ships with macOS/iOS but not Windows or Android.
-     Inter sits behind it as the webfont fallback — a browser only
-     downloads it when nothing earlier in the stack resolves, so Apple
-     devices never fetch it. */
-  font-family:"Helvetica Neue",Helvetica,"Inter",Arial,sans-serif;
+  font-family:"Inter",system-ui,-apple-system,sans-serif;
   font-size:var(--t-m); line-height:1.5;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
