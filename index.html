@@ -848,14 +848,15 @@ addEventListener("keydown", e => {
   const rand = (a,b) => a + Math.random() * (b - a);
   // every value is per-object, so no two follow the same path
   function seed(el, firstRun){
+    // suspended-in-fluid speeds: a few pixels a second, no more
     el._x   = rand(.05, .85);
-    el._vy  = rand(.008, .026);                 // page-heights per second
-    el._vx  = rand(-.01, .01);                  // steady sideways drift
-    el._amp = rand(.015, .07);                  // sway width
-    el._frq = rand(.04, .16);                   // sway cycles per second
+    el._vy  = rand(.0025, .005);                // page-heights per second
+    el._vx  = rand(-.0015, .0015);              // steady sideways drift
+    el._amp = rand(.02, .04);                   // sway width
+    el._frq = rand(.008, .018);                 // sway cycles per second
     el._pha = rand(0, Math.PI * 2);             // sway starting point
     el._rot = 0;                                // start upright, then turn
-    el._vr  = rand(-2.5, 2.5);                  // degrees per second
+    el._vr  = rand(-.7, .7);                    // degrees per second
     if(firstRun) el._y = rand(.05, 1.1);        // scattered on load
   }
   items.forEach(el => seed(el, true));
