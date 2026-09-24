@@ -370,8 +370,8 @@ body.is-detail #detail{
 .cs__block{
   background:var(--card); border-radius:var(--panel-r);
   padding:clamp(30px,5vw,72px) clamp(24px,5vw,64px);
+  text-align:center;
 }
-.cs__intro{ text-align:center }
 .cs__intro h1{
   font-size:clamp(1rem,2.2vw,1.625rem); font-weight:500; letter-spacing:-0.03em;
   line-height:1.15; margin-bottom:.5em;
@@ -397,9 +397,8 @@ body.is-play #play-page{ display:block }
 #work-page,#play-page{ padding-block:clamp(88px,13vh,150px) clamp(56px,10vh,120px) }
 .chapter__label{ font-size:var(--t-s); color:var(--mute); margin-bottom:16px }
 .chapter h2{ font-size:clamp(1.35rem,3vw,2rem); font-weight:500; letter-spacing:-0.035em; margin-bottom:.6em }
-.chapter .body{ max-width:58ch; color:#232320 }
+.chapter .body{ max-width:58ch; margin-inline:auto; color:#232320 }
 figure{ margin:0 }
-figcaption{ font-size:var(--t-xs); color:var(--mute); margin-top:7px }
 
 .next{ display:flex; justify-content:space-between; align-items:baseline; gap:20px }
 .next span{ font-size:var(--t-s); color:var(--mute) }
@@ -789,7 +788,7 @@ function renderProject(p, i){
       <div class="body">${c.body.map(t => `<p>${esc(t)}</p>`).join("")}</div>
     </section>
     ${(c.shots || []).map(s =>
-      `<figure>${shot(s)}${s.cap?`<figcaption>${esc(s.cap)}</figcaption>`:""}</figure>`
+      `<figure>${shot(s)}</figure>`
     ).join("")}`).join("");
 
   detail.innerHTML = `
