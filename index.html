@@ -310,34 +310,20 @@ body.menu-open .nav__items a{
 .pcard.is-locked .pcard__frame > *{ filter:blur(22px); transform:scale(1.14) }
 .pcard.is-locked:hover .pcard__frame > *{ transform:scale(1.14) }
 
-/* updates */
-.feed{ border-bottom:1px solid var(--line) }
-.feed article{
-  display:grid; grid-template-columns:7.5rem minmax(0,1fr) 1.5rem;
-  gap:clamp(12px,3vw,36px); align-items:start;
-  border-top:1px solid var(--line); padding:clamp(16px,2.2vw,24px) 0;
-}
-.feed time{ font-size:var(--t-s); color:var(--mute); padding-top:.15em }
-.feed h3{ font-size:var(--t-l); font-weight:500; letter-spacing:-0.025em; margin-bottom:.4em; line-height:1.15 }
-.feed p{ font-size:var(--t-s); color:var(--mute); max-width:60ch; margin:0 }
-.feed .arrow{
-  font-size:var(--t-s); color:var(--mute); text-align:right;
-  transition:color .18s ease, transform .2s var(--ease-out);
-}
-.feed h3{
-  text-decoration:underline; text-decoration-color:transparent;
-  text-underline-offset:3px; text-decoration-thickness:1px;
-  transition:text-decoration-color .22s ease;
-}
-@media (hover:hover) and (pointer:fine){
-  .feed a:hover .arrow{ color:var(--ink); transform:translate(2px,-2px) }
-  .feed a:hover h3{ text-decoration-color:currentColor }
-}
-
 /* about */
-.about{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:clamp(24px,6vw,80px); align-items:start }
+.about{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:clamp(24px,5vw,64px); align-items:start }
+.about__photo{
+  margin:0; position:relative; aspect-ratio:3/4; overflow:hidden;
+  background:var(--card); border-radius:var(--panel-r);
+  display:grid; place-items:center;
+}
+.about__photo img{ width:100%; height:100%; object-fit:cover; display:block }
+.about__photo span{
+  font-size:var(--t-xs); color:#A9A9A3; text-align:center;
+  padding:10px 16px; letter-spacing:.02em; max-width:90%;
+}
 .about__lead{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.04em; line-height:1.06; margin-bottom:.7em; max-width:18ch }
-.kv{ margin:0; border-top:1px solid var(--line) }
+.kv{ margin:clamp(28px,4vw,48px) 0 0; border-top:1px solid var(--line) }
 .kv > div{ display:flex; gap:20px; border-bottom:1px solid var(--line); padding:10px 0 11px }
 .kv dt{ flex:0 0 6.5rem; font-size:var(--t-s); color:var(--mute) }
 .kv dd{ margin:0; font-size:var(--t-s) }
@@ -366,8 +352,8 @@ footer nav a{ transition:color .18s ease }
 }
 
 /* ─────────── CASE STUDY ─────────── */
-#detail,#work-page,#play-page{ display:none }
-body.is-detail #index,body.is-work #index,body.is-play #index{ display:none }
+#detail,#work-page,#play-page,#about-page{ display:none }
+body.is-sub #index{ display:none }
 /* every section of a case study is its own rounded panel, stacked */
 body.is-detail #detail{
   display:flex; flex-direction:column; gap:clamp(8px,1vw,14px);
@@ -399,9 +385,10 @@ body.is-detail #detail{
 .cs__tags b{ font-weight:400; color:var(--mute) }
 body.is-work #work-page{ display:block }
 body.is-play #play-page{ display:block }
+body.is-about #about-page{ display:block }
 
 /* work + play pages — grid only, cleared of the fixed nav */
-#work-page,#play-page{ padding-block:clamp(88px,13vh,150px) clamp(56px,10vh,120px) }
+#work-page,#play-page,#about-page{ padding-block:clamp(88px,13vh,150px) clamp(56px,10vh,120px) }
 .chapter__label{ font-size:var(--t-s); color:var(--mute); margin-bottom:16px }
 .chapter h2{ font-size:clamp(1.35rem,3vw,2rem); font-weight:500; letter-spacing:-0.035em; margin-bottom:.6em }
 .chapter .body{ max-width:58ch; margin-inline:auto; color:#232320 }
@@ -467,8 +454,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
 /* ─────────── RESPONSIVE ─────────── */
 @media (max-width:780px){
   .pgrid{ grid-template-columns:repeat(2,1fr) }
-  .feed article{ grid-template-columns:minmax(0,1fr) 1.5rem }
-  .feed time{ grid-column:1/-1; padding-top:0 }
   .about,.listen{ grid-template-columns:1fr }
   .hero h1{ max-width:none }
 }
@@ -525,33 +510,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
     </div>
   </header>
 
-  <!-- ══════════ UPDATES ══════════ -->
-  <section class="sec wrap" id="updates">
-    <div class="sec__head"><span>Updates</span><span>Most recent first</span></div>
-    <div class="feed" id="feedList"></div>
-  </section>
-
-  <!-- ══════════ ABOUT ══════════ -->
-  <section class="sec wrap" id="about">
-    <div class="sec__head"><span>About</span></div>
-    <div class="about">
-      <div>
-        <p class="about__lead">I like problems where the constraint is physical.</p>
-        <div class="measure mute">
-          <p>Heat, tolerance, cost, the width of a hand. I studied product design at MS Ramaiah University and have been at Exponent Energy since 2023, working across EV charging and battery hardware.</p>
-          <p>Most of what I do sits in the gap between what engineering says is possible and what a person will tolerate at 6am in a parking lot. I sketch a lot, build rough physical models early, and would rather test a bad prototype on Tuesday than a good render on Friday.</p>
-        </div>
-      </div>
-      <dl class="kv">
-        <div><dt>Now</dt><dd>Industrial Designer, Exponent Energy</dd></div>
-        <div><dt>Education</dt><dd>B.Des Product Design, MS Ramaiah University</dd></div>
-        <div><dt>Tools</dt><dd>SolidWorks, Rhino, Fusion 360, KeyShot, Figma</dd></div>
-        <div><dt>Making</dt><dd>FDM/SLA, foam, sheet metal, vacuum forming</dd></div>
-        <div><dt>Based</dt><dd>Bangalore, India</dd></div>
-      </dl>
-    </div>
-  </section>
-
   <!-- ══════════ LISTENING ══════════ -->
   <section class="sec wrap" id="listening">
     <div class="sec__head"><span>Listening</span><span id="listenKind"></span></div>
@@ -586,6 +544,32 @@ main.swapping{ opacity:0; filter:blur(3px) }
 <!-- ══════════ WORK / PROJECTS PAGE ══════════ -->
 <div id="work-page" class="wrap">
   <div class="pgrid" id="workList"></div>
+</div>
+
+<!-- ══════════ ABOUT PAGE ══════════ -->
+<div id="about-page" class="wrap">
+  <section class="sec" id="about">
+    <div class="sec__head"><span>About</span></div>
+    <div class="about">
+      <figure class="about__photo">
+        <span>PORTRAIT &mdash; drop a photo at img/ken.jpg</span>
+      </figure>
+      <div>
+        <p class="about__lead">I like problems where the constraint is physical.</p>
+        <div class="measure mute">
+          <p>Heat, tolerance, cost, the width of a hand. I studied product design at MS Ramaiah University and have been at Exponent Energy since 2023, working across EV charging and battery hardware.</p>
+          <p>Most of what I do sits in the gap between what engineering says is possible and what a person will tolerate at 6am in a parking lot. I sketch a lot, build rough physical models early, and would rather test a bad prototype on Tuesday than a good render on Friday.</p>
+        </div>
+      <dl class="kv">
+        <div><dt>Now</dt><dd>Industrial Designer, Exponent Energy</dd></div>
+        <div><dt>Education</dt><dd>B.Des Product Design, MS Ramaiah University</dd></div>
+        <div><dt>Tools</dt><dd>SolidWorks, Rhino, Fusion 360, KeyShot, Figma</dd></div>
+        <div><dt>Making</dt><dd>FDM/SLA, foam, sheet metal, vacuum forming</dd></div>
+        <div><dt>Based</dt><dd>Bangalore, India</dd></div>
+      </dl>
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- ══════════ PLAY PAGE ══════════ -->
@@ -697,18 +681,6 @@ const SPOTIFY = {
   kind: "On Repeat \u2014 rebuilt by Spotify, not by me"
 };
 
-const UPDATES = [
-  { date:"Sep 2026", title:"Portfolio, version one",
-    text:"Put this site together. Three case studies up, more to follow as I get clearance to share them.",
-    href:"" },
-  { date:"Jun 2026", title:"Placeholder — something you shipped",
-    text:"A launch, an award, a talk, a prototype that finally worked. One or two sentences, then link out to the proof.",
-    href:"#" },
-  { date:"Feb 2026", title:"Placeholder — something you made on the side",
-    text:"This feed is the easiest part of the site to keep alive. Add an entry whenever anything happens and the site never looks stale.",
-    href:"#" }
-];
-
 /* ══════════════════════════════════════════════════════════════
    RENDERING — no need to touch below
    ══════════════════════════════════════════════════════════════ */
@@ -738,18 +710,6 @@ function card(p){
 const grid = (id, items) => document.getElementById(id).innerHTML = items.map(card).join("");
 grid("workList", PROJECTS.filter(p => p.kind !== "play"));
 grid("playList", PROJECTS.filter(p => p.kind === "play"));
-
-/* --- updates --- */
-document.getElementById("feedList").innerHTML = UPDATES.map(u => {
-  const inner = `<article>
-      <time>${esc(u.date)}</time>
-      <div><h3>${esc(u.title)}</h3><p>${esc(u.text)}</p></div>
-      <span class="arrow">${u.href ? "&#8599;" : ""}</span>
-    </article>`;
-  return u.href
-    ? `<a href="${esc(u.href)}" target="_blank" rel="noopener">${inner}</a>`
-    : inner;
-}).join("");
 
 /* --- listening --- */
 function spotifyEmbed(url){
@@ -815,7 +775,7 @@ function renderProject(p, i){
 /* --- reveal on scroll ---
    Stagger stays at 55ms and caps out after six items: long cascades
    read as lag, not polish. Never blocks interaction. */
-const REVEAL_SEL = ".sec__head, .pgrid > a, .feed > *, .about > div, .about > dl,"
+const REVEAL_SEL = ".sec__head, .pgrid > a, .about > *,"
                  + " .listen > *, .mailto, footer, #detail > *";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -880,13 +840,15 @@ function initReveal(scope){
 /* --- views: index | work | detail --- */
 const navBack = document.querySelector(".nav__back");
 const PAGES = {
-  work: { el: document.getElementById("work-page"), title: "Work — Ken" },
-  play: { el: document.getElementById("play-page"), title: "Play — Ken" }
+  work:  { el: document.getElementById("work-page"),  title: "Work — Ken" },
+  play:  { el: document.getElementById("play-page"),  title: "Play — Ken" },
+  about: { el: document.getElementById("about-page"), title: "About — Ken" }
 };
 const viewOf = (slug, i) => i > -1 ? "detail" : (PAGES[slug] ? slug : "index");
 const currentView = () => document.body.classList.contains("is-detail") ? "detail"
                         : document.body.classList.contains("is-work") ? "work"
-                        : document.body.classList.contains("is-play") ? "play" : "index";
+                        : document.body.classList.contains("is-play") ? "play"
+                        : document.body.classList.contains("is-about") ? "about" : "index";
 
 function applyRoute(slug, i){
   const view = viewOf(slug, i);
@@ -894,6 +856,7 @@ function applyRoute(slug, i){
   document.body.classList.toggle("is-detail", view === "detail");
   document.body.classList.toggle("is-work",   view === "work");
   document.body.classList.toggle("is-play",   view === "play");
+  document.body.classList.toggle("is-about",  view === "about");
   document.body.classList.toggle("is-sub",    view !== "index");
   // a case study goes back to the grid it came from; a grid goes home
   navBack.setAttribute("href",
