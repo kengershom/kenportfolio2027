@@ -75,6 +75,22 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 .measure{ max-width:58ch }
 .mute{ color:var(--mute) }
 
+/* ─────────── CURSOR ─────────── */
+/* only where there is a real pointer — never hide the cursor on touch,
+   and never on a device that has no cursor to replace */
+.cursor{ display:none }
+@media (hover:hover) and (pointer:fine){
+  body,body *{ cursor:none }
+  .cursor{
+    display:block; position:fixed; top:0; left:0; z-index:200;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--ink); opacity:.8;
+    pointer-events:none; will-change:transform;
+    transition:opacity .2s var(--ease-out);
+  }
+  .cursor.is-out{ opacity:0 }
+}
+
 /* ─────────── NAV ─────────── */
 .nav{
   position:fixed; top:0; left:0; right:0; z-index:60;
@@ -464,6 +480,8 @@ main.swapping{ opacity:0; filter:blur(3px) }
 </head>
 <body>
 
+<div class="cursor" aria-hidden="true"></div>
+
 <div class="pblur" aria-hidden="true">
   <i></i><i></i><i></i><i></i><i></i><i></i><i class="tint"></i>
 </div>
@@ -794,6 +812,29 @@ document.querySelector(".nav__items").addEventListener("click", e => {
 addEventListener("keydown", e => {
   if(e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false);
 });
+
+/* --- custom cursor --- */
+if(matchMedia("(hover:hover) and (pointer:fine)").matches){
+  const dot = document.querySelector(".cursor");
+  let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y;
+  let scale = 1, tScale = 1;
+  // reduced motion gets the dot pinned to the pointer with no easing
+  const ease = reduceMotion.matches ? 1 : .22;
+
+  addEventListener("mousemove", e => { tx = e.clientX; ty = e.clientY; }, { passive:true });
+  addEventListener("mouseover", e => { tScale = e.target.closest("a,button") ? 2 : 1; }, { passive:true });
+  addEventListener("mouseout",  e => { if(!e.relatedTarget) dot.classList.add("is-out"); });
+  addEventListener("mouseover", () => dot.classList.remove("is-out"), { passive:true });
+
+  (function follow(){
+    x += (tx - x) * ease;
+    y += (ty - y) * ease;
+    scale += (tScale - scale) * .2;
+    dot.style.transform =
+      `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${scale})`;
+    requestAnimationFrame(follow);
+  })();
+}
 
 /* --- blur veil appears only once the page has moved --- */
 let isScrolled = false;
