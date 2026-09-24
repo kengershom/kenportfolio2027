@@ -337,11 +337,11 @@ body.menu-open .nav__items a{
    upward and wraps it round to the bottom */
 .floater{
   position:absolute; top:0; left:0;
-  width:clamp(44px,5.5vw,72px); height:auto;
-  opacity:.85; will-change:transform;
+  width:clamp(33px,4.1vw,54px); height:auto;
+  will-change:transform;
 }
-.floater--3{ width:clamp(64px,8vw,104px) }
-.floater--4{ width:clamp(52px,6.5vw,86px) }
+.floater--3{ width:clamp(48px,6vw,78px) }
+.floater--4{ width:clamp(39px,4.9vw,64px) }
 
 .about{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:clamp(24px,5vw,64px); align-items:start }
 .about__photo{
@@ -846,14 +846,19 @@ addEventListener("keydown", e => {
   if(!page || !items.length) return;
 
   const rand = (a,b) => a + Math.random() * (b - a);
-  items.forEach((el, i) => {
-    el._x   = rand(.06, .84);
-    el._y   = i / items.length + rand(0, .1);   // spread down the page
-    el._vy  = rand(.012, .022);                 // page-heights per second
-    el._vx  = rand(-.008, .008);
+  // every value is per-object, so no two follow the same path
+  function seed(el, firstRun){
+    el._x   = rand(.05, .85);
+    el._vy  = rand(.008, .026);                 // page-heights per second
+    el._vx  = rand(-.01, .01);                  // steady sideways drift
+    el._amp = rand(.015, .07);                  // sway width
+    el._frq = rand(.04, .16);                   // sway cycles per second
+    el._pha = rand(0, Math.PI * 2);             // sway starting point
     el._rot = 0;                                // start upright, then turn
     el._vr  = rand(-2.5, 2.5);                  // degrees per second
-  });
+    if(firstRun) el._y = rand(.05, 1.1);        // scattered on load
+  }
+  items.forEach(el => seed(el, true));
 
   if(reduceMotion.matches){                     // place them, don't move them
     items.forEach(el => {
@@ -863,27 +868,27 @@ addEventListener("keydown", e => {
     return;
   }
 
-  let last = performance.now();
+  let last = performance.now(), t = 0;
   (function step(now){
     const dt = Math.min((now - last) / 1000, .05);   // ignore tab-away jumps
-    last = now;
+    last = now; t += dt;
     if(document.body.classList.contains("is-about")){
       const w = page.offsetWidth, h = page.offsetHeight;
       for(const el of items){
         el._y -= el._vy * dt;
         el._x += el._vx * dt;
         el._rot += el._vr * dt;
-        if(el._y < -.15){                       // off the top — come back below
-          el._y = 1.15;
-          el._x = rand(.06, .84);
-          el._vx = rand(-.008, .008);
-          el._rot = 0;                          // re-enter upright, out of sight
-          el._vr = rand(-2.5, 2.5);
+        if(el._y < -.18){              // left the top — reseed below, unseen
+          el._y = 1.18;
+          seed(el, false);
         }
-        if(el._x < -.12) el._x = 1.02;
-        if(el._x > 1.02) el._x = -.12;
+        if(el._x < -.14) el._x = 1.04;
+        if(el._x > 1.04) el._x = -.14;
+        // the sway rides on top of the drift, so paths curve instead of
+        // running in straight diagonals
+        const sway = Math.sin(t * el._frq * Math.PI * 2 + el._pha) * el._amp;
         el.style.transform =
-          `translate(${el._x * w}px, ${el._y * h}px) rotate(${el._rot}deg)`;
+          `translate(${(el._x + sway) * w}px, ${el._y * h}px) rotate(${el._rot}deg)`;
       }
     }
     requestAnimationFrame(step);
