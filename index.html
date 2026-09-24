@@ -846,10 +846,26 @@ addEventListener("keydown", e => {
   if(!page || !items.length) return;
 
   const rand = (a,b) => a + Math.random() * (b - a);
+
+  /* Pick the emptiest column available: try a handful of candidates and
+     keep whichever sits furthest from the objects already on the page.
+     Cheaper than collision handling and it keeps them from bunching. */
+  function spacedX(el){
+    const others = items.filter(o => o !== el && typeof o._x === "number");
+    if(!others.length) return rand(.04, .88);
+    let best = 0, bestGap = -1;
+    for(let i = 0; i < 12; i++){
+      const c = rand(.04, .88);
+      const gap = Math.min(...others.map(o => Math.abs(o._x - c)));
+      if(gap > bestGap){ bestGap = gap; best = c; }
+    }
+    return best;
+  }
+
   // every value is per-object, so no two follow the same path
-  function seed(el, firstRun){
+  function seed(el){
     // suspended-in-fluid speeds: a few pixels a second, no more
-    el._x   = rand(.05, .85);
+    el._x   = spacedX(el);
     el._vy  = rand(.0025, .005);                // page-heights per second
     el._vx  = rand(-.0015, .0015);              // steady sideways drift
     el._amp = rand(.02, .04);                   // sway width
@@ -857,9 +873,12 @@ addEventListener("keydown", e => {
     el._pha = rand(0, Math.PI * 2);             // sway starting point
     el._rot = 0;                                // start upright, then turn
     el._vr  = rand(-.7, .7);                    // degrees per second
-    if(firstRun) el._y = rand(.05, 1.1);        // scattered on load
   }
-  items.forEach(el => seed(el, true));
+  // one per horizontal band on load, so they never start bunched
+  items.forEach((el, i) => {
+    seed(el);
+    el._y = (i + rand(.15, .85)) / items.length * 1.15;
+  });
 
   if(reduceMotion.matches){                     // place them, don't move them
     items.forEach(el => {
@@ -881,7 +900,7 @@ addEventListener("keydown", e => {
         el._rot += el._vr * dt;
         if(el._y < -.18){              // left the top — reseed below, unseen
           el._y = 1.18;
-          seed(el, false);
+          seed(el);
         }
         if(el._x < -.14) el._x = 1.04;
         if(el._x > 1.04) el._x = -.14;
