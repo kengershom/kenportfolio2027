@@ -330,7 +330,8 @@ body.menu-open .nav__items a{
 /* interests drifting in the page margins — decorative only, so they
    never take pointer events and never sit above the text */
 #about-page{ position:relative; overflow:hidden }
-.floaters{ position:absolute; inset:0; pointer-events:none; z-index:0 }
+/* above the content, but still click-through so they never get in the way */
+.floaters{ position:absolute; inset:0; pointer-events:none; z-index:3 }
 #about-page .sec{ position:relative; z-index:1 }
 /* position and rotation come from the rAF loop, which drifts each one
    upward and wraps it round to the bottom */
@@ -850,7 +851,7 @@ addEventListener("keydown", e => {
     el._y   = i / items.length + rand(0, .1);   // spread down the page
     el._vy  = rand(.012, .022);                 // page-heights per second
     el._vx  = rand(-.008, .008);
-    el._rot = rand(0, 360);
+    el._rot = 0;                                // start upright, then turn
     el._vr  = rand(-2.5, 2.5);                  // degrees per second
   });
 
@@ -876,6 +877,8 @@ addEventListener("keydown", e => {
           el._y = 1.15;
           el._x = rand(.06, .84);
           el._vx = rand(-.008, .008);
+          el._rot = 0;                          // re-enter upright, out of sight
+          el._vr = rand(-2.5, 2.5);
         }
         if(el._x < -.12) el._x = 1.02;
         if(el._x > 1.02) el._x = -.12;
