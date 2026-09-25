@@ -309,6 +309,10 @@ body.menu-open .nav__items a{
   display:grid; place-items:center; padding:14%;
 }
 .pcard__frame img{ width:100%; height:100%; object-fit:contain; display:block }
+/* line art on a transparent background needs the padding; a photo or a
+   render brings its own background and fills the square instead */
+.pcard__frame.is-fill{ padding:0 }
+.pcard__frame.is-fill img{ object-fit:cover }
 .pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.01em }
 
 /* name appears in the corner, and the card itself deepens a little */
@@ -789,7 +793,29 @@ const PROJECTS = [
   { kind:"play", slug:"sliding-box",   title:"Sliding Box",   year:"2026",
     cover:{ src:"img/play-slider.png", alt:"Sliding box concept sketch" } },
   { kind:"play", slug:"8-bit-lighter", title:"8-Bit Lighter", year:"2025",
-    cover:{ src:"img/play-lighter.png", alt:"8-bit lighter concept sketch" } }
+    cover:{ src:"img/play-lighter.png", alt:"8-bit lighter concept sketch" } },
+  { kind:"play", slug:"lfa", title:"LFA", year:"2024",
+    cover:{ src:"img/play-lfa.jpg", alt:"Lexus LFA seen from behind, blue pencil sketch", fit:"cover" } },
+  { kind:"play", slug:"braun-shaver", title:"Braun Shaver", year:"2024",
+    cover:{ src:"img/play-braun-shaver.jpg", alt:"Braun foil shaver, pencil rendering", fit:"cover" } },
+  { kind:"play", slug:"planter", title:"Planter", year:"2023",
+    cover:{ src:"img/play-planter.jpg", alt:"Concrete planter on a welded wire frame, render", fit:"cover" } },
+  { kind:"play", slug:"toasters", title:"Toasters", year:"2023",
+    cover:{ src:"img/play-toasters.jpg", alt:"A page of toaster forms in blue pencil", fit:"cover" } },
+  { kind:"play", slug:"ferrari", title:"Ferrari", year:"2024",
+    cover:{ src:"img/play-ferrari.jpg", alt:"Ferrari shooting brake, digital rendering", fit:"cover" } },
+  { kind:"play", slug:"succulent", title:"Succulent", year:"2023",
+    cover:{ src:"img/play-succulent.jpg", alt:"Potted succulent painted on toned paper", fit:"cover" } },
+  { kind:"play", slug:"console", title:"Console", year:"2025",
+    cover:{ src:"img/play-console.jpg", alt:"Perforated grey console with an orange cable, render", fit:"cover" } },
+  { kind:"play", slug:"knives", title:"Knives", year:"2023",
+    cover:{ src:"img/play-knives.jpg", alt:"Three kitchen knife profiles in blue pencil", fit:"cover" } },
+  { kind:"play", slug:"lego-heisenberg", title:"Minifig", year:"2022",
+    cover:{ src:"img/play-lego-heisenberg.jpg", alt:"LEGO minifigure in a pork pie hat, render", fit:"cover" } },
+  { kind:"play", slug:"handles", title:"Handles", year:"2022",
+    cover:{ src:"img/play-handles.jpg", alt:"A sketchbook page of handle and knob forms", fit:"cover" } },
+  { kind:"play", slug:"f1-boot", title:"F1 Boot", year:"2025",
+    cover:{ src:"img/play-f1-boot.jpg", alt:"Puma AMG racing boot, digital sketch", fit:"cover" } }
 ];
 
 /* `url` is what the player shows. Spotify can embed a playlist, album,
@@ -832,7 +858,8 @@ function card(p){
   // screen readers and for anyone who never hovers
   // Play is a wall of images: no case study behind them, so no link and no name
   if(p.kind === "play")
-    return `<div class="pcard is-static"><div class="pcard__frame">${art}</div></div>`;
+    return `<div class="pcard is-static"><div class="pcard__frame${
+      c.fit === "cover" ? " is-fill" : ""}">${art}</div></div>`;
   const label = p.locked ? "Unreleased project" : `${p.title}, ${p.year}`;
   const tag   = p.locked ? "Under wraps" : p.title;
   return `
