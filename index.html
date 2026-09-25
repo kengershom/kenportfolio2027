@@ -89,7 +89,9 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 .nav{
   position:fixed; top:var(--edge); left:var(--edge); right:var(--edge); z-index:60;
   display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
-  padding:var(--nav-pad) clamp(20px,3vw,46px);
+  /* same inset all round, so the marks sit as close to the ends as
+     they are to the top and bottom */
+  padding:var(--nav-pad);
   background:var(--card); border-radius:var(--r);
 }
 
@@ -132,7 +134,9 @@ body.is-scrolled .pblur{ opacity:1 }
 }
 .nav__name{
   grid-column:1; justify-self:start;
-  display:flex; align-items:center; padding:4px; color:var(--nav-ink);
+  /* 6px not 4px: the K is 4px shorter than the screw, so the extra
+     padding makes its box match the row and its four gaps equal */
+  display:flex; align-items:center; padding:6px; color:var(--nav-ink);
   transition:color .18s ease, transform .16s var(--ease-out),
              opacity .2s var(--ease-out);
 }
