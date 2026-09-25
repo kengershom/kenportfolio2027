@@ -317,9 +317,12 @@ body.menu-open .nav__items a{
   transition:opacity .22s var(--ease-out), transform .22s var(--ease-out);
 }
 @media (hover:hover) and (pointer:fine){
-  .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
-  .pcard:hover .pcard__tag{ opacity:1; transform:none }
+  .pcard:not(.is-static):hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
+  .pcard:not(.is-static):hover .pcard__tag{ opacity:1; transform:none }
 }
+/* Play is a wall of images — nothing to click, nothing to name */
+.pcard.is-static{ cursor:default }
+.pcard.is-static .pcard__frame{ transition:none }
 /* unreleased work: blurred past recognition, scaled up so no edge shows */
 .pcard.is-locked .pcard__frame img,.pcard.is-locked .pcard__ph{ filter:blur(22px); transform:scale(1.14) }
 
@@ -415,8 +418,10 @@ body.is-detail #detail{
   background:var(--live); flex:0 0 auto;
   box-shadow:0 0 0 0 rgba(31,157,85,.45); animation:pulse 2.6s ease-out infinite;
 }
+/* narrow enough that the pills break every two or three, rather than
+   running out into one long line on a wide screen */
 .cs__tags{
-  list-style:none; margin:0; padding:0;
+  list-style:none; margin:0 auto; padding:0; max-width:340px;
   display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
 }
 .cs__tags li{
@@ -425,13 +430,13 @@ body.is-detail #detail{
 }
 .cs__link{
   display:inline-flex; align-items:center; gap:9px;
-  margin-top:2.6em; padding:11px 9px 11px 19px; border-radius:999px;
+  margin-top:2.6em; padding:12px 20px; border-radius:999px;
   background:#1A1A18; color:#FFFFFF; font-size:var(--t-xs); text-decoration:none;
   transition:background .3s var(--ease-out);
 }
 .cs__link:hover{ background:#000000 }
 .cs__link svg{
-  width:22px; height:22px; flex:0 0 auto;
+  width:15px; height:15px; flex:0 0 auto;
   transition:transform .4s var(--ease-out);
 }
 .cs__link:hover svg{ transform:translateX(3px) }
@@ -692,8 +697,10 @@ const PROJECTS = [
     slug:"heimdall",
     title:"Heimdall",
     year:"2024",
+    meta:"For [client] in 2024",
     premise:"Rethinking a modular pack housing so it could be serviced in the field without a lift or a second person.",
-    facts:{ Role:"Industrial designer", Duration:"6 months", Team:"1 ID, 3 mech", Status:"Pilot" },
+    status:"In Pilot",
+    tags:["Industrial Design","CAD + Surfacing","Prototyping","DFM"],
     cover:{ src:"img/heimdall.png", alt:"Heimdall sensor housing" },
     gallery:[{ label:"WALL IMAGE — detail" },{ label:"WALL IMAGE — context" }],
     chapters:[
@@ -706,8 +713,10 @@ const PROJECTS = [
     slug:"verve",
     title:"Verve",
     year:"2022",
-    premise:"One project that shows range. Something personal, weird, or beautifully made that the day job doesn\u2019t cover.",
-    facts:{ Role:"Solo", Duration:"4 months", Team:"\u2014", Status:"Prototype" },
+    meta:"Self-initiated in 2022",
+    premise:"One project that shows range. Something personal, weird, or beautifully made that the day job doesn’t cover.",
+    status:"Prototype",
+    tags:["Industrial Design","Sketching","Prototyping","CMF"],
     cover:{ src:"img/verve.png", alt:"Verve, underside detail" },
     gallery:[{ label:"WALL IMAGE — detail" },{ label:"WALL IMAGE — process" }],
     chapters:[
@@ -719,12 +728,42 @@ const PROJECTS = [
 
   /* Empty slots. Add premise / facts / chapters as each project gets written up —
      the case study renders whatever is present and skips what isn't. */
-  { slug:"zook", title:"Zook", year:"2025", premise:"An electric hookah — the ritual and the silhouette kept, the coals and the smoke gone.", cover:{ src:"img/zook.png", alt:"Zook electric hookah" } },
-  { slug:"project-five",  title:"Project five",  year:"2024", cover:{ label:"PROJECT 05 — cover" } },
-  { slug:"project-six",   title:"Project six",   year:"2024", cover:{ label:"PROJECT 06 — cover" } },
-  { slug:"project-seven", title:"Project seven", year:"2023", cover:{ label:"PROJECT 07 — cover" } },
-  { slug:"project-eight", title:"Project eight", year:"2023", cover:{ label:"PROJECT 08 — cover" } },
-  { slug:"project-nine",  title:"Project nine",  year:"2022", cover:{ label:"PROJECT 09 — cover" } },
+  { slug:"zook", title:"Zook", year:"2025",
+    meta:"Self-initiated in 2025",
+    premise:"An electric hookah — the ritual and the silhouette kept, the coals and the smoke gone.",
+    status:"Concept",
+    tags:["Industrial Design","CAD + Surfacing","CMF","Visualization"],
+    cover:{ src:"img/zook.png", alt:"Zook electric hookah" } },
+  { slug:"project-five", title:"Project five", year:"2024",
+    meta:"For [client] in 2024",
+    premise:"[One or two sentences: what it is, who it was for, and what made it hard.]",
+    status:"[Status]",
+    tags:["Industrial Design","[Discipline]","[Discipline]"],
+    cover:{ label:"PROJECT 05 — cover" } },
+  { slug:"project-six", title:"Project six", year:"2024",
+    meta:"For [client] in 2024",
+    premise:"[One or two sentences: what it is, who it was for, and what made it hard.]",
+    status:"[Status]",
+    tags:["Industrial Design","[Discipline]","[Discipline]"],
+    cover:{ label:"PROJECT 06 — cover" } },
+  { slug:"project-seven", title:"Project seven", year:"2023",
+    meta:"For [client] in 2023",
+    premise:"[One or two sentences: what it is, who it was for, and what made it hard.]",
+    status:"[Status]",
+    tags:["Industrial Design","[Discipline]","[Discipline]"],
+    cover:{ label:"PROJECT 07 — cover" } },
+  { slug:"project-eight", title:"Project eight", year:"2023",
+    meta:"For [client] in 2023",
+    premise:"[One or two sentences: what it is, who it was for, and what made it hard.]",
+    status:"[Status]",
+    tags:["Industrial Design","[Discipline]","[Discipline]"],
+    cover:{ label:"PROJECT 08 — cover" } },
+  { slug:"project-nine", title:"Project nine", year:"2022",
+    meta:"For [client] in 2022",
+    premise:"[One or two sentences: what it is, who it was for, and what made it hard.]",
+    status:"[Status]",
+    tags:["Industrial Design","[Discipline]","[Discipline]"],
+    cover:{ label:"PROJECT 09 — cover" } },
 
   /* kind:"play" moves an entry off the Work grid and onto Play —
      side projects, experiments, things made for their own sake. */
@@ -774,6 +813,9 @@ function card(p){
     : `<span class="pcard__ph">${esc(c.label || "IMAGE")}</span>`;
   // the name only shows on hover, so the link still carries it for
   // screen readers and for anyone who never hovers
+  // Play is a wall of images: no case study behind them, so no link and no name
+  if(p.kind === "play")
+    return `<div class="pcard is-static"><div class="pcard__frame">${art}</div></div>`;
   const label = p.locked ? "Unreleased project" : `${p.title}, ${p.year}`;
   const tag   = p.locked ? "Under wraps" : p.title;
   return `
@@ -838,14 +880,14 @@ function renderProject(p, i){
 
   /* a premise is one paragraph or several; a project lists either the newer
      status + discipline tags, or the older key/value facts */
-  const lead = [].concat(p.premise || []);
+  /* the premise reads as one block, however many pieces it is stored in */
+  const lead = [].concat(p.premise || []).join(" ");
   const tags = (p.tags || []).map(x => `<li>${esc(x)}</li>`);
   if(!tags.length) facts.forEach(([k,v]) =>
     tags.push(`<li><b>${esc(k)}</b> ${esc(v)}</li>`));
-  const arrow = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="11" fill="#FFFFFF" fill-opacity=".14"/>
-      <path d="M9 12h6m0 0-2.4-2.4M15 12l-2.4 2.4" stroke="#FFFFFF"
-        stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  const arrow = `<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3 8h10m0 0-3.6-3.6M13 8l-3.6 3.6" stroke="#FFFFFF"
+        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
 
   detail.innerHTML = `
@@ -853,7 +895,7 @@ function renderProject(p, i){
     <section class="cs__block cs__intro">
       <h1>${esc(p.title)}</h1>
       <p class="cs__meta">${esc(p.meta || p.year)}</p>
-      ${lead.map(l => `<p class="cs__lead">${esc(l)}</p>`).join("")}
+      ${lead ? `<p class="cs__lead">${esc(lead)}</p>` : ""}
       ${p.status ? `<p><span class="cs__status">Status: ${esc(p.status)}</span></p>` : ""}
       ${tags.length ? `<ul class="cs__tags">${tags.join("")}</ul>` : ""}
       ${p.link ? `<p><a class="cs__link" href="${esc(p.link.href)}"
