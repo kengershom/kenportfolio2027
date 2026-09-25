@@ -413,9 +413,7 @@ body.is-about #about-page{ display:block }
 }
 /* the page already clears the nav — the section shouldn't add to it */
 #about-page .sec{ padding-block:0 }
-.chapter__label{ font-size:var(--t-s); color:var(--mute); margin-bottom:16px }
-.chapter h2{ font-size:clamp(1.35rem,3vw,2rem); font-weight:500; letter-spacing:-0.035em; margin-bottom:.6em }
-.chapter .body{ max-width:58ch; margin-inline:auto; color:#232320 }
+.chapter p{ max-width:58ch; margin:0 auto; color:#232320 }
 figure{ margin:0 }
 
 .next{ display:flex; justify-content:space-between; align-items:baseline; gap:20px }
@@ -780,17 +778,21 @@ const detail = document.getElementById("detail");
 function renderProject(p, i){
   const next = PROJECTS[(i+1) % PROJECTS.length];
   const facts = Object.entries(p.facts || {});
-  // chapter prose and chapter images are separate panels, so an image
-  // never sits as a rounded rect inside another rounded rect
-  const chapters = (p.chapters || []).map(c => `
-    <section class="cs__block chapter">
-      <div class="chapter__label">${esc(c.label)}</div>
-      <h2>${esc(c.title)}</h2>
-      <div class="body">${c.body.map(t => `<p>${esc(t)}</p>`).join("")}</div>
-    </section>
-    ${(c.shots || []).map(s =>
-      `<figure>${shot(s)}</figure>`
-    ).join("")}`).join("");
+  /* The body alternates image, text, image, text. Chapter headings are
+     dropped — past the intro panel it is all body copy — so the images
+     and the paragraphs are flattened into two queues and dealt out in
+     turn. Whichever runs out first, the remainder simply follows. */
+  const imgs = [], paras = [];
+  (p.chapters || []).forEach(c => {
+    (c.shots || []).forEach(s => imgs.push(s));
+    (c.body  || []).forEach(b => paras.push(b));
+  });
+  const body = [];
+  for(let a = 0, b = 0; a < imgs.length || b < paras.length; ){
+    if(a < imgs.length)  body.push(`<figure>${shot(imgs[a++])}</figure>`);
+    if(b < paras.length) body.push(
+      `<section class="cs__block chapter"><p>${esc(paras[b++])}</p></section>`);
+  }
 
   detail.innerHTML = `
     ${shot(Object.assign({ratio:"wide"}, p.cover))}
@@ -801,7 +803,7 @@ function renderProject(p, i){
       ${facts.length ? `<ul class="cs__tags">${facts
         .map(([k,v]) => `<li><b>${esc(k)}</b> ${esc(v)}</li>`).join("")}</ul>` : ""}
     </section>
-    ${chapters}
+    ${body.join("")}
     <nav class="cs__block next">
       <span>Next project</span>
       <a href="#${esc(next.slug)}">${esc(next.title)}</a>
