@@ -141,6 +141,15 @@ body.is-scrolled .pblur{ opacity:1 }
 }
 .nav__name:active{ transform:scale(.97) }
 .kmark{ width:20px; height:20px; display:block }
+/* The mark draws itself in four frames, 0.1s apart: left stem, then
+   centre, then top-right, then bottom-right. Each square is simply
+   held invisible for its share of the run and snaps on when the hold
+   ends — so the finished mark is the resting state and nothing has to
+   be cleaned up afterwards. */
+@keyframes kHold{ from{ opacity:0 } to{ opacity:0 } }
+.kmark.play rect:nth-child(4){ animation:kHold .1s }
+.kmark.play rect:nth-child(5){ animation:kHold .2s }
+.kmark.play rect:nth-child(6){ animation:kHold .3s }
 
 /* back button — only on the sub pages, where it takes column 1 and
    pushes the wordmark to the centre */
@@ -814,6 +823,20 @@ document.querySelector(".nav__items").addEventListener("click", e => {
 addEventListener("keydown", e => {
   if(e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false);
 });
+
+/* --- the K mark draws itself: once on arrival, again on hover --- */
+(function kmark(){
+  const mark = document.querySelector(".kmark");
+  if(!mark || reduceMotion.matches) return;
+  const play = () => {
+    mark.classList.remove("play");
+    // SVG elements have no offsetWidth, so force layout a way that works
+    void mark.getBoundingClientRect().width;
+    mark.classList.add("play");
+  };
+  play();
+  document.querySelector(".nav__name").addEventListener("mouseenter", play);
+})();
 
 /* --- floating interests ---
    Each object drifts upward at its own pace, sways a little sideways
