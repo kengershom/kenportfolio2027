@@ -311,6 +311,8 @@ body.menu-open .nav__items a{
 
 /* work grid */
 .pgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(10px,1.4vw,18px) }
+/* sits directly under the hero panel, on the same rhythm as the nav gap */
+.home-work{ margin-top:var(--edge) }
 .pcard{ display:block }
 .pcard__frame{
   position:relative; aspect-ratio:1/1; background:var(--card);
@@ -551,6 +553,11 @@ main.swapping{ opacity:0; filter:blur(3px) }
     </div>
   </header>
 
+  <!-- ══════════ WORK ══════════ -->
+  <section class="wrap home-work">
+    <div class="pgrid" id="homeWorkList"></div>
+  </section>
+
   <!-- ══════════ LISTENING ══════════ -->
   <section class="sec wrap" id="listening">
     <div class="sec__head"><span>Listening</span><span id="listenKind"></span></div>
@@ -756,7 +763,9 @@ function card(p){
   </a>`;
 }
 const grid = (id, items) => document.getElementById(id).innerHTML = items.map(card).join("");
-grid("workList", PROJECTS.filter(p => p.kind !== "play"));
+const workProjects = PROJECTS.filter(p => p.kind !== "play");
+grid("workList", workProjects);
+grid("homeWorkList", workProjects);
 grid("playList", PROJECTS.filter(p => p.kind === "play"));
 
 /* --- listening --- */
