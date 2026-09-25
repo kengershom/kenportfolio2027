@@ -833,7 +833,7 @@ function renderProject(p, i){
   }
 
   detail.innerHTML = `
-    ${shot(Object.assign({ratio:"wide"}, p.cover))}
+    ${shot(Object.assign({ratio:"wide"}, p.hero || p.cover))}
     <section class="cs__block cs__intro">
       <h1>${esc(p.title)}</h1>
       <p class="cs__meta">${esc(p.year)}</p>
