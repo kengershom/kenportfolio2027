@@ -378,9 +378,12 @@ body.menu-open .nav__items a{
   .mailto:hover{ text-decoration-color:currentColor }
 }
 .mailto:active{ transform:scale(.99) }
+/* a panel like everything else, rather than a rule with text under it */
 footer{
-  border-top:1px solid var(--line); padding:16px 0 clamp(28px,5vh,56px);
-  display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between;
+  background:var(--card); border-radius:var(--r);
+  padding:clamp(20px,3vw,30px) var(--pad);
+  display:flex; flex-wrap:wrap; gap:14px 24px;
+  justify-content:space-between; align-items:center;
   font-size:var(--t-s); color:var(--mute); margin-top:clamp(40px,7vh,80px);
   letter-spacing:-0.01em
 }
