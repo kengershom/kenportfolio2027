@@ -497,13 +497,13 @@ main.swapping{ opacity:0; filter:blur(3px) }
     </svg>
   </a>
   <a class="nav__name" href="#" aria-label="Ken Gershom — home">
-    <svg class="kmark" viewBox="0 0 189 189" fill="currentColor" aria-hidden="true" focusable="false">
-      <rect width="62.9984" height="62.929"/>
-      <rect y="62.8594" width="62.9984" height="62.929"/>
-      <rect y="125.781" width="62.9984" height="62.929"/>
-      <rect x="62.9922" y="62.9219" width="62.9984" height="62.929"/>
-      <rect x="125.996" width="62.9984" height="62.929"/>
-      <rect x="125.996" y="125.867" width="62.9984" height="62.929"/>
+    <svg class="kmark" viewBox="0 0 300 300" fill="currentColor" aria-hidden="true" focusable="false">
+      <rect x="0" y="0" width="101" height="101"/>
+      <rect x="0" y="99" width="101" height="102"/>
+      <rect x="0" y="199" width="101" height="101"/>
+      <rect x="99" y="99" width="102" height="102"/>
+      <rect x="199" y="0" width="101" height="101"/>
+      <rect x="199" y="199" width="101" height="101"/>
     </svg>
   </a>
   <div class="nav__menu">
@@ -832,18 +832,18 @@ addEventListener("keydown", e => {
   if(e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false);
 });
 
-/* --- the K mark draws itself: once on arrival, again on hover --- */
+/* --- the K mark draws itself: on every screen, and on hover --- */
+let playKmark = () => {};
 (function kmark(){
   const mark = document.querySelector(".kmark");
   if(!mark || reduceMotion.matches) return;
-  const play = () => {
+  playKmark = () => {
     mark.classList.remove("play");
     // SVG elements have no offsetWidth, so force layout a way that works
     void mark.getBoundingClientRect().width;
     mark.classList.add("play");
   };
-  play();
-  document.querySelector(".nav__name").addEventListener("mouseenter", play);
+  document.querySelector(".nav__name").addEventListener("mouseenter", playKmark);
 })();
 
 /* --- floating interests ---
@@ -991,6 +991,7 @@ function applyRoute(slug, i){
   // a case study goes back to the grid it came from; a grid goes home
   navBack.setAttribute("href",
     view === "detail" ? (PROJECTS[i].kind === "play" ? "#play" : "#work") : "#");
+  playKmark();          // the mark redraws itself on every screen
 
   if(view === "detail"){
     renderProject(PROJECTS[i], i);
