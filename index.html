@@ -179,6 +179,18 @@ body.is-sub .nav__name{ grid-column:2; justify-self:center }
   width:20px; height:20px; display:block;
   transition:transform .45s var(--ease-out), color .18s ease;
 }
+/* driven home, then nudged back and forth a couple of degrees the way
+   you check a fastener is seated. Ends on 360deg, which is the resting
+   state, so no fill-mode is needed and hover still works afterwards. */
+@keyframes screwDrive{
+  0%   { transform:rotate(0deg);     animation-timing-function:cubic-bezier(.3,.85,.3,1) }
+  58%  { transform:rotate(360deg);   animation-timing-function:ease-in-out }
+  70%  { transform:rotate(357deg);   animation-timing-function:ease-in-out }
+  81%  { transform:rotate(363deg);   animation-timing-function:ease-in-out }
+  91%  { transform:rotate(358.5deg); animation-timing-function:ease-out }
+  100% { transform:rotate(360deg) }
+}
+.screw.drive{ animation:screwDrive 1.05s }
 @media (hover:hover) and (pointer:fine){
   .nav__cta:hover{ color:var(--ink) }
   .nav__cta:hover .screw{ transform:rotate(90deg) }
@@ -832,18 +844,24 @@ addEventListener("keydown", e => {
   if(e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false);
 });
 
-/* --- the K mark draws itself: on every screen, and on hover --- */
-let playKmark = () => {};
-(function kmark(){
-  const mark = document.querySelector(".kmark");
-  if(!mark || reduceMotion.matches) return;
-  playKmark = () => {
-    mark.classList.remove("play");
-    // SVG elements have no offsetWidth, so force layout a way that works
-    void mark.getBoundingClientRect().width;
-    mark.classList.add("play");
+/* --- nav marks animate on every screen: the K draws itself, the screw
+       is driven home. Both also replay on hover of their own element. --- */
+let playNavMarks = () => {};
+(function navMarks(){
+  if(reduceMotion.matches) return;
+  const mark  = document.querySelector(".kmark");
+  const screw = document.querySelector(".screw");
+  // SVG elements have no offsetWidth, so force layout a way that works
+  const restart = (el, cls) => {
+    if(!el) return;
+    el.classList.remove(cls);
+    void el.getBoundingClientRect().width;
+    el.classList.add(cls);
   };
-  document.querySelector(".nav__name").addEventListener("mouseenter", playKmark);
+  const playK = () => restart(mark, "play");
+  playNavMarks = () => { playK(); restart(screw, "drive"); };
+
+  document.querySelector(".nav__name").addEventListener("mouseenter", playK);
 })();
 
 /* --- floating interests ---
@@ -991,7 +1009,7 @@ function applyRoute(slug, i){
   // a case study goes back to the grid it came from; a grid goes home
   navBack.setAttribute("href",
     view === "detail" ? (PROJECTS[i].kind === "play" ? "#play" : "#work") : "#");
-  playKmark();          // the mark redraws itself on every screen
+  playNavMarks();       // mark redraws, screw drives home, on every screen
 
   if(view === "detail"){
     renderProject(PROJECTS[i], i);
