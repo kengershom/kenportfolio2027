@@ -334,15 +334,30 @@ body.menu-open .nav__items a{
   display:grid; place-items:center; padding:14%;
 }
 .pcard__frame img{ width:100%; height:100%; object-fit:contain; display:block }
-.pcard__frame span{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.02em }
-.pcard__frame > *{ transition:transform .5s var(--ease-out) }
-@media (hover:hover) and (pointer:fine){
-  .pcard:hover .pcard__frame > *{ transform:scale(1.04) }
+.pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.02em }
+/* the artwork scales; the name tag is excluded so it keeps its own motion */
+.pcard__frame img,.pcard__ph{ transition:transform .5s var(--ease-out) }
+
+/* name appears in the corner, and the card itself deepens a little */
+.pcard__frame{ transition:background-color .3s var(--ease-out) }
+.pcard__tag{
+  position:absolute; top:9px; left:9px; z-index:2;
+  font-size:var(--t-xs); line-height:1; color:var(--ink);
+  background:var(--bg); border-radius:999px; padding:6px 11px;
+  max-width:calc(100% - 18px); overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap;
+  opacity:0; transform:translateY(-5px); pointer-events:none;
+  transition:opacity .22s var(--ease-out), transform .22s var(--ease-out);
 }
-.pcard:active .pcard__frame > *{ transform:scale(1.02) }
+@media (hover:hover) and (pointer:fine){
+  .pcard:hover .pcard__frame img,.pcard:hover .pcard__ph{ transform:scale(1.04) }
+  .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
+  .pcard:hover .pcard__tag{ opacity:1; transform:none }
+}
+.pcard:active .pcard__frame img,.pcard:active .pcard__ph{ transform:scale(1.02) }
 /* unreleased work: blurred past recognition, scaled up so no edge shows */
-.pcard.is-locked .pcard__frame > *{ filter:blur(22px); transform:scale(1.14) }
-.pcard.is-locked:hover .pcard__frame > *{ transform:scale(1.14) }
+.pcard.is-locked .pcard__frame img,.pcard.is-locked .pcard__ph{ filter:blur(22px); transform:scale(1.14) }
+.pcard.is-locked:hover .pcard__frame img,.pcard.is-locked:hover .pcard__ph{ transform:scale(1.14) }
 
 /* about */
 /* interests drifting in the page margins — decorative only, so they
@@ -768,12 +783,14 @@ function card(p){
   const c = p.cover || {};
   const art = c.src
     ? `<img src="${esc(c.src)}" alt="${esc(c.alt || p.title)}" loading="lazy">`
-    : `<span>${esc(c.label || "IMAGE")}</span>`;
-  // no visible caption, so the link carries the name for screen readers
+    : `<span class="pcard__ph">${esc(c.label || "IMAGE")}</span>`;
+  // the name only shows on hover, so the link still carries it for
+  // screen readers and for anyone who never hovers
   const label = p.locked ? "Unreleased project" : `${p.title}, ${p.year}`;
+  const tag   = p.locked ? "Under wraps" : p.title;
   return `
   <a class="pcard${p.locked ? " is-locked" : ""}" href="#${esc(p.slug)}" aria-label="${esc(label)}">
-    <div class="pcard__frame">${art}</div>
+    <div class="pcard__frame">${art}<span class="pcard__tag">${esc(tag)}</span></div>
   </a>`;
 }
 const grid = (id, items) => document.getElementById(id).innerHTML = items.map(card).join("");
