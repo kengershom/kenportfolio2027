@@ -384,23 +384,32 @@ body.is-detail #detail{
   text-align:center;
 }
 .cs__intro h1{
-  font-size:clamp(1rem,2.2vw,1.625rem); font-weight:500; letter-spacing:-0.03em;
-  line-height:1.15; margin-bottom:.5em;
+  font-size:clamp(.9rem,1.8vw,1.3rem); font-weight:500; letter-spacing:-0.03em;
+  line-height:1.15; margin-bottom:.5em; color:#2A2A28;
 }
-.cs__meta{ font-size:var(--t-s); color:var(--mute); margin-bottom:1.5em }
+.cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:1.6em }
 .cs__lead{
-  font-size:var(--t-m); line-height:1.5; letter-spacing:0;
-  max-width:60ch; margin:0 auto 1.7em; color:#232320;
+  font-size:var(--t-s); line-height:1.6; letter-spacing:0;
+  max-width:62ch; margin:0 auto 1em; color:#3A3A37;
 }
+.cs__lead:last-of-type{ margin-bottom:1.8em }
 .cs__tags{
   list-style:none; margin:0; padding:0;
   display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
 }
 .cs__tags li{
-  font-size:var(--t-s); background:var(--bg);
-  border-radius:999px; padding:7px 15px;
+  font-size:var(--t-xs); color:#3A3A37; background:var(--bg);
+  border-radius:999px; padding:7px 14px;
 }
-.cs__tags b{ font-weight:400; color:var(--mute) }
+/* the one tag that carries state, so it gets colour and a live dot */
+.cs__tags li.is-status{
+  display:inline-flex; align-items:center; gap:7px;
+  background:#EEF7CE; color:#33691E;
+}
+.cs__tags li.is-status::before{
+  content:""; width:7px; height:7px; border-radius:50%;
+  background:#2E7D32; flex:0 0 auto;
+}
 body.is-work #work-page{ display:block }
 body.is-play #play-page{ display:block }
 body.is-about #about-page{ display:block }
@@ -411,7 +420,7 @@ body.is-about #about-page{ display:block }
 }
 /* the page already clears the nav — the section shouldn't add to it */
 #about-page .sec{ padding-block:0 }
-.chapter p{ max-width:58ch; margin:0 auto; color:#232320 }
+.chapter p{ max-width:60ch; margin:0 auto; font-size:var(--t-s); line-height:1.6; color:#3A3A37 }
 figure{ margin:0 }
 
 .next{ display:flex; justify-content:space-between; align-items:baseline; gap:20px }
@@ -618,8 +627,13 @@ const PROJECTS = [
     slug:"exponent-p4",
     title:"Exponent P4",
     year:"2025",
-    premise:"A handheld connector for 1000A charging that stays cool enough to hold and docks one-handed.",
-    facts:{ Role:"Industrial design lead", Duration:"9 months", Team:"2 ID, 4 mech, 1 EE", Status:"In production" },
+    meta:"For Exponent Energy in 2025",
+    premise:[
+      "Exponent Energy\u2019s P4 charger reimagines what rapid EV charging should feel like, delivering a seamless 15-minute full charge through a slim, space-efficient form that sits flush along the vehicle.",
+      "Working as one half of a two-person Industrial Design team, I helped shape this deep-tech, engineering-heavy product in close collaboration with a large cross-functional group of mechanical, electronics, and firmware engineers."
+    ],
+    status:"In Full-Scale Production",
+    tags:["Industrial Design","Class-A CAD + Surfacing","Prototyping","CMF","DFM","Visualization","Visual Design & Branding"],
     cover:{ src:"img/exponent-p4.webp", alt:"Exponent P4 rapid charging station" },
     hero:{ src:"img/exponent-p4-hero.jpg", alt:"Exponent P4 charging an electric auto-rickshaw" },
     gallery:[
@@ -792,14 +806,22 @@ function renderProject(p, i){
       `<section class="cs__block chapter"><p>${esc(paras[b++])}</p></section>`);
   }
 
+  /* a premise is one paragraph or several; a project lists either the newer
+     status + discipline tags, or the older key/value facts */
+  const lead = [].concat(p.premise || []);
+  const tags = [];
+  if(p.status) tags.push(`<li class="is-status">Status: ${esc(p.status)}</li>`);
+  (p.tags || []).forEach(x => tags.push(`<li>${esc(x)}</li>`));
+  if(!tags.length) facts.forEach(([k,v]) =>
+    tags.push(`<li><b>${esc(k)}</b> ${esc(v)}</li>`));
+
   detail.innerHTML = `
     ${shot(Object.assign({ratio:"wide"}, p.hero || p.cover))}
     <section class="cs__block cs__intro">
       <h1>${esc(p.title)}</h1>
-      <p class="cs__meta">${esc(p.year)}</p>
-      ${p.premise ? `<p class="cs__lead">${esc(p.premise)}</p>` : ""}
-      ${facts.length ? `<ul class="cs__tags">${facts
-        .map(([k,v]) => `<li><b>${esc(k)}</b> ${esc(v)}</li>`).join("")}</ul>` : ""}
+      <p class="cs__meta">${esc(p.meta || p.year)}</p>
+      ${lead.map(l => `<p class="cs__lead">${esc(l)}</p>`).join("")}
+      ${tags.length ? `<ul class="cs__tags">${tags.join("")}</ul>` : ""}
     </section>
     ${body.join("")}
     <nav class="cs__block next">
