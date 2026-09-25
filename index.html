@@ -93,6 +93,17 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
      they are to the top and bottom */
   padding:var(--nav-pad);
   background:var(--card); border-radius:var(--r);
+  transition:transform .4s var(--ease-out), opacity .3s var(--ease-out);
+}
+/* out of the way going down, back on the way up. The translate clears
+   the bar's own height plus the gap it floats in. */
+.nav.is-tucked{
+  transform:translateY(calc(-100% - var(--edge) - 4px));
+  opacity:0; pointer-events:none;
+}
+@media (prefers-reduced-motion:reduce){
+  .nav{ transition:none }
+  .nav.is-tucked{ transform:none; opacity:1; pointer-events:auto }
 }
 /* all three children share row 1. Without this the back button and the
    mark both want column 1 on the homepage, and auto-placement pushes
@@ -385,30 +396,48 @@ body.is-detail #detail{
 }
 .cs__intro h1{
   font-size:clamp(.9rem,1.8vw,1.3rem); font-weight:500; letter-spacing:-0.03em;
-  line-height:1.15; margin-bottom:.5em; color:#2A2A28;
+  line-height:1.15; margin-bottom:.75em; color:#2A2A28;
 }
-.cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:1.6em }
+.cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:2.6em }
 .cs__lead{
-  font-size:var(--t-s); line-height:1.6; letter-spacing:0;
-  max-width:62ch; margin:0 auto 1em; color:#3A3A37;
+  font-size:var(--t-s); line-height:1.75; letter-spacing:0;
+  max-width:62ch; margin:0 auto 1.5em; color:#3A3A37;
 }
-.cs__lead:last-of-type{ margin-bottom:1.8em }
+.cs__lead:last-of-type{ margin-bottom:2.6em }
+/* the state tag sits on its own line, above the disciplines */
+.cs__status{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:var(--t-xs); color:#3A3A37; background:var(--bg);
+  border-radius:999px; padding:8px 15px; margin-bottom:14px;
+}
+.cs__status::before{
+  content:""; width:7px; height:7px; border-radius:50%;
+  background:var(--live); flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(31,157,85,.45); animation:pulse 2.6s ease-out infinite;
+}
 .cs__tags{
   list-style:none; margin:0; padding:0;
-  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
 }
 .cs__tags li{
   font-size:var(--t-xs); color:#3A3A37; background:var(--bg);
-  border-radius:999px; padding:7px 14px;
+  border-radius:999px; padding:8px 15px;
 }
-/* the one tag that carries state, so it gets colour and a live dot */
-.cs__tags li.is-status{
-  display:inline-flex; align-items:center; gap:7px;
-  background:#EEF7CE; color:#33691E;
+.cs__link{
+  display:inline-flex; align-items:center; gap:9px;
+  margin-top:2.6em; padding:11px 9px 11px 19px; border-radius:999px;
+  background:#1A1A18; color:#FFFFFF; font-size:var(--t-xs); text-decoration:none;
+  transition:background .3s var(--ease-out);
 }
-.cs__tags li.is-status::before{
-  content:""; width:7px; height:7px; border-radius:50%;
-  background:#2E7D32; flex:0 0 auto;
+.cs__link:hover{ background:#000000 }
+.cs__link svg{
+  width:22px; height:22px; flex:0 0 auto;
+  transition:transform .4s var(--ease-out);
+}
+.cs__link:hover svg{ transform:translateX(3px) }
+@media (prefers-reduced-motion:reduce){
+  .cs__status::before{ animation:none }
+  .cs__link svg{ transition:none }
 }
 body.is-work #work-page{ display:block }
 body.is-play #play-page{ display:block }
@@ -633,6 +662,7 @@ const PROJECTS = [
       "Working as one half of a two-person Industrial Design team, I helped shape this deep-tech, engineering-heavy product in close collaboration with a large cross-functional group of mechanical, electronics, and firmware engineers."
     ],
     status:"In Full-Scale Production",
+    link:{ label:"Exponent Energy\u2019s Website", href:"https://exponent.energy" },
     tags:["Industrial Design","Class-A CAD + Surfacing","Prototyping","CMF","DFM","Visualization","Visual Design & Branding"],
     cover:{ src:"img/exponent-p4.webp", alt:"Exponent P4 rapid charging station" },
     hero:{ src:"img/exponent-p4-hero.jpg", alt:"Exponent P4 charging an electric auto-rickshaw" },
@@ -809,11 +839,14 @@ function renderProject(p, i){
   /* a premise is one paragraph or several; a project lists either the newer
      status + discipline tags, or the older key/value facts */
   const lead = [].concat(p.premise || []);
-  const tags = [];
-  if(p.status) tags.push(`<li class="is-status">Status: ${esc(p.status)}</li>`);
-  (p.tags || []).forEach(x => tags.push(`<li>${esc(x)}</li>`));
+  const tags = (p.tags || []).map(x => `<li>${esc(x)}</li>`);
   if(!tags.length) facts.forEach(([k,v]) =>
     tags.push(`<li><b>${esc(k)}</b> ${esc(v)}</li>`));
+  const arrow = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="11" fill="#FFFFFF" fill-opacity=".14"/>
+      <path d="M9 12h6m0 0-2.4-2.4M15 12l-2.4 2.4" stroke="#FFFFFF"
+        stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
 
   detail.innerHTML = `
     ${shot(Object.assign({ratio:"wide"}, p.hero || p.cover))}
@@ -821,7 +854,10 @@ function renderProject(p, i){
       <h1>${esc(p.title)}</h1>
       <p class="cs__meta">${esc(p.meta || p.year)}</p>
       ${lead.map(l => `<p class="cs__lead">${esc(l)}</p>`).join("")}
+      ${p.status ? `<p><span class="cs__status">Status: ${esc(p.status)}</span></p>` : ""}
       ${tags.length ? `<ul class="cs__tags">${tags.join("")}</ul>` : ""}
+      ${p.link ? `<p><a class="cs__link" href="${esc(p.link.href)}"
+        target="_blank" rel="noopener noreferrer">${esc(p.link.label)}${arrow}</a></p>` : ""}
     </section>
     ${body.join("")}
     <nav class="cs__block next">
@@ -841,6 +877,7 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const menuBtn = document.querySelector(".nav__cta");
 function setMenu(open){
   document.body.classList.toggle("menu-open", open);
+  if(open) showNav();
   menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
   if(!open) menuBtn.focus();
 }
@@ -1078,7 +1115,23 @@ function route(){
     main.classList.remove("swapping");
   }, 160);
 }
-addEventListener("hashchange", route);
+/* --- nav tucks away going down, returns going up --- */
+const navBar = document.querySelector(".nav");
+let lastY = 0;
+function showNav(){ navBar.classList.remove("is-tucked"); }
+function onScroll(){
+  const y = Math.max(0, scrollY);
+  /* near the top, or with the menu open, the bar always stays put */
+  if(y < 120 || document.body.classList.contains("menu-open")) showNav();
+  /* a few pixels of jitter shouldn't flip it */
+  else if(Math.abs(y - lastY) > 6)
+    navBar.classList.toggle("is-tucked", y > lastY);
+  lastY = y;
+}
+addEventListener("scroll", onScroll, { passive:true });
+navBar.addEventListener("focusin", showNav);
+
+addEventListener("hashchange", () => { showNav(); lastY = 0; route(); });
 route();
 initReveal(document.getElementById("index"));
 </script>
