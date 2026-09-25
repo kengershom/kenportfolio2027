@@ -99,43 +99,6 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
    one onto a second row, doubling the bar's height. */
 .nav > *{ grid-row:1 }
 
-/* progressive blur veil — stacked backdrop layers, each blurring more
-   over a shorter band, so the blur ramps instead of cutting off */
-.pblur{
-  position:fixed; top:0; left:0; right:0; z-index:55; pointer-events:none;
-  height:clamp(130px, 19vh, 230px);
-  /* nothing has passed under the nav yet at rest, so the veil only
-     earns its place once the page moves */
-  opacity:0; transition:opacity .3s var(--ease-out);
-}
-body.is-scrolled .pblur{ opacity:1 }
-.pblur i{ position:absolute; inset:0; display:block }
-.pblur i:nth-child(1){ backdrop-filter:blur(1px);  -webkit-backdrop-filter:blur(1px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%);
-          mask:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%) }
-.pblur i:nth-child(2){ backdrop-filter:blur(2px);  -webkit-backdrop-filter:blur(2px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 54%,transparent 84%);
-          mask:linear-gradient(to bottom,#000 0%,#000 54%,transparent 84%) }
-.pblur i:nth-child(3){ backdrop-filter:blur(4px);  -webkit-backdrop-filter:blur(4px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 40%,transparent 70%);
-          mask:linear-gradient(to bottom,#000 0%,#000 40%,transparent 70%) }
-.pblur i:nth-child(4){ backdrop-filter:blur(9px);  -webkit-backdrop-filter:blur(9px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 28%,transparent 56%);
-          mask:linear-gradient(to bottom,#000 0%,#000 28%,transparent 56%) }
-.pblur i:nth-child(5){ backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 17%,transparent 42%);
-          mask:linear-gradient(to bottom,#000 0%,#000 17%,transparent 42%) }
-.pblur i:nth-child(6){ backdrop-filter:blur(44px); -webkit-backdrop-filter:blur(44px);
-  -webkit-mask:linear-gradient(to bottom,#000 0%,#000 9%,transparent 30%);
-          mask:linear-gradient(to bottom,#000 0%,#000 9%,transparent 30%) }
-.pblur .tint{
-  background:linear-gradient(to bottom,
-    var(--bg) 0%,
-    var(--bg) 22%,
-    color-mix(in srgb, var(--bg) 72%, transparent) 46%,
-    color-mix(in srgb, var(--bg) 28%, transparent) 72%,
-    transparent 100%);
-}
 .nav__name{
   grid-column:1; justify-self:start;
   /* 6px not 4px: the K is 4px shorter than the screw, so the extra
@@ -514,10 +477,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
 </style>
 </head>
 <body>
-
-<div class="pblur" aria-hidden="true">
-  <i></i><i></i><i></i><i></i><i></i><i></i><i class="tint"></i>
-</div>
 
 <nav class="nav">
   <a class="nav__back" href="#" aria-label="Back">
@@ -971,17 +930,7 @@ let playNavMarks = () => {};
   })(last);
 })();
 
-/* --- blur veil appears only once the page has moved --- */
-let isScrolled = false;
-function syncBlur(){
-  const now = scrollY > 4;
-  if(now === isScrolled) return;          // only touch the DOM on a change
-  isScrolled = now;
-  document.body.classList.toggle("is-scrolled", now);
-}
-addEventListener("scroll", syncBlur, { passive:true });
-
-const scrollToTop = () => { window.scrollTo({ top:0, behavior:"instant" }); syncBlur(); };
+const scrollToTop = () => window.scrollTo({ top:0, behavior:"instant" });
 const scrollToEl = el => el.scrollIntoView();
 
 let io = null;
@@ -1109,7 +1058,6 @@ function route(){
 }
 addEventListener("hashchange", route);
 route();
-syncBlur();   // a reload part-way down the page should start blurred
 initReveal(document.getElementById("index"));
 </script>
 </body>
