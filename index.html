@@ -335,13 +335,9 @@ body.menu-open .nav__items a{
 /* name appears in the corner, and the card itself deepens a little */
 .pcard__frame{ transition:background-color .3s var(--ease-out) }
 .pcard__tag{
-  position:absolute; top:10px; left:10px; z-index:2;
+  position:absolute; top:14px; left:14px; z-index:2;
   font-size:var(--t-xs); line-height:1; color:var(--mute);
-  background:var(--card); border-radius:8px;
-  /* near-even padding so the text reads as inset equally, not just
-     the box it sits in */
-  padding:7px 8px;
-  max-width:calc(100% - 20px); overflow:hidden;
+  max-width:calc(100% - 28px); overflow:hidden;
   text-overflow:ellipsis; white-space:nowrap;
   opacity:0; transform:translateY(-5px); pointer-events:none;
   transition:opacity .22s var(--ease-out), transform .22s var(--ease-out);
