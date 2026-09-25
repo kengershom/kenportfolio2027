@@ -56,6 +56,9 @@ body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family:"Inter",system-ui,-apple-system,sans-serif;
   font-size:var(--t-m); line-height:1.5;
+  /* Figma's letter-spacing % is a fraction of the font size, so its
+     -1% is -0.01em. Every explicit value below is 1% tighter than it was. */
+  letter-spacing:-0.01em;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
@@ -75,7 +78,7 @@ body{
 }
 
 a{ color:inherit; text-decoration:none }
-h1,h2,h3{ margin:0; font-weight:500; letter-spacing:-0.035em; line-height:1 }
+h1,h2,h3{ margin:0; font-weight:500; letter-spacing:-0.045em; line-height:1 }
 p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 :focus-visible{ outline:2px solid var(--ink); outline-offset:4px; border-radius:2px }
 ::selection{ background:var(--ink); color:var(--bg) }
@@ -206,6 +209,7 @@ body.menu-open .nav__cta .screw{ transform:rotate(180deg) }
   opacity:0; transform:translateX(12px); pointer-events:none;
   transition:opacity .28s var(--ease-out), transform .28s var(--ease-out),
              background-color .18s ease, color .18s ease;
+  letter-spacing:-0.01em
 }
 /* nearest the screw reveals first, so they unfurl leftwards */
 .nav__items a:nth-child(3){ transition-delay:0s }
@@ -240,7 +244,7 @@ body.menu-open .nav__items a{
 }
 .hero h1{
   font-size:var(--t-hero); font-weight:500;
-  letter-spacing:-0.05em; line-height:.94; max-width:16ch;
+  letter-spacing:-0.06em; line-height:.94; max-width:16ch;
   margin-bottom:clamp(24px,4vh,44px);
 }
 .hero h1 .ln{ display:block; overflow:hidden }
@@ -250,8 +254,8 @@ body.menu-open .nav__items a{
   align-items:flex-end; justify-content:space-between;
   border-top:1px solid var(--line); padding-top:18px;
 }
-.hero__sub{ font-size:var(--t-l); max-width:30ch; letter-spacing:-0.015em; line-height:1.3 }
-.status{ display:inline-flex; align-items:center; gap:8px; font-size:var(--t-s); color:var(--mute); white-space:nowrap }
+.hero__sub{ font-size:var(--t-l); max-width:30ch; letter-spacing:-0.025em; line-height:1.3 }
+.status{ display:inline-flex; align-items:center; gap:8px; font-size:var(--t-s); color:var(--mute); white-space:nowrap; letter-spacing:-0.01em }
 .status::before{
   content:""; width:7px; height:7px; border-radius:50%; background:var(--live);
   box-shadow:0 0 0 0 rgba(31,157,85,.45); animation:pulse 2.6s ease-out infinite;
@@ -275,7 +279,7 @@ body.menu-open .nav__items a{
 }
 .shot span{
   font-size:var(--t-xs); color:#A9A9A3; text-align:center; padding:10px 16px;
-  letter-spacing:.02em; max-width:90%;
+  letter-spacing:.01em; max-width:90%;
 }
 .shot img{
   width:100%; height:100%; object-fit:cover; display:block;
@@ -291,6 +295,7 @@ body.menu-open .nav__items a{
   display:flex; justify-content:space-between; align-items:baseline; gap:16px;
   font-size:var(--t-s); color:var(--mute);
   border-top:1px solid var(--line); padding-top:14px; margin-bottom:clamp(24px,4vh,48px);
+  letter-spacing:-0.01em
 }
 
 /* work grid */
@@ -304,7 +309,7 @@ body.menu-open .nav__items a{
   display:grid; place-items:center; padding:14%;
 }
 .pcard__frame img{ width:100%; height:100%; object-fit:contain; display:block }
-.pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.02em }
+.pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.01em }
 
 /* name appears in the corner, and the card itself deepens a little */
 .pcard__frame{ transition:background-color .3s var(--ease-out) }
@@ -315,6 +320,7 @@ body.menu-open .nav__items a{
   text-overflow:ellipsis; white-space:nowrap;
   opacity:0; transform:translateY(-5px); pointer-events:none;
   transition:opacity .22s var(--ease-out), transform .22s var(--ease-out);
+  letter-spacing:-0.01em
 }
 @media (hover:hover) and (pointer:fine){
   .pcard:not(.is-static):hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
@@ -352,18 +358,18 @@ body.menu-open .nav__items a{
 .about__photo img{ width:100%; height:100%; object-fit:cover; display:block }
 .about__photo span{
   font-size:var(--t-xs); color:#A9A9A3; text-align:center;
-  padding:10px 16px; letter-spacing:.02em; max-width:90%;
+  padding:10px 16px; letter-spacing:.01em; max-width:90%;
 }
-.about__lead{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.04em; line-height:1.06; margin-bottom:.7em; max-width:18ch }
+.about__lead{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.05em; line-height:1.06; margin-bottom:.7em; max-width:18ch }
 .kv{ margin:clamp(28px,4vw,48px) 0 0; border-top:1px solid var(--line) }
 .kv > div{ display:flex; gap:20px; border-bottom:1px solid var(--line); padding:10px 0 11px }
-.kv dt{ flex:0 0 6.5rem; font-size:var(--t-s); color:var(--mute) }
-.kv dd{ margin:0; font-size:var(--t-s) }
+.kv dt{ flex:0 0 6.5rem; font-size:var(--t-s); color:var(--mute); letter-spacing:-0.01em }
+.kv dd{ margin:0; font-size:var(--t-s); letter-spacing:-0.01em }
 
 /* contact + footer */
 .mailto{
   display:inline-block; font-size:clamp(1.75rem,7vw,4.5rem); font-weight:500;
-  letter-spacing:-0.05em; line-height:1; word-break:break-word;
+  letter-spacing:-0.06em; line-height:1; word-break:break-word;
   text-decoration:underline; text-decoration-color:transparent;
   text-underline-offset:.1em; text-decoration-thickness:.04em;
   transition:text-decoration-color .3s ease, transform .16s var(--ease-out);
@@ -376,6 +382,7 @@ footer{
   border-top:1px solid var(--line); padding:16px 0 clamp(28px,5vh,56px);
   display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between;
   font-size:var(--t-s); color:var(--mute); margin-top:clamp(40px,7vh,80px);
+  letter-spacing:-0.01em
 }
 footer nav{ display:flex; gap:16px }
 footer nav a{ transition:color .18s ease }
@@ -398,13 +405,16 @@ body.is-detail #detail{
   text-align:center;
 }
 .cs__intro h1{
-  font-size:clamp(.9rem,1.8vw,1.3rem); font-weight:500; letter-spacing:-0.03em;
+  font-size:clamp(.9rem,1.8vw,1.3rem); font-weight:500; letter-spacing:-0.04em;
   line-height:1.15; margin-bottom:.75em; color:#2A2A28;
 }
-.cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:2.6em }
+.cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:2.6em; letter-spacing:-0.01em }
 .cs__lead{
-  font-size:var(--t-s); line-height:1.75; letter-spacing:0;
-  max-width:62ch; margin:0 auto 1.5em; color:#3A3A37;
+  font-size:var(--t-s); line-height:1.75; letter-spacing:-0.01em;
+  /* wide enough that a sentence doesn't end on a word or two of its own;
+     text-wrap:pretty evens out whatever the last line would have been */
+  max-width:84ch; text-wrap:pretty;
+  margin:0 auto 1.5em; color:#3A3A37;
 }
 .cs__lead:last-of-type{ margin-bottom:2.6em }
 /* the state tag sits on its own line, above the disciplines */
@@ -412,6 +422,7 @@ body.is-detail #detail{
   display:inline-flex; align-items:center; gap:8px;
   font-size:var(--t-xs); color:#3A3A37; background:var(--bg);
   border-radius:999px; padding:8px 15px; margin-bottom:14px;
+  letter-spacing:-0.01em
 }
 .cs__status::before{
   content:""; width:7px; height:7px; border-radius:50%;
@@ -427,12 +438,14 @@ body.is-detail #detail{
 .cs__tags li{
   font-size:var(--t-xs); color:#3A3A37; background:var(--bg);
   border-radius:999px; padding:8px 15px;
+  letter-spacing:-0.01em
 }
 .cs__link{
   display:inline-flex; align-items:center; gap:9px;
   margin-top:2.6em; padding:12px 20px; border-radius:999px;
   background:#1A1A18; color:#FFFFFF; font-size:var(--t-xs); text-decoration:none;
   transition:background .3s var(--ease-out);
+  letter-spacing:-0.01em
 }
 .cs__link:hover{ background:#000000 }
 .cs__link svg{
@@ -454,13 +467,13 @@ body.is-about #about-page{ display:block }
 }
 /* the page already clears the nav — the section shouldn't add to it */
 #about-page .sec{ padding-block:0 }
-.chapter p{ max-width:60ch; margin:0 auto; font-size:var(--t-s); line-height:1.6; color:#3A3A37 }
+.chapter p{ max-width:84ch; text-wrap:pretty; margin:0 auto; font-size:var(--t-s); line-height:1.6; color:#3A3A37; letter-spacing:-0.01em }
 figure{ margin:0 }
 
 .next{ display:flex; justify-content:space-between; align-items:baseline; gap:20px }
-.next span{ font-size:var(--t-s); color:var(--mute) }
+.next span{ font-size:var(--t-s); color:var(--mute); letter-spacing:-0.01em }
 .next a{
-  font-size:clamp(1.2rem,3vw,2rem); font-weight:500; letter-spacing:-0.04em;
+  font-size:clamp(1.2rem,3vw,2rem); font-weight:500; letter-spacing:-0.05em;
   text-decoration:underline; text-decoration-color:transparent; text-underline-offset:3px;
   transition:text-decoration-color .22s ease, transform .16s var(--ease-out);
 }
@@ -479,12 +492,13 @@ figure{ margin:0 }
   background:var(--card);
 }
 .listen__card iframe{ display:block; border:0; width:100% }
-.listen__note{ font-size:var(--t-s); color:var(--mute); max-width:40ch }
+.listen__note{ font-size:var(--t-s); color:var(--mute); max-width:40ch; letter-spacing:-0.01em }
 .listen__note b{ font-weight:500; color:var(--ink) }
 .listen__out{
   display:inline-flex; align-items:center; gap:5px; margin-top:14px;
   font-size:var(--t-s); color:var(--mute);
   transition:color .18s ease, transform .2s var(--ease-out);
+  letter-spacing:-0.01em
 }
 .listen__out .arw{ display:inline-block; transition:transform .2s var(--ease-out) }
 @media (hover:hover) and (pointer:fine){
