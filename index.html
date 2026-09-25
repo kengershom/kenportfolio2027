@@ -162,19 +162,23 @@ body.is-scrolled .pblur{ opacity:1 }
 
 /* back button — only on the sub pages, where it takes column 1 and
    pushes the wordmark to the centre */
+/* always laid out, faded rather than display-toggled — display can't
+   transition, and on the homepage it sits invisibly behind the mark */
 .nav__back{
-  grid-column:1; justify-self:start; display:none;
+  grid-column:1; justify-self:start; display:inline-flex;
   align-items:center; justify-content:center;
   width:54px; height:32px; border-radius:999px;
   background:color-mix(in srgb, var(--ink) 5%, transparent); color:var(--nav-ink);
-  transition:background-color .18s ease, transform .16s var(--ease-out);
+  opacity:0; transform:translateX(-8px) scale(.94); pointer-events:none;
+  transition:opacity .3s var(--ease-out), transform .3s var(--ease-out),
+             background-color .18s ease;
 }
+body.is-sub .nav__back{ opacity:1; transform:none; pointer-events:auto }
 .nav__back svg{ width:17px; height:17px; display:block }
 @media (hover:hover) and (pointer:fine){
   .nav__back:hover{ background:color-mix(in srgb, var(--ink) 9%, transparent) }
 }
 .nav__back:active{ transform:scale(.96) }
-body.is-sub .nav__back{ display:inline-flex }
 body.is-sub .nav__name{ grid-column:2; justify-self:center }
 .nav__cta{
   display:inline-flex; align-items:center;
@@ -1014,14 +1018,41 @@ const currentView = () => document.body.classList.contains("is-detail") ? "detai
                         : document.body.classList.contains("is-play") ? "play"
                         : document.body.classList.contains("is-about") ? "about" : "index";
 
+/* The mark changes grid column between home and the sub pages, and
+   grid placement can't be transitioned. So: measure, let the layout
+   jump, then put it back with a transform and release that — it slides
+   the real distance whatever the viewport. */
+const navName = document.querySelector(".nav__name");
+function slideNavName(relayout){
+  if(reduceMotion.matches) return relayout();
+  const from = navName.getBoundingClientRect().left;
+  relayout();
+  const dx = from - navName.getBoundingClientRect().left;
+  if(Math.abs(dx) < 1) return;
+  const clear = () => { navName.style.transition = ""; navName.style.transform = ""; };
+  navName.style.transition = "none";
+  navName.style.transform  = `translateX(${dx}px)`;
+  requestAnimationFrame(() => {
+    navName.style.transition = "transform .45s var(--ease-in-out)";
+    navName.style.transform  = "translateX(0)";
+    navName.addEventListener("transitionend", clear, { once:true });
+  });
+  // a backgrounded tab may never paint the frames above; don't leave
+  // the mark stranded at the offset if that happens
+  clearTimeout(navName._flip);
+  navName._flip = setTimeout(clear, 800);
+}
+
 function applyRoute(slug, i){
   const view = viewOf(slug, i);
   const wasFullPage = currentView() !== "index";
-  document.body.classList.toggle("is-detail", view === "detail");
-  document.body.classList.toggle("is-work",   view === "work");
-  document.body.classList.toggle("is-play",   view === "play");
-  document.body.classList.toggle("is-about",  view === "about");
-  document.body.classList.toggle("is-sub",    view !== "index");
+  slideNavName(() => {
+    document.body.classList.toggle("is-detail", view === "detail");
+    document.body.classList.toggle("is-work",   view === "work");
+    document.body.classList.toggle("is-play",   view === "play");
+    document.body.classList.toggle("is-about",  view === "about");
+    document.body.classList.toggle("is-sub",    view !== "index");
+  });
   // a case study goes back to the grid it came from; a grid goes home
   navBack.setAttribute("href",
     view === "detail" ? (PROJECTS[i].kind === "play" ? "#play" : "#work") : "#");
