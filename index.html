@@ -94,6 +94,10 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   padding:var(--nav-pad);
   background:var(--card); border-radius:var(--r);
 }
+/* all three children share row 1. Without this the back button and the
+   mark both want column 1 on the homepage, and auto-placement pushes
+   one onto a second row, doubling the bar's height. */
+.nav > *{ grid-row:1 }
 
 /* progressive blur veil — stacked backdrop layers, each blurring more
    over a shorter band, so the blur ramps instead of cutting off */
@@ -167,7 +171,9 @@ body.is-scrolled .pblur{ opacity:1 }
 .nav__back{
   grid-column:1; justify-self:start; display:inline-flex;
   align-items:center; justify-content:center;
-  width:54px; height:32px; border-radius:999px;
+  /* 28px matches the mark and the screw, so the row height stays
+     exactly what --nav-h predicts and the hero clears it properly */
+  width:54px; height:28px; border-radius:999px;
   background:color-mix(in srgb, var(--ink) 5%, transparent); color:var(--nav-ink);
   opacity:0; transform:translateX(-8px) scale(.94); pointer-events:none;
   transition:opacity .3s var(--ease-out), transform .3s var(--ease-out),
