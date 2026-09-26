@@ -382,14 +382,25 @@ body.menu-open .nav__items a{
   .mailto:hover{ text-decoration-color:currentColor }
 }
 .mailto:active{ transform:scale(.99) }
-/* a panel like everything else, rather than a rule with text under it */
+/* a panel like everything else, holding the whole sign-off */
 footer{
   background:var(--card); border-radius:var(--r);
-  padding:clamp(20px,3vw,30px) var(--pad);
+  padding:var(--pad);
+  display:flex; flex-direction:column;
+  font-size:var(--t-s); color:var(--mute);
+  letter-spacing:-0.01em
+}
+.foot__label{
+  display:block; font-size:var(--t-s); color:var(--mute);
+  border-top:1px solid var(--line); padding-top:14px;
+  margin-bottom:clamp(28px,5vh,56px); letter-spacing:-0.01em
+}
+/* the address gets the room; the small print settles under it */
+footer .mailto{ color:var(--ink); margin-bottom:clamp(40px,8vh,96px) }
+.foot__bar{
   display:flex; flex-wrap:wrap; gap:14px 24px;
   justify-content:space-between; align-items:center;
-  font-size:var(--t-s); color:var(--mute); margin-top:clamp(40px,7vh,80px);
-  letter-spacing:-0.01em
+  border-top:1px solid var(--line); padding-top:18px;
 }
 footer nav{ display:flex; gap:16px }
 footer nav a{ transition:color .18s ease }
@@ -610,16 +621,18 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
   <!-- ══════════ CONTACT ══════════ -->
   <section class="sec wrap" id="contact">
-    <div class="sec__head"><span>Say hello</span></div>
-    <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
     <footer>
-      <span>© 2026 Ken — Bangalore, India</span>
-      <nav>
-        <a href="#">LinkedIn</a>
-        <a href="#">Instagram</a>
-        <a href="#">Behance</a>
-        <a href="#">CV</a>
-      </nav>
+      <span class="foot__label">Say hello</span>
+      <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
+      <div class="foot__bar">
+        <span>© 2026 Ken — Bangalore, India</span>
+        <nav>
+          <a href="#">LinkedIn</a>
+          <a href="#">Instagram</a>
+          <a href="#">Behance</a>
+          <a href="#">CV</a>
+        </nav>
+      </div>
     </footer>
   </section>
 
@@ -950,7 +963,7 @@ function renderProject(p, i){
    Stagger stays at 55ms and caps out after six items: long cascades
    read as lag, not polish. Never blocks interaction. */
 const REVEAL_SEL = ".sec__head, .pgrid > a, .about > *,"
-                 + " .listen > *, .mailto, footer, #detail > *";
+                 + " .listen > *, footer, #detail > *";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 /* --- nav menu: click toggles it where there is no hover --- */
