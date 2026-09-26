@@ -96,6 +96,9 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
      they are to the top and bottom */
   padding:var(--nav-pad);
   background:var(--card); border-radius:var(--r);
+  /* just enough to lift it off a white image scrolling past underneath:
+     a tight contact edge, and a soft one to give it somewhere to sit */
+  box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 20px -8px rgba(0,0,0,.10);
   transition:transform .4s var(--ease-out), opacity .3s var(--ease-out);
 }
 /* the first landing: held off screen through the delay, then dropped in.
