@@ -792,8 +792,10 @@ const PROJECTS = [
     cover:{ src:"img/zook.png", alt:"Zook electric hookah", art:"120%" },
     hero:{ src:"img/zook-hero.jpg", alt:"Zook electric hookah, stem and hose detail" },
     chapters:[
-      { label:"Context", title:"The brief",
-        body:["The client – an entrepreneur with several ventures in the hospitality industry – approached us with a vision to revolutionise the shisha experience for bars and restaurants. The aim was to conceptualise a modern take on a royal practice that has been passed on many centuries."] }
+      { label:"Context", title:"The brief", blocks:[
+        { text:"The client – an entrepreneur with several ventures in the hospitality industry – approached us with a vision to revolutionise the shisha experience for bars and restaurants. The aim was to conceptualise a modern take on a royal practice that has been passed on many centuries." },
+        { src:"img/zook-sketches.jpg", ratio:"wide", alt:"Ideation sheets for the hookah, spread across a desk with pens and a ruler" }
+      ] }
     ] },
   {
     slug:"verve",
@@ -1050,16 +1052,25 @@ function renderProject(p, i){
      dropped — past the intro panel it is all body copy — so the images
      and the paragraphs are flattened into two queues and dealt out in
      turn. Whichever runs out first, the remainder simply follows. */
+  const para = s => `<section class="cs__block chapter"><p>${esc(s)}</p></section>`;
+  const body = [];
+  /* A chapter can set out its own order with `blocks` — paragraphs and
+     shots read in the order written. Chapters without it are dealt from
+     two queues, a shot then a paragraph, which is how the older
+     write-ups are laid out. */
   const imgs = [], paras = [];
   (p.chapters || []).forEach(c => {
+    if(c.blocks){
+      c.blocks.forEach(b => body.push(
+        b.text ? para(b.text) : `<figure>${shot(b)}</figure>`));
+      return;
+    }
     (c.shots || []).forEach(s => imgs.push(s));
     (c.body  || []).forEach(b => paras.push(b));
   });
-  const body = [];
   for(let a = 0, b = 0; a < imgs.length || b < paras.length; ){
     if(a < imgs.length)  body.push(`<figure>${shot(imgs[a++])}</figure>`);
-    if(b < paras.length) body.push(
-      `<section class="cs__block chapter"><p>${esc(paras[b++])}</p></section>`);
+    if(b < paras.length) body.push(para(paras[b++]));
   }
 
   /* a premise is one paragraph or several; a project lists either the newer
