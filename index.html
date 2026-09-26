@@ -275,7 +275,7 @@ body.menu-open .nav__items a{
   content:""; width:7px; height:7px; border-radius:50%; background:var(--live);
   box-shadow:0 0 0 0 rgba(31,157,85,.45); animation:pulse 2.6s ease-out infinite;
 }
-@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(31,157,85,.45)} 70%,100%{box-shadow:0 0 0 9px rgba(31,157,85,0)} }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 var(--dot-glow, rgba(31,157,85,.45))} 70%,100%{box-shadow:0 0 0 9px transparent} }
 
 @keyframes riseIn{ from{ transform:translateY(105%) } to{ transform:translateY(0) } }
 .hero h1 .ln i{ animation:riseIn .78s cubic-bezier(.16,.9,.26,1) both }
@@ -477,9 +477,14 @@ body.is-detail #detail{
 }
 .cs__status::before{
   content:""; width:7px; height:7px; border-radius:50%;
-  background:var(--live); flex:0 0 auto;
-  box-shadow:0 0 0 0 rgba(31,157,85,.45); animation:pulse 2.6s ease-out infinite;
+  background:var(--dot, var(--live)); flex:0 0 auto;
+  box-shadow:0 0 0 0 var(--dot-glow, rgba(31,157,85,.45));
+  animation:pulse 2.6s ease-out infinite;
 }
+/* a project that isn't shipping yet blinks blue rather than live green */
+.cs__status.is-blue{ --dot:#2563EB; --dot-glow:rgba(37,99,235,.45) }
+/* a short tag set that reads better unbroken */
+.cs__tags.is-inline{ max-width:none }
 /* narrow enough that the pills break every two or three, rather than
    running out into one long line on a wide screen */
 .cs__tags{
@@ -728,7 +733,7 @@ const PROJECTS = [
       "Exponent Energy\u2019s P4 charger reimagines what rapid EV charging should feel like, delivering a seamless 15-minute full charge through a slim, space-efficient form that sits flush along the vehicle.",
       "Working as one half of a two-person Industrial Design team, I helped shape this deep-tech, engineering-heavy product in close collaboration with a large cross-functional group of mechanical, electronics, and firmware engineers."
     ],
-    status:"In Full-Scale Production",
+    status:"Status: In Full-Scale Production",
     link:{ label:"Exponent Energy\u2019s Website", href:"https://exponent.energy" },
     tags:["Industrial Design","Class-A CAD + Surfacing","Prototyping","CMF","DFM","Visualization","Visual Design & Branding"],
     cover:{ src:"img/exponent-p4.webp", alt:"Exponent P4 rapid charging station" },
@@ -777,10 +782,12 @@ const PROJECTS = [
 
   /* Empty slots. Add premise / facts / chapters as each project gets written up —
      the case study renders whatever is present and skips what isn't. */
-  { slug:"zook", title:"Zook", year:"2025",
-    meta:"Self-initiated in 2025",
-    premise:"An electric hookah — the ritual and the silhouette kept, the coals and the smoke gone.",
-    status:"Concept",
+  { slug:"zook", title:"Zook", year:"2023",
+    meta:"For Analogy Design in 2023",
+    premise:"Reimagining the Electric Hookah for Effortless Enjoyment in the Modern Era",
+    status:"Concept, Working Prototype and DFM Ready",
+    dot:"blue",
+    tagsInline:true,
     tags:["Industrial Design","CAD + Surfacing","CMF","Visualization"],
     cover:{ src:"img/zook.png", alt:"Zook electric hookah", art:"120%" },
     hero:{ src:"img/zook-hero.jpg", alt:"Zook electric hookah, stem and hose detail" } },
@@ -1069,8 +1076,10 @@ function renderProject(p, i){
       <h1>${esc(p.title)}</h1>
       <p class="cs__meta">${esc(p.meta || p.year)}</p>
       ${lead ? `<p class="cs__lead">${esc(lead)}</p>` : ""}
-      ${p.status ? `<p><span class="cs__status">Status: ${esc(p.status)}</span></p>` : ""}
-      ${tags.length ? `<ul class="cs__tags">${tags.join("")}</ul>` : ""}
+      ${p.status ? `<p><span class="cs__status${
+        p.dot ? " is-" + esc(p.dot) : ""}">${esc(p.status)}</span></p>` : ""}
+      ${tags.length ? `<ul class="cs__tags${
+        p.tagsInline ? " is-inline" : ""}">${tags.join("")}</ul>` : ""}
       ${p.link ? `<p><a class="cs__link" href="${esc(p.link.href)}"
         target="_blank" rel="noopener noreferrer">${esc(p.link.label)}${arrow}</a></p>` : ""}
     </section>
