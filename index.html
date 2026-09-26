@@ -285,6 +285,16 @@ body.menu-open .nav__items a{
   width:100%; height:100%; object-fit:cover; display:block;
   transition:transform .45s var(--ease-out);
 }
+/* a shot can hold a stack of frames instead of one image: process shots
+   that cycle. They sit on top of each other and cross-fade in place. */
+.shot--seq img{
+  grid-area:1/1; opacity:0;
+  transition:opacity .35s var(--ease-out);
+}
+.shot--seq img.is-on{ opacity:1 }
+@media (prefers-reduced-motion:reduce){
+  .shot--seq img{ transition:none }
+}
 .shot--wide{ aspect-ratio:16/9 }
 .shot--sq{ aspect-ratio:1/1 }
 .shot--tall{ aspect-ratio:3/4 }
@@ -849,10 +859,36 @@ const SPOTIFY = {
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function shot(o, cls=""){
-  const inner = o.src
-    ? `<img src="${esc(o.src)}" alt="${esc(o.alt||"")}" loading="lazy">`
-    : `<span>${esc(o.label||"IMAGE")}</span>`;
-  return `<div class="shot ${o.ratio?"shot--"+o.ratio:""} ${cls}">${inner}</div>`;
+  // `frames` turns one shot into a sequence; `src` is the single-image case
+  const seq = (o.frames || []).length > 1;
+  const inner = seq
+    ? o.frames.map((f, i) =>
+        `<img src="${esc(f.src)}" alt="${esc(f.alt || o.alt || "")}"${
+          i ? ' loading="lazy"' : ""}${i ? "" : ' class="is-on"'}>`).join("")
+    : o.src || (o.frames || [])[0]
+      ? `<img src="${esc(o.src || o.frames[0].src)}" alt="${esc(o.alt||"")}" loading="lazy">`
+      : `<span>${esc(o.label||"IMAGE")}</span>`;
+  return `<div class="shot ${o.ratio?"shot--"+o.ratio:""}${
+    seq ? " shot--seq" : ""} ${cls}">${inner}</div>`;
+}
+
+/* Sequences advance a second at a time. Timers are tracked so a route
+   change doesn't leave them running against detached nodes. */
+let seqTimers = [];
+function runSequences(root){
+  seqTimers.forEach(clearInterval);
+  seqTimers = [];
+  if(reduceMotion.matches) return;      // the first frame simply stays
+  root.querySelectorAll(".shot--seq").forEach(el => {
+    const f = [...el.querySelectorAll("img")];
+    if(f.length < 2) return;
+    let i = 0;
+    seqTimers.push(setInterval(() => {
+      f[i].classList.remove("is-on");
+      i = (i + 1) % f.length;
+      f[i].classList.add("is-on");
+    }, 1000));
+  });
 }
 
 /* --- work + play grids --- */
@@ -967,6 +1003,7 @@ function renderProject(p, i){
       <span>Next project</span>
       <a href="#${esc(next.slug)}">${esc(next.title)}</a>
     </nav>`;
+  runSequences(detail);
 }
 
 /* --- reveal on scroll ---
@@ -1234,7 +1271,11 @@ function onScroll(){
 addEventListener("scroll", onScroll, { passive:true });
 navBar.addEventListener("focusin", showNav);
 
-addEventListener("hashchange", () => { showNav(); lastY = 0; route(); });
+addEventListener("hashchange", () => {
+  showNav(); lastY = 0;
+  seqTimers.forEach(clearInterval); seqTimers = [];
+  route();
+});
 route();
 initReveal(document.getElementById("index"));
 </script>
