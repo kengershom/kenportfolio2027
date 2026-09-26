@@ -55,7 +55,7 @@ html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth }
 body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family:"Inter",system-ui,-apple-system,sans-serif;
-  font-size:var(--t-m); line-height:1.5;
+  font-size:var(--t-m); line-height:1.45;
   /* Figma's letter-spacing % is a fraction of the font size, so its
      -1% is -0.01em. Every explicit value below is 1% tighter than it was. */
   letter-spacing:-0.01em;
@@ -417,7 +417,7 @@ body.is-detail #detail{
 }
 .cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:2.6em; letter-spacing:-0.01em }
 .cs__lead{
-  font-size:var(--t-s); line-height:1.75; letter-spacing:-0.01em;
+  font-size:var(--t-s); line-height:1.5; letter-spacing:-0.01em;
   /* wide enough that a sentence doesn't end on a word or two of its own;
      text-wrap:pretty evens out whatever the last line would have been */
   max-width:84ch; text-wrap:pretty;
@@ -474,7 +474,7 @@ body.is-about #about-page{ display:block }
 }
 /* the page already clears the nav — the section shouldn't add to it */
 #about-page .sec{ padding-block:0 }
-.chapter p{ max-width:84ch; text-wrap:pretty; margin:0 auto; font-size:var(--t-s); line-height:1.6; color:#3A3A37; letter-spacing:-0.01em }
+.chapter p{ max-width:84ch; text-wrap:pretty; margin:0 auto; font-size:var(--t-s); line-height:1.45; color:#3A3A37; letter-spacing:-0.01em }
 figure{ margin:0 }
 
 .next{ display:flex; justify-content:space-between; align-items:baseline; gap:20px }
