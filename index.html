@@ -878,7 +878,17 @@ const grid = (id, items) => document.getElementById(id).innerHTML = items.map(ca
 const workProjects = PROJECTS.filter(p => p.kind !== "play");
 grid("workList", workProjects);
 grid("homeWorkList", workProjects);
-grid("playList", PROJECTS.filter(p => p.kind === "play"));
+/* Play is a wall, not a sequence, so it gets dealt fresh each visit.
+   Fisher-Yates on a copy: PROJECTS keeps the order the router indexes by. */
+function shuffled(list){
+  const a = list.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+grid("playList", shuffled(PROJECTS.filter(p => p.kind === "play")));
 
 /* --- listening --- */
 function spotifyEmbed(url){
