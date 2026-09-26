@@ -98,6 +98,18 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   background:var(--card); border-radius:var(--r);
   transition:transform .4s var(--ease-out), opacity .3s var(--ease-out);
 }
+/* the first landing: held off screen through the delay, then dropped in.
+   `backwards` keeps it hidden while it waits, and the finished state is
+   the resting one, so nothing needs undoing afterwards. */
+@keyframes navDrop{
+  from{ opacity:0; transform:translateY(calc(-100% - var(--edge) - 4px)) }
+  to  { opacity:1; transform:none }
+}
+html.nav-intro .nav{ animation:navDrop .55s 2s backwards var(--ease-out) }
+@media (prefers-reduced-motion:reduce){
+  html.nav-intro .nav{ animation:none }
+}
+
 /* out of the way going down, back on the way up. The translate clears
    the bar's own height plus the gap it floats in. */
 .nav.is-tucked{
@@ -566,6 +578,12 @@ main.swapping{ opacity:0; filter:blur(3px) }
 </style>
 </head>
 <body>
+<script>
+  /* Landing on the home page, the bar holds off for a beat. Decided here,
+     before the element is parsed, so it never flashes in and then hides. */
+  if(!location.hash || location.hash === "#")
+    document.documentElement.classList.add("nav-intro");
+</script>
 
 <nav class="nav">
   <a class="nav__back" href="#" aria-label="Back">
@@ -1231,7 +1249,9 @@ function applyRoute(slug, i){
   // a case study goes back to the grid it came from; a grid goes home
   navBack.setAttribute("href",
     view === "detail" ? (PROJECTS[i].kind === "play" ? "#play" : "#work") : "#");
-  playNavMarks();       // mark redraws, screw drives home, on every screen
+  // mark redraws, screw drives home, on every screen — but on a first
+  // landing the entrance owns that, so it isn't played twice
+  if(navReady) playNavMarks();
 
   if(view === "detail"){
     renderProject(PROJECTS[i], i);
@@ -1277,8 +1297,19 @@ function route(){
 /* --- nav tucks away going down, returns going up --- */
 const navBar = document.querySelector(".nav");
 let lastY = 0;
+/* While the bar is still making its entrance it neither tucks nor plays
+   its marks: a tuck landing mid-drop would leave it off screen until the
+   next scroll up. */
+const NAV_INTRO = 2600;   // the 2s wait plus the .55s drop, then the marks
+let navReady = !document.documentElement.classList.contains("nav-intro")
+            || reduceMotion.matches;
+if(!navReady) setTimeout(() => {
+  navReady = true;
+  playNavMarks();     // mark draws and screw drives once the bar has landed
+}, NAV_INTRO);
 function showNav(){ navBar.classList.remove("is-tucked"); }
 function onScroll(){
+  if(!navReady) return;
   const y = Math.max(0, scrollY);
   /* near the top, or with the menu open, the bar always stays put */
   if(y < 120 || document.body.classList.contains("menu-open")) showNav();
