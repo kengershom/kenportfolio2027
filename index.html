@@ -410,6 +410,7 @@ body.menu-open .nav__items a{
 .mailto:active{ transform:scale(.99) }
 /* a panel like everything else, holding the whole sign-off */
 footer{
+  margin:clamp(40px,7vh,80px) var(--edge) var(--edge);
   background:var(--card); border-radius:var(--r);
   padding:var(--pad);
   display:flex; flex-direction:column;
@@ -651,23 +652,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
     </div>
   </section>
 
-  <!-- ══════════ CONTACT ══════════ -->
-  <section class="sec wrap" id="contact">
-    <footer>
-      <span class="foot__label">Say hello</span>
-      <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
-      <div class="foot__bar">
-        <span>© 2026 Ken — Bangalore, India</span>
-        <nav>
-          <a href="#">LinkedIn</a>
-          <a href="#">Instagram</a>
-          <a href="#">Behance</a>
-          <a href="#">CV</a>
-        </nav>
-      </div>
-    </footer>
-  </section>
-
 </div>
 
 <!-- ══════════ WORK / PROJECTS PAGE ══════════ -->
@@ -715,6 +699,21 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 <div id="detail" class="wrap"></div>
 </main>
+
+<!-- ══════════ CONTACT — outside the views, so it ends every page ══════════ -->
+<footer>
+  <span class="foot__label">Say hello</span>
+  <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
+  <div class="foot__bar">
+    <span>© 2026 Ken — Bangalore, India</span>
+    <nav>
+      <a href="#">LinkedIn</a>
+      <a href="#">Instagram</a>
+      <a href="#">Behance</a>
+      <a href="#">CV</a>
+    </nav>
+  </div>
+</footer>
 
 <script>
 /* ══════════════════════════════════════════════════════════════
@@ -1047,7 +1046,7 @@ function renderProject(p, i){
    Stagger stays at 55ms and caps out after six items: long cascades
    read as lag, not polish. Never blocks interaction. */
 const REVEAL_SEL = ".sec__head, .pgrid > a, .about > *,"
-                 + " .listen > *, footer, #detail > *";
+                 + " .listen > *, #detail > *";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 /* --- nav menu: click toggles it where there is no hover --- */
