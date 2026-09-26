@@ -906,20 +906,38 @@ function shot(o, cls=""){
 
 /* Sequences advance a second at a time. Timers are tracked so a route
    change doesn't leave them running against detached nodes. */
-let seqTimers = [];
+let seqTimers = [], seqWatchers = [];
+function stopSequences(){
+  seqTimers.forEach(clearInterval);   seqTimers = [];
+  seqWatchers.forEach(o => o.disconnect()); seqWatchers = [];
+}
 function runSequences(root){
-  seqTimers.forEach(clearInterval);
-  seqTimers = [];
+  stopSequences();
   if(reduceMotion.matches) return;      // the first frame simply stays
   root.querySelectorAll(".shot--seq").forEach(el => {
     const f = [...el.querySelectorAll("img")];
     if(f.length < 2) return;
-    let i = 0;
-    seqTimers.push(setInterval(() => {
-      f[i].classList.remove("is-on");
-      i = (i + 1) % f.length;
-      f[i].classList.add("is-on");
-    }, 1000));
+    let i = 0, timer = null;
+    const show = n => {
+      f.forEach(x => x.classList.remove("is-on"));
+      f[n].classList.add("is-on");
+    };
+    const play = () => {
+      clearInterval(timer);
+      timer = setInterval(() => { i = (i + 1) % f.length; show(i); }, 1000);
+      seqTimers.push(timer);
+    };
+    play();          // motion runs regardless, so nothing can strand it
+    /* Rewinding as it comes into view means whoever scrolls down meets
+       the sequence at its first frame, rather than partway through
+       because it has been cycling since the page rendered. The clock
+       restarts too, so frame one gets its full second. */
+    if(!("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(es => {
+      for(const e of es) if(e.isIntersecting){ i = 0; show(0); play(); }
+    }, { threshold:.35 });
+    io.observe(el);
+    seqWatchers.push(io);
   });
 }
 
@@ -1319,7 +1337,7 @@ navBar.addEventListener("focusin", showNav);
 
 addEventListener("hashchange", () => {
   showNav(); lastY = 0;
-  seqTimers.forEach(clearInterval); seqTimers = [];
+  stopSequences();
   route();
 });
 route();
