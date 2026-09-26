@@ -429,9 +429,9 @@ body.is-detail #detail{
 .cs__meta{ font-size:var(--t-xs); color:var(--mute); margin-bottom:2.6em; letter-spacing:-0.01em }
 .cs__lead{
   font-size:var(--t-s); line-height:1.5; letter-spacing:-0.01em;
-  /* wide enough that a sentence doesn't end on a word or two of its own;
-     text-wrap:pretty evens out whatever the last line would have been */
-  max-width:84ch; text-wrap:pretty;
+  /* balance splits the paragraph into lines of near-equal length, so the
+     centred block reads as a shape rather than a ragged triangle */
+  max-width:84ch; text-wrap:balance;
   margin:0 auto 1.5em; color:#3A3A37;
 }
 .cs__lead:last-of-type{ margin-bottom:2.6em }
@@ -485,7 +485,7 @@ body.is-about #about-page{ display:block }
 }
 /* the page already clears the nav — the section shouldn't add to it */
 #about-page .sec{ padding-block:0 }
-.chapter p{ max-width:84ch; text-wrap:pretty; margin:0 auto; font-size:var(--t-s); line-height:1.45; color:#3A3A37; letter-spacing:-0.01em }
+.chapter p{ max-width:84ch; text-wrap:balance; margin:0 auto; font-size:var(--t-s); line-height:1.45; color:#3A3A37; letter-spacing:-0.01em }
 figure{ margin:0 }
 
 .next{ display:flex; justify-content:space-between; align-items:baseline; gap:20px }
