@@ -1147,7 +1147,17 @@ let playNavMarks = () => {};
     el.classList.add(cls);
   };
   const playK = () => restart(mark, "play");
-  playNavMarks = () => { playK(); restart(screw, "drive"); };
+  /* The mark draws itself over .3s, so the screw waits that out and then
+     drives home — one after the other rather than both at once. The
+     pending turn is cleared on a replay so a quick second load can't
+     leave two of them queued. */
+  const MARK_RUN = 350;
+  let queued = null;
+  playNavMarks = () => {
+    clearTimeout(queued);
+    playK();
+    queued = setTimeout(() => restart(screw, "drive"), MARK_RUN);
+  };
 
   document.querySelector(".nav__name").addEventListener("mouseenter", playK);
 })();
