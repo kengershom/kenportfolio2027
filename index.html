@@ -339,9 +339,9 @@ body.menu-open .nav__items a{
 .pcard__frame.is-fill{ padding:0 }
 .pcard__frame.is-fill img{ object-fit:cover }
 /* the art sits at 70% inside its frame, so the covers read as objects
-   rather than filling the tile. A cover already small within its own
-   bounds opts out with full:true. */
-.pcard__frame:not(.is-fill):not(.is-full) img{ width:70%; height:70% }
+   rather than filling the tile. A cover that needs more room says so
+   with `art`, a percentage of the frame. */
+.pcard__frame:not(.is-fill) img{ width:var(--art,70%); height:var(--art,70%) }
 .pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.01em }
 
 /* name appears in the corner, and the card itself deepens a little */
@@ -782,7 +782,7 @@ const PROJECTS = [
     premise:"An electric hookah — the ritual and the silhouette kept, the coals and the smoke gone.",
     status:"Concept",
     tags:["Industrial Design","CAD + Surfacing","CMF","Visualization"],
-    cover:{ src:"img/zook.png", alt:"Zook electric hookah", full:true },
+    cover:{ src:"img/zook.png", alt:"Zook electric hookah", art:"120%" },
     hero:{ src:"img/zook-hero.jpg", alt:"Zook electric hookah, stem and hose detail" } },
   {
     slug:"verve",
@@ -808,7 +808,7 @@ const PROJECTS = [
     premise:"Rethinking a modular pack housing so it could be serviced in the field without a lift or a second person.",
     status:"In Pilot",
     tags:["Industrial Design","CAD + Surfacing","Prototyping","DFM"],
-    cover:{ src:"img/heimdall.png", alt:"Heimdal dual-lens camera", full:true },
+    cover:{ src:"img/heimdall.png", alt:"Heimdal dual-lens camera", art:"100%" },
     hero:{ src:"img/heimdall-hero.png", alt:"Heimdal dual-lens camera, three-quarter view" },
     gallery:[{ label:"WALL IMAGE — detail" },{ label:"WALL IMAGE — context" }],
     chapters:[
@@ -978,12 +978,12 @@ function card(p){
   if(p.kind === "play")
     return `<div class="pcard is-static"><div class="pcard__frame${
       c.fit === "cover" ? " is-fill" : ""}">${art}</div></div>`;
-  const frameCls = c.full ? " is-full" : "";
+  const frameStyle = c.art ? ` style="--art:${esc(c.art)}"` : "";
   const label = p.locked ? "Unreleased project" : `${p.title}, ${p.year}`;
   const tag   = p.locked ? "Under wraps" : p.title;
   return `
   <a class="pcard${p.locked ? " is-locked" : ""}" href="#${esc(p.slug)}" aria-label="${esc(label)}">
-    <div class="pcard__frame${frameCls}">${art}<span class="pcard__tag">${esc(tag)}</span></div>
+    <div class="pcard__frame"${frameStyle}>${art}<span class="pcard__tag">${esc(tag)}</span></div>
   </a>`;
 }
 const grid = (id, items) => document.getElementById(id).innerHTML = items.map(card).join("");
