@@ -365,19 +365,23 @@ body.menu-open .nav__items a{
 /* about */
 /* interests drifting in the page margins — decorative only, so they
    never take pointer events and never sit above the text */
-#about-page{ position:relative; overflow:hidden }
-/* above the content, but still click-through so they never get in the way */
-.floaters{ position:absolute; inset:0; pointer-events:none; z-index:3 }
-#about-page .sec{ position:relative; z-index:1 }
+/* the interests drift inside a panel of their own, which does the
+   clipping the page used to do */
+.drift{
+  position:relative; overflow:hidden;
+  margin-top:clamp(28px,5vh,56px);
+  height:clamp(150px,24vh,230px);
+  background:var(--card); border-radius:var(--r);
+}
 /* position and rotation come from the rAF loop, which drifts each one
    upward and wraps it round to the bottom */
 .floater{
   position:absolute; top:0; left:0;
-  width:clamp(33px,4.1vw,54px); height:auto;
-  will-change:transform;
+  width:clamp(24px,2.8vw,38px); height:auto;
+  pointer-events:none; will-change:transform;
 }
-.floater--3{ width:clamp(48px,6vw,78px) }
-.floater--4{ width:clamp(39px,4.9vw,64px) }
+.floater--3{ width:clamp(34px,4.1vw,55px) }
+.floater--4{ width:clamp(28px,3.3vw,45px) }
 
 .about{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:clamp(24px,5vw,64px); align-items:start }
 .about__photo{
@@ -390,7 +394,9 @@ body.menu-open .nav__items a{
   font-size:var(--t-xs); color:#A9A9A3; text-align:center;
   padding:10px 16px; letter-spacing:.01em; max-width:90%;
 }
-.about__lead{ font-size:var(--t-xl); font-weight:500; letter-spacing:-0.05em; line-height:1.06; margin-bottom:.7em; max-width:18ch }
+.about__copy{ color:#3A3A37 }
+.about__copy p{ margin-bottom:1em }
+.about__copy p:last-child{ margin-bottom:0 }
 .kv{ margin:clamp(28px,4vw,48px) 0 0; border-top:1px solid var(--line) }
 .kv > div{ display:flex; gap:20px; border-bottom:1px solid var(--line); padding:10px 0 11px }
 .kv dt{ flex:0 0 6.5rem; font-size:var(--t-s); color:var(--mute); letter-spacing:-0.01em }
@@ -661,13 +667,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 <!-- ══════════ ABOUT PAGE ══════════ -->
 <div id="about-page" class="wrap">
-  <!-- interests, drifting in the margins -->
-  <div class="floaters" aria-hidden="true">
-    <img class="floater floater--1" src="img/pentax.png"  alt="">
-    <img class="floater floater--2" src="img/moka.png"    alt="">
-    <img class="floater floater--3" src="img/porsche.png" alt="">
-    <img class="floater floater--4" src="img/ram.png"     alt="">
-  </div>
   <section class="sec" id="about">
     <div class="sec__head"><span>About</span></div>
     <div class="about">
@@ -675,10 +674,9 @@ main.swapping{ opacity:0; filter:blur(3px) }
         <img src="img/ken.jpg" alt="Ken Gershom" width="1331" height="2000">
       </figure>
       <div>
-        <p class="about__lead">I like problems where the constraint is physical.</p>
-        <div class="measure mute">
-          <p>Heat, tolerance, cost, the width of a hand. I studied product design at MS Ramaiah University and have been at Exponent Energy since 2023, working across EV charging and battery hardware.</p>
-          <p>Most of what I do sits in the gap between what engineering says is possible and what a person will tolerate at 6am in a parking lot. I sketch a lot, build rough physical models early, and would rather test a bad prototype on Tuesday than a good render on Friday.</p>
+        <div class="measure about__copy">
+          <p>Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</p>
+          <p>Over the years I’ve worked with the best design studios and hardware startups designing &amp; building everything from tiny components to full-on charging systems. My process is practical, playful, and always hands-on. Outside work, I retreat into my analog world — film photography, retro music on vinyl, and anything that slows life down a bit.</p>
         </div>
       <dl class="kv">
         <div><dt>Now</dt><dd>Industrial Designer, Exponent Energy</dd></div>
@@ -688,6 +686,14 @@ main.swapping{ opacity:0; filter:blur(3px) }
         <div><dt>Based</dt><dd>Bangalore, India</dd></div>
       </dl>
       </div>
+    </div>
+
+    <!-- the interests, drifting in a panel of their own -->
+    <div class="drift" aria-hidden="true">
+      <img class="floater floater--1" src="img/pentax.png"  alt="">
+      <img class="floater floater--2" src="img/moka.png"    alt="">
+      <img class="floater floater--3" src="img/porsche.png" alt="">
+      <img class="floater floater--4" src="img/ram.png"     alt="">
     </div>
   </section>
 </div>
@@ -1091,7 +1097,7 @@ let playNavMarks = () => {};
    and turns slowly. Leaving the top edge it wraps round to the bottom
    at a fresh horizontal position, so the loop never repeats exactly. */
 (function floaters(){
-  const page = document.getElementById("about-page");
+  const page = document.querySelector(".drift");
   const items = [...document.querySelectorAll(".floater")];
   if(!page || !items.length) return;
 
@@ -1116,8 +1122,8 @@ let playNavMarks = () => {};
   function seed(el){
     // suspended-in-fluid speeds: a few pixels a second, no more
     el._x   = spacedX(el);
-    el._vy  = rand(.0025, .005);                // page-heights per second
-    el._vx  = rand(-.0015, .0015);              // steady sideways drift
+    el._vy  = rand(.016, .030);                 // panel-heights per second
+    el._vx  = rand(-.0022, .0022);              // steady sideways drift
     el._amp = rand(.02, .04);                   // sway width
     el._frq = rand(.008, .018);                 // sway cycles per second
     el._pha = rand(0, Math.PI * 2);             // sway starting point
