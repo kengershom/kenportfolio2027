@@ -370,7 +370,7 @@ body.menu-open .nav__items a{
 .drift{
   position:relative; overflow:hidden;
   margin-top:clamp(28px,5vh,56px);
-  height:clamp(150px,24vh,230px);
+  flex:1; min-height:clamp(150px,22vh,210px);
   background:var(--card); border-radius:var(--r);
 }
 /* position and rotation come from the rAF loop, which drifts each one
@@ -384,6 +384,7 @@ body.menu-open .nav__items a{
 .floater--4{ width:clamp(28px,3.3vw,45px) }
 
 .about{ display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:clamp(24px,5vw,64px); align-items:start }
+.about > div{ align-self:stretch; display:flex; flex-direction:column }
 .about__photo{
   margin:0; position:relative; aspect-ratio:3/4; overflow:hidden;
   background:var(--card); border-radius:var(--r);
@@ -397,10 +398,6 @@ body.menu-open .nav__items a{
 .about__copy{ color:#3A3A37 }
 .about__copy p{ margin-bottom:1em }
 .about__copy p:last-child{ margin-bottom:0 }
-.kv{ margin:clamp(28px,4vw,48px) 0 0; border-top:1px solid var(--line) }
-.kv > div{ display:flex; gap:20px; border-bottom:1px solid var(--line); padding:10px 0 11px }
-.kv dt{ flex:0 0 6.5rem; font-size:var(--t-s); color:var(--mute); letter-spacing:-0.01em }
-.kv dd{ margin:0; font-size:var(--t-s); letter-spacing:-0.01em }
 
 /* contact + footer */
 .mailto{
@@ -668,7 +665,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
 <!-- ══════════ ABOUT PAGE ══════════ -->
 <div id="about-page" class="wrap">
   <section class="sec" id="about">
-    <div class="sec__head"><span>About</span></div>
     <div class="about">
       <figure class="about__photo">
         <img src="img/ken.jpg" alt="Ken Gershom" width="1331" height="2000">
@@ -678,22 +674,14 @@ main.swapping{ opacity:0; filter:blur(3px) }
           <p>Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</p>
           <p>Over the years I’ve worked with the best design studios and hardware startups designing &amp; building everything from tiny components to full-on charging systems. My process is practical, playful, and always hands-on. Outside work, I retreat into my analog world — film photography, retro music on vinyl, and anything that slows life down a bit.</p>
         </div>
-      <dl class="kv">
-        <div><dt>Now</dt><dd>Industrial Designer, Exponent Energy</dd></div>
-        <div><dt>Education</dt><dd>B.Des Product Design, MS Ramaiah University</dd></div>
-        <div><dt>Tools</dt><dd>SolidWorks, Rhino, Fusion 360, KeyShot, Figma</dd></div>
-        <div><dt>Making</dt><dd>FDM/SLA, foam, sheet metal, vacuum forming</dd></div>
-        <div><dt>Based</dt><dd>Bangalore, India</dd></div>
-      </dl>
+        <!-- the interests, drifting in a panel of their own -->
+        <div class="drift" aria-hidden="true">
+          <img class="floater floater--1" src="img/pentax.png"  alt="">
+          <img class="floater floater--2" src="img/moka.png"    alt="">
+          <img class="floater floater--3" src="img/porsche.png" alt="">
+          <img class="floater floater--4" src="img/ram.png"     alt="">
+        </div>
       </div>
-    </div>
-
-    <!-- the interests, drifting in a panel of their own -->
-    <div class="drift" aria-hidden="true">
-      <img class="floater floater--1" src="img/pentax.png"  alt="">
-      <img class="floater floater--2" src="img/moka.png"    alt="">
-      <img class="floater floater--3" src="img/porsche.png" alt="">
-      <img class="floater floater--4" src="img/ram.png"     alt="">
     </div>
   </section>
 </div>
