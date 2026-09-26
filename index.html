@@ -105,7 +105,7 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
   from{ opacity:0; transform:translateY(calc(-100% - var(--edge) - 4px)) }
   to  { opacity:1; transform:none }
 }
-html.nav-intro .nav{ animation:navDrop .55s 2s backwards var(--ease-out) }
+html.nav-intro .nav{ animation:navDrop .28s 1s backwards var(--ease-out) }
 @media (prefers-reduced-motion:reduce){
   html.nav-intro .nav{ animation:none }
 }
@@ -1300,7 +1300,7 @@ let lastY = 0;
 /* While the bar is still making its entrance it neither tucks nor plays
    its marks: a tuck landing mid-drop would leave it off screen until the
    next scroll up. */
-const NAV_INTRO = 2600;   // the 2s wait plus the .55s drop, then the marks
+const NAV_INTRO = 1300;   // the 1s wait plus the .28s drop, then the marks
 let navReady = !document.documentElement.classList.contains("nav-intro")
             || reduceMotion.matches;
 if(!navReady) setTimeout(() => {
