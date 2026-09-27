@@ -96,11 +96,14 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
      they are to the top and bottom */
   padding:var(--nav-pad);
   background:var(--card); border-radius:var(--r);
-  /* just enough to lift it off a white image scrolling past underneath:
-     a tight contact edge, and a soft one to give it somewhere to sit */
-  box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 20px -8px rgba(0,0,0,.10);
   transition:transform .4s var(--ease-out), opacity .3s var(--ease-out);
 }
+/* At rest the bar sits on the page background and needs no help. The
+   moment anything scrolls under it, it takes an edge: a tight contact
+   shadow and a soft one to give it somewhere to sit. No transition —
+   it should be there as soon as there is something to sit above. */
+.nav.is-lifted{ box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 20px -8px rgba(0,0,0,.10) }
+
 /* the first landing: held off screen through the delay, then dropped in.
    `backwards` keeps it hidden while it waits, and the finished state is
    the resting one, so nothing needs undoing afterwards. */
@@ -1383,8 +1386,12 @@ if(!navReady) setTimeout(() => {
   navReady = true;
   playNavMarks();     // mark draws and screw drives once the bar has landed
 }, NAV_INTRO);
+
 function showNav(){ navBar.classList.remove("is-tucked"); }
+/* off the top by any amount means something is passing underneath */
+const liftNav = () => navBar.classList.toggle("is-lifted", scrollY > 0);
 function onScroll(){
+  liftNav();
   if(!navReady) return;
   const y = Math.max(0, scrollY);
   /* near the top, or with the menu open, the bar always stays put */
@@ -1401,6 +1408,7 @@ addEventListener("hashchange", () => {
   showNav(); lastY = 0;
   stopSequences();
   route();
+  requestAnimationFrame(liftNav);   // the route may have scrolled us to the top
 });
 route();
 initReveal(document.getElementById("index"));
