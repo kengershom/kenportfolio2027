@@ -926,6 +926,7 @@ function shot(o, cls=""){
 
 /* Sequences advance a second at a time. Timers are tracked so a route
    change doesn't leave them running against detached nodes. */
+const FRAME_MS = 2500;   // how long each frame of a sequence holds
 let seqTimers = [], seqWatchers = [], seqDisposers = [];
 function stopSequences(){
   seqTimers.forEach(clearInterval);   seqTimers = [];
@@ -945,7 +946,7 @@ function runSequences(root){
     };
     const play = () => {
       clearInterval(timer);
-      timer = setInterval(() => { i = (i + 1) % f.length; show(i); }, 1000);
+      timer = setInterval(() => { i = (i + 1) % f.length; show(i); }, FRAME_MS);
       seqTimers.push(timer);
     };
     /* The frames hold their URL in data-src and fetch nothing until the
