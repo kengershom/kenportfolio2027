@@ -926,7 +926,7 @@ function shot(o, cls=""){
 
 /* Sequences advance a second at a time. Timers are tracked so a route
    change doesn't leave them running against detached nodes. */
-const FRAME_MS = 2500;   // how long each frame of a sequence holds
+const FRAME_MS = 2000;   // how long each frame of a sequence holds
 let seqTimers = [], seqWatchers = [], seqDisposers = [];
 function stopSequences(){
   seqTimers.forEach(clearInterval);   seqTimers = [];
