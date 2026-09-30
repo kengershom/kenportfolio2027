@@ -73,7 +73,7 @@ body{
     transition-duration:.15s !important;
     transition-delay:0ms !important;
   }
-  .hero h1 .ln i,.hero__links,.hero .status{ transform:none !important; opacity:1 !important }
+  .hero__links,.hero .status{ transform:none !important; opacity:1 !important }
   .reveal{ opacity:1 !important; transform:none !important }
 }
 
@@ -260,13 +260,6 @@ body.menu-open .nav__items a{
   align-items:center; justify-content:center; text-align:center;
   padding:var(--pad);
 }
-.hero h1{
-  font-size:clamp(1.5rem,4.2vw,3rem); font-weight:500;
-  letter-spacing:-0.045em; line-height:1.1; color:var(--mute);
-  margin-bottom:clamp(26px,5vh,48px);
-}
-.hero h1 .ln{ display:block; overflow:hidden }
-.hero h1 .ln i{ display:block; font-style:normal }
 /* reachable by screen readers, out of the way of everyone else */
 .vh{
   position:absolute; width:1px; height:1px; overflow:hidden;
@@ -318,11 +311,6 @@ body.menu-open .nav__items a{
 }
 @keyframes pulse{ 0%{box-shadow:0 0 0 0 var(--dot-glow, rgba(31,157,85,.45))} 70%,100%{box-shadow:0 0 0 9px transparent} }
 
-@keyframes riseIn{ from{ transform:translateY(105%) } to{ transform:translateY(0) } }
-.hero h1 .ln i{ animation:riseIn .78s cubic-bezier(.16,.9,.26,1) both }
-.hero h1 .ln:nth-child(1) i{ animation-delay:.05s }
-.hero h1 .ln:nth-child(2) i{ animation-delay:.13s }
-.hero h1 .ln:nth-child(3) i{ animation-delay:.21s }
 @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
 .hero__links,.hero .status{ animation:fadeIn .7s .45s both }
 
@@ -623,7 +611,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
 @media (max-width:780px){
   .pgrid{ grid-template-columns:repeat(2,1fr) }
   .about,.listen{ grid-template-columns:1fr }
-  .hero h1{ max-width:none }
 }
 @media (max-width:520px){
   .pgrid{ grid-template-columns:1fr }
@@ -674,10 +661,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
   <!-- ══════════ HERO ══════════ -->
   <header class="hero">
-    <h1>
-      <span class="ln"><i>Industrial Designer from</i></span>
-      <span class="ln"><i>Bangalore, India.</i></span>
-    </h1>
+    <h1 class="vh">Ken Gershom — Industrial Designer, Bangalore</h1>
     <p class="hero__intro">
       <!-- the full line, held invisible, so the box never resizes as it types -->
       <span class="hero__ghost" aria-hidden="true">Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
