@@ -652,7 +652,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
       <span class="ln"><i>Bangalore, India.</i></span>
     </h1>
     <div class="hero__links">
-      <a href="tel:+910000000000" aria-label="Call"><span aria-hidden="true">📞</span></a>
+      <a href="tel:+917022236140" aria-label="Call"><span aria-hidden="true">📞</span></a>
       <a href="https://www.linkedin.com/in/REPLACE-ME" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><span aria-hidden="true">💼</span></a>
       <a href="mailto:hello@example.com" aria-label="Email"><span aria-hidden="true">📧</span></a>
       <a href="https://www.instagram.com/kenxdesign/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><span aria-hidden="true">📸</span></a>
@@ -1164,7 +1164,20 @@ let playNavMarks = () => {};
     void el.getBoundingClientRect().width;
     el.classList.add(cls);
   };
-  const playK = () => restart(mark, "play");
+  /* The mark redraws itself every 10–15 seconds on its own. Any other
+     reason to play it — a hover, a change of page — resets that clock, so
+     it never fires straight after one you just watched. Nothing runs
+     while the tab is in the background. */
+  let idleTimer = null;
+  function playK(){ restart(mark, "play"); scheduleIdle(); }
+  function scheduleIdle(){
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      if(document.hidden) scheduleIdle();   // wait for them to come back
+      else playK();
+    }, 10000 + Math.random() * 5000);
+  }
+  scheduleIdle();
   /* The mark draws itself over .3s, so the screw waits that out and then
      drives home — one after the other rather than both at once. The
      pending turn is cleared on a replay so a quick second load can't
