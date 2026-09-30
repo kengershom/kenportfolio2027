@@ -266,8 +266,9 @@ body.menu-open .nav__items a{
   clip-path:inset(50%); white-space:nowrap;
 }
 .hero__intro{
-  position:relative; max-width:58ch; margin:0 auto clamp(26px,5vh,44px);
-  font-size:var(--t-s); line-height:1.75; color:#3A3A37; letter-spacing:-0.01em;
+  position:relative; max-width:44ch; margin:0 auto clamp(26px,5vh,44px);
+  font-size:clamp(1.05rem,2.1vw,1.3125rem); line-height:1.6;
+  color:#3A3A37; letter-spacing:-0.01em;
 }
 /* the ghost reserves the space; the typed copy sits on top of it */
 .hero__ghost{ visibility:hidden }
@@ -664,9 +665,9 @@ main.swapping{ opacity:0; filter:blur(3px) }
     <h1 class="vh">Ken Gershom — Industrial Designer, Bangalore</h1>
     <p class="hero__intro">
       <!-- the full line, held invisible, so the box never resizes as it types -->
-      <span class="hero__ghost" aria-hidden="true">Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
+      <span class="hero__ghost" aria-hidden="true">Hi! 👋 I’m Ken, an Industrial designer from Bangalore currently working at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
       <span class="hero__typed" aria-hidden="true"></span>
-      <span class="vh">Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
+      <span class="vh">Hi! 👋 I’m Ken, an Industrial designer from Bangalore currently working at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
     </p>
     <div class="hero__links">
       <a href="tel:+917022236140" aria-label="Call"><span aria-hidden="true">📞</span></a>
@@ -1223,15 +1224,25 @@ let playNavMarks = () => {};
     el.classList.add("is-done");
     return;
   }
+  /* A hand doesn't type on a metronome. Letters inside a word come out
+     in a quick burst, the space before the next word costs a beat,
+     punctuation costs more, and every so often there is a catch where
+     the typist thinks. Everything is jittered so no two runs match. */
+  const rand = (a, b) => a + Math.random() * (b - a);
+  function pauseAfter(c){
+    if(c === "." || c === "!" || c === "?") return rand(240, 400);
+    if(c === "," || c === ";" || c === ":") return rand(110, 200);
+    if(c === " ")                           return rand(28, 70);
+    if(Math.random() < 0.035)               return rand(110, 230);   // a catch
+    return rand(10, 34);
+  }
   let i = 0;
   const tick = () => {
     el.textContent = chars.slice(0, ++i).join("");
     if(i >= chars.length){ el.classList.add("is-done"); return; }
-    /* a shade slower after a full stop, the way a sentence lands */
-    const c = chars[i - 1];
-    setTimeout(tick, c === "." ? 260 : c === "," ? 120 : 18);
+    setTimeout(tick, pauseAfter(chars[i - 1]));
   };
-  setTimeout(tick, 700);               // after the hero has faded up
+  setTimeout(tick, rand(600, 900));    // after the hero has faded up
 })();
 
 /* --- floating interests ---
