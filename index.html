@@ -1235,10 +1235,10 @@ let playNavMarks = () => {};
   const keys = [...document.querySelectorAll(".hero__links a")];
   const note = document.querySelector(".hero .status");
   function bringIn(){
-    keys.forEach((k, n) => setTimeout(() => k.classList.add("is-in"), 260 + n * 110));
-    const noteAt = 260 + keys.length * 110 + 120;
+    keys.forEach((k, n) => setTimeout(() => k.classList.add("is-in"), 110 + n * 65));
+    const noteAt = 110 + keys.length * 65 + 70;
     if(note) setTimeout(() => note.classList.add("is-in"), noteAt);
-    setTimeout(revealNav, noteAt + 260);   // the bar comes down last
+    setTimeout(revealNav, noteAt + 130);   // the bar comes down last
   }
   if(reduceMotion.matches){            // no performance, just the words
     el.textContent = full.textContent;
@@ -1254,11 +1254,11 @@ let playNavMarks = () => {};
      the typist thinks. Everything is jittered so no two runs match. */
   const rand = (a, b) => a + Math.random() * (b - a);
   function pauseAfter(c){
-    if(c === "." || c === "!" || c === "?") return rand(240, 400);
-    if(c === "," || c === ";" || c === ":") return rand(110, 200);
-    if(c === " ")                           return rand(28, 70);
-    if(Math.random() < 0.035)               return rand(110, 230);   // a catch
-    return rand(10, 34);
+    if(c === "." || c === "!" || c === "?") return rand(130, 220);
+    if(c === "," || c === ";" || c === ":") return rand(60, 110);
+    if(c === " ")                           return rand(14, 34);
+    if(Math.random() < 0.03)                return rand(60, 130);    // a catch
+    return rand(4, 13);
   }
   let i = 0;
   const tick = () => {
@@ -1266,7 +1266,7 @@ let playNavMarks = () => {};
     if(i >= chars.length){ el.classList.add("is-done"); bringIn(); return; }
     setTimeout(tick, pauseAfter(chars[i - 1]));
   };
-  setTimeout(tick, rand(600, 900));    // after the hero has faded up
+  setTimeout(tick, rand(280, 420));    // after the hero has faded up
 })();
 
 /* --- floating interests ---
@@ -1493,10 +1493,10 @@ function revealNav(){
   setTimeout(() => {          // once it has finished coming down
     navReady = true;
     playNavMarks();
-  }, 420);
+  }, 300);
 }
 /* a backstop: if the landing never gets there, the bar still arrives */
-if(!navReady) setTimeout(revealNav, 14000);
+if(!navReady) setTimeout(revealNav, 8000);
 
 function showNav(){ navBar.classList.remove("is-tucked"); }
 /* off the top by any amount means something is passing underneath */
