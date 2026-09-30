@@ -73,7 +73,7 @@ body{
     transition-duration:.15s !important;
     transition-delay:0ms !important;
   }
-  .hero h1 .ln i,.hero__foot{ transform:none !important; opacity:1 !important }
+  .hero h1 .ln i,.hero__links,.hero .status{ transform:none !important; opacity:1 !important }
   .reveal{ opacity:1 !important; transform:none !important }
 }
 
@@ -253,26 +253,37 @@ body.menu-open .nav__items a{
 
 /* ─────────── HERO ─────────── */
 .hero{
-  /* clears the floating nav pill: its inset, its height, then a gap */
+  /* no panel of its own — it sits straight on the page background */
   margin:calc(var(--edge) * 2 + var(--nav-h)) var(--edge) var(--edge);
   min-height:calc(100svh - var(--edge) * 3 - var(--nav-h));
-  display:flex; flex-direction:column; justify-content:flex-end;
-  background:var(--card); border-radius:var(--r);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
   padding:var(--pad);
 }
 .hero h1{
-  font-size:var(--t-hero); font-weight:500;
-  letter-spacing:-0.06em; line-height:.94; max-width:16ch;
-  margin-bottom:clamp(24px,4vh,44px);
+  font-size:clamp(1.5rem,4.2vw,3rem); font-weight:500;
+  letter-spacing:-0.045em; line-height:1.1; color:var(--mute);
+  margin-bottom:clamp(26px,5vh,48px);
 }
 .hero h1 .ln{ display:block; overflow:hidden }
 .hero h1 .ln i{ display:block; font-style:normal }
-.hero__foot{
-  display:flex; flex-wrap:wrap; gap:clamp(18px,5vw,64px);
-  align-items:flex-end; justify-content:space-between;
-  border-top:1px solid var(--line); padding-top:18px;
+/* a row of ways to reach him, each its own little raised key */
+.hero__links{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
+.hero__links a{
+  display:grid; place-items:center;
+  width:58px; height:42px; border-radius:16px;
+  background:var(--card); font-size:21px; line-height:1;
+  box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 18px -10px rgba(0,0,0,.22);
+  transition:transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
 }
-.hero__sub{ font-size:var(--t-l); max-width:30ch; letter-spacing:-0.025em; line-height:1.3 }
+@media (hover:hover) and (pointer:fine){
+  .hero__links a:hover{
+    transform:translateY(-3px);
+    box-shadow:0 1px 2px rgba(0,0,0,.06), 0 14px 26px -12px rgba(0,0,0,.28);
+  }
+}
+.hero__links a:active{ transform:translateY(-1px) }
+.hero .status{ margin-top:clamp(22px,4vh,38px) }
 .status{ display:inline-flex; align-items:center; gap:8px; font-size:var(--t-s); color:var(--mute); white-space:nowrap; letter-spacing:-0.01em }
 .status::before{
   content:""; width:7px; height:7px; border-radius:50%; background:var(--live);
@@ -286,7 +297,7 @@ body.menu-open .nav__items a{
 .hero h1 .ln:nth-child(2) i{ animation-delay:.13s }
 .hero h1 .ln:nth-child(3) i{ animation-delay:.21s }
 @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
-.hero__foot{ animation:fadeIn .7s .45s both }
+.hero__links,.hero .status{ animation:fadeIn .7s .45s both }
 
 
 /* ─────────── IMAGE PLATES ─────────── */
@@ -637,14 +648,16 @@ main.swapping{ opacity:0; filter:blur(3px) }
   <!-- ══════════ HERO ══════════ -->
   <header class="hero">
     <h1>
-      <span class="ln"><i>Industrial design</i></span>
-      <span class="ln"><i>for the hardware</i></span>
-      <span class="ln"><i>that moves energy.</i></span>
+      <span class="ln"><i>Industrial Designer from</i></span>
+      <span class="ln"><i>Bangalore, India.</i></span>
     </h1>
-    <div class="hero__foot">
-      <p class="hero__sub">Battery packs, fast chargers, and the parts people actually put their hands on. Bangalore.</p>
-      <span class="status">Open to 2027 roles</span>
+    <div class="hero__links">
+      <a href="tel:+910000000000" aria-label="Call"><span aria-hidden="true">📞</span></a>
+      <a href="https://www.linkedin.com/in/REPLACE-ME" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><span aria-hidden="true">💼</span></a>
+      <a href="mailto:hello@example.com" aria-label="Email"><span aria-hidden="true">📧</span></a>
+      <a href="https://www.instagram.com/kenxdesign/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><span aria-hidden="true">📸</span></a>
     </div>
+    <span class="status">Open to 2027 roles</span>
   </header>
 
   <!-- ══════════ WORK ══════════ -->
