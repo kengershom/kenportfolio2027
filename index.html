@@ -107,13 +107,14 @@ p{ margin:0 0 1em } p:last-child{ margin-bottom:0 }
 /* the first landing: held off screen through the delay, then dropped in.
    `backwards` keeps it hidden while it waits, and the finished state is
    the resting one, so nothing needs undoing afterwards. */
-@keyframes navDrop{
-  from{ opacity:0; transform:translateY(calc(-100% - var(--edge) - 4px)) }
-  to  { opacity:1; transform:none }
+/* Held above the top edge until the landing has finished introducing
+   itself. Dropping the class lets the bar's own transition carry it in,
+   so there is no keyframe to keep in step with the copy below. */
+html.nav-intro .nav{
+  opacity:0; transform:translateY(calc(-100% - var(--edge) - 4px));
 }
-html.nav-intro .nav{ animation:navDrop .28s 1s backwards var(--ease-out) }
 @media (prefers-reduced-motion:reduce){
-  html.nav-intro .nav{ animation:none }
+  html.nav-intro .nav{ opacity:1; transform:none }
 }
 
 /* out of the way going down, back on the way up. The translate clears
@@ -1235,13 +1236,16 @@ let playNavMarks = () => {};
   const note = document.querySelector(".hero .status");
   function bringIn(){
     keys.forEach((k, n) => setTimeout(() => k.classList.add("is-in"), 260 + n * 110));
-    if(note) setTimeout(() => note.classList.add("is-in"), 260 + keys.length * 110 + 120);
+    const noteAt = 260 + keys.length * 110 + 120;
+    if(note) setTimeout(() => note.classList.add("is-in"), noteAt);
+    setTimeout(revealNav, noteAt + 260);   // the bar comes down last
   }
   if(reduceMotion.matches){            // no performance, just the words
     el.textContent = full.textContent;
     el.classList.add("is-done");
     keys.forEach(k => k.classList.add("is-in"));
     if(note) note.classList.add("is-in");
+    revealNav();
     return;
   }
   /* A hand doesn't type on a metronome. Letters inside a word come out
@@ -1478,13 +1482,21 @@ let lastY = 0;
 /* While the bar is still making its entrance it neither tucks nor plays
    its marks: a tuck landing mid-drop would leave it off screen until the
    next scroll up. */
-const NAV_INTRO = 1300;   // the 1s wait plus the .28s drop, then the marks
 let navReady = !document.documentElement.classList.contains("nav-intro")
             || reduceMotion.matches;
-if(!navReady) setTimeout(() => {
-  navReady = true;
-  playNavMarks();     // mark draws and screw drives once the bar has landed
-}, NAV_INTRO);
+/* The landing calls this when it has had its say. Anything else on the
+   site never holds the bar back, so it only ever fires on a first
+   visit to the home page. */
+function revealNav(){
+  if(navReady) return;
+  document.documentElement.classList.remove("nav-intro");
+  setTimeout(() => {          // once it has finished coming down
+    navReady = true;
+    playNavMarks();
+  }, 420);
+}
+/* a backstop: if the landing never gets there, the bar still arrives */
+if(!navReady) setTimeout(revealNav, 14000);
 
 function showNav(){ navBar.classList.remove("is-tucked"); }
 /* off the top by any amount means something is passing underneath */
