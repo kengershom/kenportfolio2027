@@ -267,6 +267,29 @@ body.menu-open .nav__items a{
 }
 .hero h1 .ln{ display:block; overflow:hidden }
 .hero h1 .ln i{ display:block; font-style:normal }
+/* reachable by screen readers, out of the way of everyone else */
+.vh{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap;
+}
+.hero__intro{
+  position:relative; max-width:58ch; margin:0 auto clamp(26px,5vh,44px);
+  font-size:var(--t-s); line-height:1.75; color:#3A3A37; letter-spacing:-0.01em;
+}
+/* the ghost reserves the space; the typed copy sits on top of it */
+.hero__ghost{ visibility:hidden }
+.hero__typed{ position:absolute; inset:0 }
+.hero__typed::after{
+  content:""; display:inline-block; width:1px; height:1em;
+  margin-left:2px; vertical-align:-.15em;
+  background:currentColor; animation:caret 1.05s steps(1) infinite;
+}
+.hero__typed.is-done::after{ display:none }
+@keyframes caret{ 0%,50%{ opacity:1 } 50.01%,100%{ opacity:0 } }
+@media (prefers-reduced-motion:reduce){
+  .hero__typed::after{ animation:none; display:none }
+}
+
 /* a row of ways to reach him, each its own little raised key */
 .hero__links{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
 .hero__links a{
@@ -655,6 +678,12 @@ main.swapping{ opacity:0; filter:blur(3px) }
       <span class="ln"><i>Industrial Designer from</i></span>
       <span class="ln"><i>Bangalore, India.</i></span>
     </h1>
+    <p class="hero__intro">
+      <!-- the full line, held invisible, so the box never resizes as it types -->
+      <span class="hero__ghost" aria-hidden="true">Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
+      <span class="hero__typed" aria-hidden="true"></span>
+      <span class="vh">Hi! 👋 I’m Ken, an Industrial designer from Bangalore who’s been sketching since before I could even spell. I currently work at Exponent Energy, a deep-tech hardware startup as an Industrial Designer helping build and scale one of the world’s fastest charging solutions for EVs.</span>
+    </p>
     <div class="hero__links">
       <a href="tel:+917022236140" aria-label="Call"><span aria-hidden="true">📞</span></a>
       <a href="mailto:kennethgershom@gmail.com" aria-label="Email"><span aria-hidden="true">📮</span></a>
@@ -1194,6 +1223,31 @@ let playNavMarks = () => {};
   };
 
   document.querySelector(".nav__name").addEventListener("mouseenter", playK);
+})();
+
+/* --- the intro types itself out ---
+   Stepping through code points rather than string indices, so the wave
+   emoji is written as one character instead of being split down the
+   middle of its surrogate pair. */
+(function typeIntro(){
+  const el = document.querySelector(".hero__typed");
+  const full = document.querySelector(".hero__ghost");
+  if(!el || !full) return;
+  const chars = Array.from(full.textContent);
+  if(reduceMotion.matches){            // no performance, just the words
+    el.textContent = full.textContent;
+    el.classList.add("is-done");
+    return;
+  }
+  let i = 0;
+  const tick = () => {
+    el.textContent = chars.slice(0, ++i).join("");
+    if(i >= chars.length){ el.classList.add("is-done"); return; }
+    /* a shade slower after a full stop, the way a sentence lands */
+    const c = chars[i - 1];
+    setTimeout(tick, c === "." ? 260 : c === "," ? 120 : 18);
+  };
+  setTimeout(tick, 700);               // after the hero has faded up
 })();
 
 /* --- floating interests ---
