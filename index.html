@@ -73,7 +73,7 @@ body{
     transition-duration:.15s !important;
     transition-delay:0ms !important;
   }
-  .hero__links,.hero .status{ transform:none !important; opacity:1 !important }
+  .hero__links a,.hero .status{ transform:none !important; opacity:1 !important }
   .reveal{ opacity:1 !important; transform:none !important }
 }
 
@@ -268,7 +268,7 @@ body.menu-open .nav__items a{
 .hero__intro{
   position:relative; max-width:44ch; margin:0 auto clamp(26px,5vh,44px);
   font-size:clamp(1.05rem,2.1vw,1.3125rem); line-height:1.6;
-  color:#3A3A37; letter-spacing:-0.01em;
+  color:#3A3A37; letter-spacing:-0.025em;
 }
 /* the ghost reserves the space; the typed copy sits on top of it */
 .hero__ghost{ visibility:hidden }
@@ -291,8 +291,14 @@ body.menu-open .nav__items a{
   width:58px; height:42px; border-radius:999px;
   background:var(--card); font-size:21px; line-height:1;
   box-shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 18px -10px rgba(0,0,0,.22);
-  transition:transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
+  opacity:0; transform:translateY(9px);
+  transition:opacity .4s var(--ease-out), transform .3s var(--ease-out),
+             box-shadow .25s var(--ease-out);
 }
+/* JS adds this one at a time once the line has finished typing, rather
+   than a CSS transition-delay, which would still be sitting on the
+   element afterwards and hold up the hover */
+.hero__links a.is-in{ opacity:1; transform:none }
 @media (hover:hover) and (pointer:fine){
   .hero__links a:hover{
     transform:translateY(-3px);
@@ -313,7 +319,11 @@ body.menu-open .nav__items a{
 @keyframes pulse{ 0%{box-shadow:0 0 0 0 var(--dot-glow, rgba(31,157,85,.45))} 70%,100%{box-shadow:0 0 0 9px transparent} }
 
 @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
-.hero__links,.hero .status{ animation:fadeIn .7s .45s both }
+.hero .status{
+  opacity:0; transform:translateY(9px);
+  transition:opacity .4s var(--ease-out), transform .3s var(--ease-out);
+}
+.hero .status.is-in{ opacity:1; transform:none }
 
 
 /* ─────────── IMAGE PLATES ─────────── */
@@ -1219,9 +1229,19 @@ let playNavMarks = () => {};
   const full = document.querySelector(".hero__ghost");
   if(!el || !full) return;
   const chars = Array.from(full.textContent);
+  /* Once the line lands, the keys arrive one at a time and the
+     availability note last, so the eye is led down the page. */
+  const keys = [...document.querySelectorAll(".hero__links a")];
+  const note = document.querySelector(".hero .status");
+  function bringIn(){
+    keys.forEach((k, n) => setTimeout(() => k.classList.add("is-in"), 260 + n * 110));
+    if(note) setTimeout(() => note.classList.add("is-in"), 260 + keys.length * 110 + 120);
+  }
   if(reduceMotion.matches){            // no performance, just the words
     el.textContent = full.textContent;
     el.classList.add("is-done");
+    keys.forEach(k => k.classList.add("is-in"));
+    if(note) note.classList.add("is-in");
     return;
   }
   /* A hand doesn't type on a metronome. Letters inside a word come out
@@ -1239,7 +1259,7 @@ let playNavMarks = () => {};
   let i = 0;
   const tick = () => {
     el.textContent = chars.slice(0, ++i).join("");
-    if(i >= chars.length){ el.classList.add("is-done"); return; }
+    if(i >= chars.length){ el.classList.add("is-done"); bringIn(); return; }
     setTimeout(tick, pauseAfter(chars[i - 1]));
   };
   setTimeout(tick, rand(600, 900));    // after the hero has faded up
