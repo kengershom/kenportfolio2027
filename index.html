@@ -375,14 +375,10 @@ body.menu-open .nav__items a{
   display:grid; place-items:center; padding:14%;
 }
 .pcard__frame img{ width:100%; height:100%; object-fit:contain; display:block }
-/* line art on a transparent background needs the padding; a photo or a
-   render brings its own background and fills the square instead */
-.pcard__frame.is-fill{ padding:0 }
-.pcard__frame.is-fill img{ object-fit:cover }
 /* the art sits at 70% inside its frame, so the covers read as objects
    rather than filling the tile. A cover that needs more room says so
    with `art`, a percentage of the frame. */
-.pcard__frame:not(.is-fill) img{ width:var(--art,70%); height:var(--art,70%) }
+.pcard__frame img{ width:var(--art,70%); height:var(--art,70%) }
 .pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.01em }
 
 /* name appears in the corner, and the card itself deepens a little */
@@ -397,12 +393,19 @@ body.menu-open .nav__items a{
   letter-spacing:-0.01em
 }
 @media (hover:hover) and (pointer:fine){
-  .pcard:not(.is-static):hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
-  .pcard:not(.is-static):hover .pcard__tag{ opacity:1; transform:none }
+  .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
+  .pcard:hover .pcard__tag{ opacity:1; transform:none }
 }
-/* Play is a wall of images — nothing to click, nothing to name */
-.pcard.is-static{ cursor:default }
-.pcard.is-static .pcard__frame{ transition:none }
+/* Laid out in columns rather than a grid, so a tall picture can run
+   past a short one and the gaps stay even in both directions. */
+#playList{ display:block; columns:3; column-gap:clamp(10px,1.4vw,18px) }
+.ptile{
+  break-inside:avoid; margin:0 0 clamp(10px,1.4vw,18px);
+  border-radius:var(--r); overflow:hidden; background:var(--card);
+}
+.ptile img{ display:block; width:100%; height:auto }
+@media (max-width:780px){ #playList{ columns:2 } }
+@media (max-width:520px){ #playList{ columns:1 } }
 /* unreleased work: blurred past recognition, scaled up so no edge shows */
 .pcard.is-locked .pcard__frame img,.pcard.is-locked .pcard__ph{ filter:blur(22px); transform:scale(1.14) }
 
@@ -905,27 +908,33 @@ const PROJECTS = [
   /* kind:"play" moves an entry off the Work grid and onto Play —
      side projects, experiments, things made for their own sake. */
   { kind:"play", slug:"lfa", title:"LFA", year:"2024",
-    cover:{ src:"img/play-lfa.jpg", alt:"Lexus LFA seen from behind, blue pencil sketch", fit:"cover" } },
+    cover:{ src:"img/play-lfa.jpg", alt:"Lexus LFA seen from behind, blue pencil sketch", w:800, h:509 } },
   { kind:"play", slug:"braun-shaver", title:"Braun Shaver", year:"2024",
-    cover:{ src:"img/play-braun-shaver.jpg", alt:"Braun foil shaver, pencil rendering", fit:"cover" } },
+    cover:{ src:"img/play-braun-shaver.jpg", alt:"Braun foil shaver, pencil rendering", w:800, h:800 } },
   { kind:"play", slug:"planter", title:"Planter", year:"2023",
-    cover:{ src:"img/play-planter.jpg", alt:"Concrete planter on a welded wire frame, render", fit:"cover" } },
+    cover:{ src:"img/play-planter.jpg", alt:"Concrete planter on a welded wire frame, render", w:800, h:800 } },
   { kind:"play", slug:"toasters", title:"Toasters", year:"2023",
-    cover:{ src:"img/play-toasters.jpg", alt:"A page of toaster forms in blue pencil", fit:"cover" } },
+    cover:{ src:"img/play-toasters.jpg", alt:"A page of toaster forms in blue pencil", w:800, h:800 } },
   { kind:"play", slug:"ferrari", title:"Ferrari", year:"2024",
-    cover:{ src:"img/play-ferrari.jpg", alt:"Ferrari shooting brake, digital rendering", fit:"cover" } },
+    cover:{ src:"img/play-ferrari.jpg", alt:"Ferrari shooting brake, digital rendering", w:800, h:788 } },
   { kind:"play", slug:"succulent", title:"Succulent", year:"2023",
-    cover:{ src:"img/play-succulent.jpg", alt:"Potted succulent painted on toned paper", fit:"cover" } },
+    cover:{ src:"img/play-succulent.jpg", alt:"Potted succulent painted on toned paper", w:800, h:800 } },
   { kind:"play", slug:"console", title:"Console", year:"2025",
-    cover:{ src:"img/play-console.jpg", alt:"Perforated grey console with an orange cable, render", fit:"cover" } },
+    cover:{ src:"img/play-console.jpg", alt:"Perforated grey console with an orange cable, render", w:800, h:800 } },
   { kind:"play", slug:"knives", title:"Knives", year:"2023",
-    cover:{ src:"img/play-knives.jpg", alt:"Three kitchen knife profiles in blue pencil", fit:"cover" } },
+    cover:{ src:"img/play-knives.jpg", alt:"Three kitchen knife profiles in blue pencil", w:800, h:800 } },
   { kind:"play", slug:"lego-heisenberg", title:"Minifig", year:"2022",
-    cover:{ src:"img/play-lego-heisenberg.jpg", alt:"LEGO minifigure in a pork pie hat, render", fit:"cover" } },
+    cover:{ src:"img/play-lego-heisenberg.jpg", alt:"LEGO minifigure in a pork pie hat, render", w:800, h:800 } },
   { kind:"play", slug:"handles", title:"Handles", year:"2022",
-    cover:{ src:"img/play-handles.jpg", alt:"A sketchbook page of handle and knob forms", fit:"cover" } },
+    cover:{ src:"img/play-handles.jpg", alt:"A sketchbook page of handle and knob forms", w:800, h:800 } },
   { kind:"play", slug:"f1-boot", title:"F1 Boot", year:"2025",
-    cover:{ src:"img/play-f1-boot.jpg", alt:"Puma AMG racing boot, digital sketch", fit:"cover" } }
+    cover:{ src:"img/play-f1-boot.jpg", alt:"Puma AMG racing boot, digital sketch", w:800, h:800 } },
+  { kind:"play", slug:"costanza", title:"Costanza", year:"2024",
+    cover:{ src:"img/play-costanza.jpg", alt:"LEGO minifigure of a sitcom character on a yellow field", w:1000, h:1000 } },
+  { kind:"play", slug:"speaker", title:"Speaker", year:"2025",
+    cover:{ src:"img/play-speaker.jpg", alt:"Orange speckled bluetooth speaker on sand, blue strap", w:1000, h:1000 } },
+  { kind:"play", slug:"cockpit", title:"Cockpit", year:"2023",
+    cover:{ src:"img/play-cockpit.jpg", alt:"Concept aircraft cockpit in wood and glass, head-up display lit", w:1400, h:633 } }
 ];
 
 /* `url` is what the player shows. Spotify can embed a playlist, album,
@@ -1035,10 +1044,13 @@ function card(p){
     : `<span class="pcard__ph">${esc(c.label || "IMAGE")}</span>`;
   // the name only shows on hover, so the link still carries it for
   // screen readers and for anyone who never hovers
-  // Play is a wall of images: no case study behind them, so no link and no name
+  /* Play is a wall of pictures: no case study behind them, so no link and
+     no name, and each keeps the shape it was made at. The dimensions go
+     on the tag so the column heights settle before the image arrives
+     rather than reshuffling as each one loads. */
   if(p.kind === "play")
-    return `<div class="pcard is-static"><div class="pcard__frame${
-      c.fit === "cover" ? " is-fill" : ""}">${art}</div></div>`;
+    return `<figure class="ptile"><img src="${esc(c.src)}" alt="${esc(c.alt || "")}"${
+      c.w ? ` width="${c.w}" height="${c.h}"` : ""} loading="lazy"></figure>`;
   const frameStyle = c.art ? ` style="--art:${esc(c.art)}"` : "";
   const label = p.locked ? "Unreleased project" : `${p.title}, ${p.year}`;
   const tag   = p.locked ? "Under wraps" : p.title;
