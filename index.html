@@ -1276,7 +1276,13 @@ let playNavMarks = () => {};
     }
     return Math.max(2, runPace + rand(-2, 6));
   }
-  function pauseAfter(c){
+  function pauseAfter(c, at){
+    /* The greeting is its own little moment: "Hi!" lands, the wave
+       follows, and only then does the sentence proper get going. Matched
+       on the characters rather than their positions, so editing the line
+       later doesn't quietly undo it. */
+    if(c === "\u{1F44B}")                   return rand(430, 680);
+    if(c === "!" && at < 6)                 return rand(230, 370);
     if(c === "." || c === "!" || c === "?") return rand(100, 190);
     if(c === "," || c === ";" || c === ":") return rand(50, 130);
     /* between words the hand sometimes hangs for a moment, the way it
@@ -1346,7 +1352,7 @@ let playNavMarks = () => {};
     if(slips < maxSlips && i > 18 && Math.random() < 0.02 && fumble()) return;
     i++;
     show();
-    setTimeout(step, pauseAfter(c));
+    setTimeout(step, pauseAfter(c, i - 1));
   }
   setTimeout(step, rand(280, 420));    // after the hero has faded up
 })();
