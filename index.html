@@ -257,9 +257,34 @@ body.menu-open .nav__items a{
   /* no panel of its own — it sits straight on the page background */
   margin:calc(var(--edge) * 2 + var(--nav-h)) var(--edge) var(--edge);
   min-height:calc(100svh - var(--edge) * 3 - var(--nav-h));
+  position:relative;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center; text-align:center;
   padding:var(--pad);
+}
+/* a small nudge at the foot of the first screen, to say there is more
+   below. It bobs rather than pulses, which reads as a direction rather
+   than an alarm, and it steps aside the moment anyone starts scrolling. */
+.hero__scroll{
+  position:absolute; left:50%; bottom:clamp(10px,2.4vh,26px);
+  width:34px; height:34px; padding:0; border:0; background:none;
+  display:grid; place-items:center; color:var(--nav-ink); cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  opacity:0; transform:translateX(-50%);
+  transition:opacity .5s var(--ease-out);
+}
+.hero__scroll.is-in{ opacity:.5 }
+.hero__scroll.is-gone{ opacity:0; pointer-events:none }
+.hero__scroll svg{ width:19px; height:19px; display:block; animation:nudge 2s var(--ease-in-out) infinite }
+@keyframes nudge{
+  0%,100%{ transform:translateY(-2px) }
+  50%    { transform:translateY(3px) }
+}
+@media (hover:hover) and (pointer:fine){
+  .hero__scroll:hover{ opacity:.85 }
+}
+@media (prefers-reduced-motion:reduce){
+  .hero__scroll svg{ animation:none }
 }
 /* reachable by screen readers, out of the way of everyone else */
 .vh{
@@ -689,6 +714,12 @@ main.swapping{ opacity:0; filter:blur(3px) }
       <a href="https://www.instagram.com/kenxdesign/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><img src="img/instagram.png" alt="" width="128" height="128"></a>
     </div>
     <span class="status">Open to 2027 roles</span>
+    <button class="hero__scroll" type="button" aria-label="Scroll to the work">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 10l5 5 5-5"/>
+      </svg>
+    </button>
   </header>
 
   <!-- ══════════ WORK ══════════ -->
@@ -1246,17 +1277,31 @@ let playNavMarks = () => {};
      availability note last, so the eye is led down the page. */
   const keys = [...document.querySelectorAll(".hero__links a")];
   const note = document.querySelector(".hero .status");
+  const cue  = document.querySelector(".hero__scroll");
+  if(cue){
+    cue.addEventListener("click", () => {
+      const work = document.querySelector(".home-work");
+      if(work) work.scrollIntoView({
+        behavior: reduceMotion.matches ? "auto" : "smooth", block:"start" });
+    });
+    /* it has done its job the moment they start moving */
+    addEventListener("scroll", () => {
+      if(scrollY > 40) cue.classList.add("is-gone");
+    }, { passive:true });
+  }
   function bringIn(){
     keys.forEach((k, n) => setTimeout(() => k.classList.add("is-in"), 110 + n * 65));
     const noteAt = 110 + keys.length * 65 + 70;
     if(note) setTimeout(() => note.classList.add("is-in"), noteAt);
     setTimeout(revealNav, noteAt + 130);   // the bar comes down last
+    if(cue) setTimeout(() => cue.classList.add("is-in"), noteAt + 420);
   }
   if(reduceMotion.matches){            // no performance, just the words
     el.textContent = full.textContent;
     el.classList.add("is-done");
     keys.forEach(k => k.classList.add("is-in"));
     if(note) note.classList.add("is-in");
+    if(cue) cue.classList.add("is-in");
     revealNav();
     return;
   }
