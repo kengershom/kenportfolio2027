@@ -267,21 +267,21 @@ body.menu-open .nav__items a{
    than an alarm, and it steps aside the moment anyone starts scrolling. */
 .hero__scroll{
   position:absolute; left:50%; bottom:clamp(10px,2.4vh,26px);
-  width:34px; height:34px; padding:0; border:0; background:none;
-  display:grid; place-items:center; color:var(--nav-ink); cursor:pointer;
+  width:42px; height:42px; padding:0; border:0; background:none;
+  display:grid; place-items:center; color:#8A8A84; cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   opacity:0; transform:translateX(-50%);
   transition:opacity .5s var(--ease-out);
 }
-.hero__scroll.is-in{ opacity:.5 }
+.hero__scroll.is-in{ opacity:1 }
 .hero__scroll.is-gone{ opacity:0; pointer-events:none }
-.hero__scroll svg{ width:19px; height:19px; display:block; animation:nudge 2s var(--ease-in-out) infinite }
+.hero__scroll svg{ width:26px; height:26px; display:block; animation:nudge 1.7s var(--ease-in-out) infinite }
 @keyframes nudge{
-  0%,100%{ transform:translateY(-2px) }
-  50%    { transform:translateY(3px) }
+  0%,100%{ transform:translateY(-3px) }
+  50%    { transform:translateY(5px) }
 }
 @media (hover:hover) and (pointer:fine){
-  .hero__scroll:hover{ opacity:.85 }
+  .hero__scroll:hover{ color:var(--ink) }
 }
 @media (prefers-reduced-motion:reduce){
   .hero__scroll svg{ animation:none }
@@ -715,7 +715,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
     </div>
     <span class="status">Open to 2027 roles</span>
     <button class="hero__scroll" type="button" aria-label="Scroll to the work">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M7 10l5 5 5-5"/>
       </svg>
@@ -1284,9 +1284,14 @@ let playNavMarks = () => {};
       if(work) work.scrollIntoView({
         behavior: reduceMotion.matches ? "auto" : "smooth", block:"start" });
     });
-    /* it has done its job the moment they start moving */
+    /* Out early, and on its own clock: tying it to the end of the
+       cascade put it on screen at eight seconds, long after anyone had
+       decided whether to scroll. */
+    setTimeout(() => cue.classList.add("is-in"), 1100);
+    /* Out of the way while they are moving, back when they return to the
+       top — someone who scrolls up is looking for their bearings again. */
     addEventListener("scroll", () => {
-      if(scrollY > 40) cue.classList.add("is-gone");
+      cue.classList.toggle("is-gone", scrollY > 40);
     }, { passive:true });
   }
   function bringIn(){
@@ -1294,7 +1299,6 @@ let playNavMarks = () => {};
     const noteAt = 110 + keys.length * 65 + 70;
     if(note) setTimeout(() => note.classList.add("is-in"), noteAt);
     setTimeout(revealNav, noteAt + 130);   // the bar comes down last
-    if(cue) setTimeout(() => cue.classList.add("is-in"), noteAt + 420);
   }
   if(reduceMotion.matches){            // no performance, just the words
     el.textContent = full.textContent;
