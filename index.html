@@ -176,10 +176,17 @@ html.nav-intro .nav{
              background-color .18s ease;
 }
 body.is-sub .nav__back{ opacity:1; transform:none; pointer-events:auto }
-.nav__back svg{ width:17px; height:17px; display:block }
+/* the arrow moves on its own, not the button: the button's transform is
+   already spoken for by the slide it makes coming in and out */
+.nav__back svg{
+  width:17px; height:17px; display:block;
+  transition:transform .3s var(--ease-out);
+}
 @media (hover:hover) and (pointer:fine){
   .nav__back:hover{ background:color-mix(in srgb, var(--ink) 9%, transparent) }
+  .nav__back:hover svg{ transform:translateX(-3px) }   /* the way it points */
 }
+.nav__back:active svg{ transform:translateX(-4px) }
 .nav__back:active{ transform:scale(.96) }
 body.is-sub .nav__name{ grid-column:2; justify-self:center }
 .nav__cta{
@@ -271,10 +278,7 @@ body.menu-open .nav__items a{
   display:grid; place-items:center; color:#8A8A84; cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   opacity:0; transform:translateX(-50%);
-  /* the translateX is what centres it, so any hover nudge has to carry
-     it along or the arrow jumps half its width to the right */
-  transition:opacity .5s var(--ease-out), transform .3s var(--ease-out),
-             color .2s ease;
+  transition:opacity .5s var(--ease-out);
 }
 .hero__scroll.is-in{ opacity:1 }
 .hero__scroll.is-gone{ opacity:0; pointer-events:none }
@@ -284,10 +288,8 @@ body.menu-open .nav__items a{
   50%    { transform:translateY(5px) }
 }
 @media (hover:hover) and (pointer:fine){
-  /* a push in the direction it is pointing, on top of its own drift */
-  .hero__scroll:hover{ color:var(--ink); transform:translateX(-50%) translateY(5px) }
+  .hero__scroll:hover{ color:var(--ink) }
 }
-.hero__scroll:active{ transform:translateX(-50%) translateY(7px) }
 @media (prefers-reduced-motion:reduce){
   .hero__scroll svg{ animation:none }
 }
