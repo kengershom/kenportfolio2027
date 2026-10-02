@@ -1249,6 +1249,19 @@ let playNavMarks = () => {};
     }, 10000 + Math.random() * 5000);
   }
   scheduleIdle();
+  /* The screw checks itself every 5-10 seconds on the same terms: any
+     other reason to drive it resets its clock, so one never lands on
+     top of another, and it rests while the tab is in the background. */
+  let screwTimer = null;
+  function driveScrew(){ restart(screw, "drive"); scheduleScrew(); }
+  function scheduleScrew(){
+    clearTimeout(screwTimer);
+    screwTimer = setTimeout(() => {
+      if(document.hidden) scheduleScrew();
+      else driveScrew();
+    }, 5000 + Math.random() * 5000);
+  }
+  scheduleScrew();
   /* The mark draws itself over .3s, so the screw waits that out and then
      drives home — one after the other rather than both at once. The
      pending turn is cleared on a replay so a quick second load can't
@@ -1258,7 +1271,7 @@ let playNavMarks = () => {};
   playNavMarks = () => {
     clearTimeout(queued);
     playK();
-    queued = setTimeout(() => restart(screw, "drive"), MARK_RUN);
+    queued = setTimeout(driveScrew, MARK_RUN);
   };
 
   document.querySelector(".nav__name").addEventListener("mouseenter", playK);
