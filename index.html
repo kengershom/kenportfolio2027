@@ -416,8 +416,8 @@ body.menu-open .nav__items a{
 }
 .pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.01em }
 
-/* the name appears in the corner and the object lifts; the tile itself
-   stays as it is */
+/* name appears in the corner, the object lifts, and the card itself
+   deepens a little */
 .pcard__frame{ transition:background-color .3s var(--ease-out) }
 .pcard__tag{
   position:absolute; top:26px; left:26px; z-index:2;
@@ -429,6 +429,7 @@ body.menu-open .nav__items a{
   letter-spacing:-0.01em
 }
 @media (hover:hover) and (pointer:fine){
+  .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
   .pcard:hover .pcard__tag{ opacity:1; transform:none }
   /* the object lifts off the tile a little, as if picked up */
   .pcard:hover .pcard__frame img{ transform:translateY(-5px) }
