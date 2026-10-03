@@ -410,7 +410,10 @@ body.menu-open .nav__items a{
 /* the art sits at 70% inside its frame, so the covers read as objects
    rather than filling the tile. A cover that needs more room says so
    with `art`, a percentage of the frame. */
-.pcard__frame img{ width:var(--art,70%); height:var(--art,70%) }
+.pcard__frame img{
+  width:var(--art,70%); height:var(--art,70%);
+  transition:transform .35s var(--ease-out);
+}
 .pcard__ph{ font-size:var(--t-xs); color:#A9A9A3; text-align:center; letter-spacing:.01em }
 
 /* name appears in the corner, and the card itself deepens a little */
@@ -427,6 +430,8 @@ body.menu-open .nav__items a{
 @media (hover:hover) and (pointer:fine){
   .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 7%, var(--card)) }
   .pcard:hover .pcard__tag{ opacity:1; transform:none }
+  /* the object lifts off the tile a little, as if picked up */
+  .pcard:hover .pcard__frame img{ transform:translateY(-5px) }
 }
 /* Laid out in columns rather than a grid, so a tall picture can run
    past a short one and the gaps stay even in both directions. */
