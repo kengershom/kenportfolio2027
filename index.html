@@ -1304,10 +1304,6 @@ let playNavMarks = () => {};
       if(work) work.scrollIntoView({
         behavior: reduceMotion.matches ? "auto" : "smooth", block:"start" });
     });
-    /* Out early, and on its own clock: tying it to the end of the
-       cascade put it on screen at eight seconds, long after anyone had
-       decided whether to scroll. */
-    setTimeout(() => cue.classList.add("is-in"), 1100);
     /* Out of the way while they are moving, back when they return to the
        top — someone who scrolls up is looking for their bearings again. */
     addEventListener("scroll", () => {
@@ -1318,7 +1314,10 @@ let playNavMarks = () => {};
     keys.forEach((k, n) => setTimeout(() => k.classList.add("is-in"), 110 + n * 65));
     const noteAt = 110 + keys.length * 65 + 70;
     if(note) setTimeout(() => note.classList.add("is-in"), noteAt);
-    setTimeout(revealNav, noteAt + 130);   // the bar comes down last
+    setTimeout(revealNav, noteAt + 130);                    // then the bar
+    /* and the arrow once the bar has settled, so it reads as the last
+       word rather than competing with it */
+    if(cue) setTimeout(() => cue.classList.add("is-in"), noteAt + 600);
   }
   if(reduceMotion.matches){            // no performance, just the words
     el.textContent = full.textContent;
@@ -1652,8 +1651,10 @@ function revealNav(){
     playNavMarks();
   }, 300);
 }
-/* a backstop: if the landing never gets there, the bar still arrives */
-if(!navReady) setTimeout(revealNav, 8000);
+/* A backstop in case the landing never gets there. It has to sit clear
+   of the cascade itself — at eight seconds it was beating the typing
+   and dropping the bar ahead of the buttons. */
+if(!navReady) setTimeout(revealNav, 20000);
 
 function showNav(){ navBar.classList.remove("is-tucked"); }
 /* off the top by any amount means something is passing underneath */
