@@ -498,6 +498,7 @@ body.menu-open .nav__items a{
 .mailto:active{ transform:scale(.99) }
 /* a panel like everything else, holding the whole sign-off */
 footer{
+  position:relative; overflow:hidden;
   margin:clamp(40px,7vh,80px) var(--edge) var(--edge);
   background:var(--card); border-radius:var(--r);
   padding:var(--pad);
@@ -505,6 +506,18 @@ footer{
   font-size:var(--t-s); color:var(--mute);
   letter-spacing:-0.01em
 }
+/* A sheet of sketches behind the sign-off, run larger than the panel so
+   it crops rather than sits inside it. The scale and the framing are
+   drawn fresh on each visit, so it never settles into one composition. */
+.foot__art{
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:url("img/footer-sketches.jpg") no-repeat;
+  background-size:var(--art-scale,170%) auto;
+  background-position:var(--art-x,30%) var(--art-y,45%);
+  opacity:.5;
+}
+/* everything else rides over it */
+footer > *:not(.foot__art){ position:relative; z-index:1 }
 .foot__label{
   display:block; font-size:var(--t-s); color:var(--mute);
   border-top:1px solid var(--line); padding-top:14px;
@@ -795,6 +808,7 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 <!-- ══════════ CONTACT — outside the views, so it ends every page ══════════ -->
 <footer>
+  <div class="foot__art" aria-hidden="true"></div>
   <span class="foot__label">Say hello</span>
   <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
   <div class="foot__bar">
@@ -1308,6 +1322,19 @@ let playNavMarks = () => {};
   };
 
   document.querySelector(".nav__name").addEventListener("mouseenter", playK);
+})();
+
+/* --- the sketch sheet behind the sign-off ---
+   A fresh scale and framing each visit, so the crop is never the same
+   twice. Always larger than the panel, so it reads as a sheet carrying
+   on past the edges rather than a picture placed inside one. */
+(function footerArt(){
+  const art = document.querySelector(".foot__art");
+  if(!art) return;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  art.style.setProperty("--art-scale", Math.round(rand(150, 260)) + "%");
+  art.style.setProperty("--art-x", Math.round(rand(5, 85)) + "%");
+  art.style.setProperty("--art-y", Math.round(rand(10, 90)) + "%");
 })();
 
 /* --- the intro types itself out ---
