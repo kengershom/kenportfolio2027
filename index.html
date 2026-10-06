@@ -1219,12 +1219,32 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 /* --- nav menu: click toggles it where there is no hover --- */
 const menuBtn = document.querySelector(".nav__cta");
-function setMenu(open){
+function setMenu(open, keepFocus){
   document.body.classList.toggle("menu-open", open);
   if(open) showNav();
   menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-  if(!open) menuBtn.focus();
+  /* returning focus to the button is for someone who closed it
+     themselves; the demo below must not grab the caret off the page */
+  if(!open && !keepFocus) menuBtn.focus();
 }
+
+/* A screw doesn't read as a menu, so on a first landing it shows what
+   it does: the options unfurl, hold a moment, and fold away again.
+   Cancelled by the first sign of anyone doing anything — a hint that
+   fights the person using the page is worse than no hint. */
+let demoTimer = null, demoSpent = false;
+function demoMenu(){
+  if(demoSpent || reduceMotion.matches) return;
+  demoSpent = true;
+  setMenu(true, true);
+  demoTimer = setTimeout(() => { demoTimer = null; setMenu(false, true); }, 1500);
+}
+function cancelDemo(){
+  if(demoTimer){ clearTimeout(demoTimer); demoTimer = null; setMenu(false, true); }
+  demoSpent = true;
+}
+["pointerdown", "keydown", "wheel", "touchstart"].forEach(ev =>
+  addEventListener(ev, cancelDemo, { once:true, passive:true }));
 menuBtn.addEventListener("click", () =>
   setMenu(!document.body.classList.contains("menu-open")));
 document.querySelector(".nav__items").addEventListener("click", e => {
@@ -1655,6 +1675,8 @@ function revealNav(){
   setTimeout(() => {          // once it has finished coming down
     navReady = true;
     playNavMarks();
+    /* after the mark has drawn and the screw has turned, not over them */
+    setTimeout(demoMenu, 1700);
   }, 300);
 }
 /* A backstop in case the landing never gets there. It has to sit clear
