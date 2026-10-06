@@ -506,16 +506,19 @@ footer{
   font-size:var(--t-s); color:var(--mute);
   letter-spacing:-0.01em
 }
-/* A sheet of sketches behind the sign-off, run larger than the panel so
-   it crops rather than sits inside it. The scale and the framing are
-   drawn fresh on each visit, so it never settles into one composition. */
+/* A sheet of sketches lying at an angle on the left of the sign-off,
+   the right side left as paper. Carried by an img rather than a
+   background so it is drawn at its own resolution — at roughly half the
+   panel's width it is still well inside the file's 1800px. */
+footer{ perspective:1400px }
 .foot__art{
-  position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url("img/footer-sketches.jpg") no-repeat;
-  background-size:var(--art-scale,170%) auto;
-  background-position:var(--art-x,30%) var(--art-y,45%);
-  opacity:.5;
+  position:absolute; z-index:0; pointer-events:none;
+  left:-7%; top:50%; width:62%;
+  transform-origin:left center;
+  transform:translateY(-50%) rotateY(26deg) rotateZ(-7deg);
+  opacity:.65;
 }
+.foot__art img{ width:100%; height:auto; display:block }
 /* everything else rides over it */
 footer > *:not(.foot__art){ position:relative; z-index:1 }
 .foot__label{
@@ -808,7 +811,9 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 <!-- ══════════ CONTACT — outside the views, so it ends every page ══════════ -->
 <footer>
-  <div class="foot__art" aria-hidden="true"></div>
+  <div class="foot__art" aria-hidden="true">
+    <img src="img/footer-sketches.jpg" alt="" width="1800" height="1012">
+  </div>
   <span class="foot__label">Say hello</span>
   <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
   <div class="foot__bar">
@@ -1322,19 +1327,6 @@ let playNavMarks = () => {};
   };
 
   document.querySelector(".nav__name").addEventListener("mouseenter", playK);
-})();
-
-/* --- the sketch sheet behind the sign-off ---
-   A fresh scale and framing each visit, so the crop is never the same
-   twice. Always larger than the panel, so it reads as a sheet carrying
-   on past the edges rather than a picture placed inside one. */
-(function footerArt(){
-  const art = document.querySelector(".foot__art");
-  if(!art) return;
-  const rand = (a, b) => a + Math.random() * (b - a);
-  art.style.setProperty("--art-scale", Math.round(rand(150, 260)) + "%");
-  art.style.setProperty("--art-x", Math.round(rand(5, 85)) + "%");
-  art.style.setProperty("--art-y", Math.round(rand(10, 90)) + "%");
 })();
 
 /* --- the intro types itself out ---
