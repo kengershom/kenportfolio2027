@@ -536,16 +536,6 @@ footer .mailto{ color:var(--ink); margin-bottom:clamp(40px,8vh,96px) }
   justify-content:space-between; align-items:center;
   border-top:1px solid var(--line); padding-top:18px;
 }
-/* a slow breath rather than a blink — four seconds down and back, so it
-   reads as something alive rather than something demanding attention */
-.foot__built{ animation:breathe 4s var(--ease-in-out) infinite }
-@keyframes breathe{
-  0%,100%{ opacity:.4 }
-  50%    { opacity:1 }
-}
-@media (prefers-reduced-motion:reduce){
-  .foot__built{ animation:none; opacity:.8 }
-}
 footer nav{ display:flex; gap:16px }
 footer nav a{ transition:color .18s ease }
 @media (hover:hover) and (pointer:fine){
