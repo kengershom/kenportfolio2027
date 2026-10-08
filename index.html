@@ -1402,9 +1402,16 @@ let playNavMarks = () => {};
     }
     if(ctx.state === "suspended") ctx.resume().catch(() => {});
   }
-  if(canSound)
+  if(canSound){
+    /* Ask straight away. Whether it is granted is the browser's call —
+       a first-time visitor is usually refused and the typing runs quiet,
+       while someone who has been here before, or whose browser has
+       relaxed its policy for the site, hears it from the first key. */
+    wake();
+    /* and if it was refused, the first thing they do unlocks it */
     ["pointerdown", "keydown", "touchstart"].forEach(ev =>
       addEventListener(ev, wake, { passive:true }));
+  }
 
   /* letters tick, the space is a shade duller and softer, a correction
      is quieter still — and every one is jittered in pitch and level so a
