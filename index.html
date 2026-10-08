@@ -276,38 +276,6 @@ body.menu-open .nav__items a{
   align-items:center; justify-content:center; text-align:center;
   padding:var(--pad);
 }
-/* A sketch drawing itself in behind the words, so the first screen isn't
-   a paragraph alone in a field. The clip is pencil on white paper, and
-   multiply is what makes that usable: 255 over the page's 243 is 243, so
-   the paper drops out completely and only the pencil darkens anything.
-   No panel appears, no edge, the grey stays exactly the grey. */
-/* deliberately no z-index here, and none on .hero either: any positioned
-   ancestor with a z-index of its own would open a stacking context, the
-   multiply would blend against that group instead of the page, and the
-   paper would come back as a white rectangle */
-.hero__film{
-  position:absolute; inset:0; overflow:hidden;
-  border-radius:var(--r); pointer-events:none;
-}
-.hero__film video{
-  display:block; width:100%; height:100%; object-fit:cover;
-  /* the opacity rides on the video itself, never on the wrapper: a
-     wrapper with opacity would isolate the blend, and the multiply would
-     stop at the wrapper instead of reaching the page behind it */
-  mix-blend-mode:multiply; opacity:0;
-  transition:opacity 1.6s var(--ease-out);
-}
-.hero__film video.is-in{ opacity:.8 }
-/* a tall phone screen against a landscape sketch crops it about three
-   times over, and what's left is one enormous cylinder with strokes to
-   match. Fit the whole drawing instead, then push it past the sides a
-   little so it still has some presence. */
-@media (max-width:780px){
-  .hero__film video{ object-fit:contain; transform:scale(1.5) }
-}
-/* z-index works on flex children even unpositioned, so the rest of the
-   hero can stand in front without being given a position of its own */
-.hero > *:not(.hero__film){ z-index:1 }
 /* a small nudge at the foot of the first screen, to say there is more
    below. It bobs rather than pulses, which reads as a direction rather
    than an alarm, and it steps aside the moment anyone starts scrolling. */
@@ -549,19 +517,28 @@ footer{
   font-size:var(--t-s); color:var(--mute);
   letter-spacing:-0.01em
 }
-/* A sheet of sketches lying at an angle on the left of the sign-off,
-   the right side left as paper. Carried by an img rather than a
-   background so it is drawn at its own resolution — at roughly half the
-   panel's width it is still well inside the file's 1800px. */
+/* A sheet of sketching lying at an angle on the left of the sign-off,
+   the right side left as paper — and drawing itself as you arrive at it.
+   The blend and the opacity sit on this element rather than on the video:
+   the rotation already makes a stacking context here, so a multiply set
+   on the video inside would blend against this box's own transparency
+   and come straight back as a white rectangle. On the wrapper it is the
+   whole turned sheet that multiplies into the panel, and 255 over the
+   card's 255 is 255 — the paper goes, only the pencil lands. */
 footer{ perspective:1400px }
 .foot__art{
-  position:absolute; z-index:0; pointer-events:none;
+  /* no z-index of its own: that would open a second stacking context and
+     isolate the multiply inside it. It happens to look the same against a
+     white card, but it would break the moment the panel wasn't white */
+  position:absolute; pointer-events:none;
   left:-7%; top:50%; width:62%;
   transform-origin:left center;
   transform:translateY(-50%) rotateY(26deg) rotateZ(-7deg);
-  opacity:.65;
+  mix-blend-mode:multiply; opacity:0;
+  transition:opacity 1.6s var(--ease-out);
 }
-.foot__art img{ width:100%; height:auto; display:block }
+.foot__art.is-in{ opacity:.65 }
+.foot__art video{ width:100%; height:auto; display:block }
 /* everything else rides over it */
 footer > *:not(.foot__art){ position:relative; z-index:1 }
 .foot__label{
@@ -776,13 +753,6 @@ main.swapping{ opacity:0; filter:blur(3px) }
   <!-- ══════════ HERO ══════════ -->
   <header class="hero">
     <h1 class="vh">Ken Gershom — Industrial Designer, Bangalore</h1>
-    <!-- decoration only, and silent: it carries no information the line
-         below doesn't already give, so it stays out of the reading order -->
-    <div class="hero__film" aria-hidden="true">
-      <video src="img/hero-sketch.mp4" width="1568" height="1088"
-             autoplay muted loop playsinline preload="auto"
-             disablepictureinpicture tabindex="-1"></video>
-    </div>
     <p class="hero__intro">
       <!-- the full line, held invisible, so the box never resizes as it types -->
       <span class="hero__ghost" aria-hidden="true">Hi! 👋 I’m Ken, an Industrial Designer from Bangalore currently working at Exponent Energy, a deep-tech hardware startup helping build, design and scale one of the world’s fastest charging solutions for EVs.</span>
@@ -863,8 +833,11 @@ main.swapping{ opacity:0; filter:blur(3px) }
 
 <!-- ══════════ CONTACT — outside the views, so it ends every page ══════════ -->
 <footer>
+  <!-- decoration only, and silent: it says nothing the links below don't -->
   <div class="foot__art" aria-hidden="true">
-    <img src="img/footer-sketches.jpg" alt="" width="1800" height="1012">
+    <video src="img/footer-sketch.mp4" width="1568" height="1088"
+           autoplay muted loop playsinline preload="auto"
+           disablepictureinpicture tabindex="-1"></video>
   </div>
   <span class="foot__label">Say hello</span>
   <a class="mailto" href="mailto:hello@example.com">hello@example.com</a>
@@ -1289,24 +1262,30 @@ const REVEAL_SEL = ".sec__head, .pgrid > a, .about > *,"
                  + " .listen > *, #detail > *";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
-/* --- the sketch behind the hero --- */
+/* --- the sketch in the footer --- */
 /* The clip holds the finished drawing for a second, wipes it, then draws
-   it back over two and a half. Entering at the wipe means the first thing
-   anyone sees is a blank sheet filling in, which is the same gesture as
-   the sentence typing itself out beside it. At full speed the whole cycle
-   is under four seconds, which is restless behind text, so it runs at
-   under half pace and takes about nine. */
+   it back over two and a half. Entering at the wipe means the sheet is
+   blank until someone actually reaches the sign-off, and then draws
+   itself in front of them. At full speed the whole cycle is under four
+   seconds, which is restless under a set of links, so it runs at under
+   half pace and takes about nine. */
 (() => {
-  const film = document.querySelector(".hero__film video");
+  const film = document.querySelector(".foot__art video");
   if(!film) return;
+  const sheet = film.parentElement;   /* the blend and the fade live here */
   const BLANK = 1.44;
   film.playbackRate = .45;
-  let onScreen = true, armed = false;
+  /* the observer is the accurate answer but it only arrives later, so
+     start from a straight look at where the sheet is */
+  function inView(){
+    const r = sheet.getBoundingClientRect();
+    return r.bottom > 0 && r.top < innerHeight;
+  }
+  let onScreen = inView(), armed = false, heard = false;
 
   /* one place decides whether it should be running: nothing to animate
-     once it has scrolled away, while the tab is in the background, or on
-     any page but this one — #index goes display:none on the sub pages,
-     which an observer reads as simply not on screen */
+     while the sign-off is still below the fold or the tab is in the
+     background */
   function settle(){
     if(reduceMotion.matches || !onScreen || document.hidden) film.pause();
     /* if autoplay is refused, fall back to frame zero: a still of the
@@ -1318,7 +1297,7 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
     armed = true;
     /* frame zero is the finished sketch — the right thing to hold still on */
     film.currentTime = reduceMotion.matches ? 0 : BLANK;
-    film.classList.add("is-in");
+    sheet.classList.add("is-in");
     settle();
   }
   /* by the time this script runs the clip may already be loaded, and
@@ -1328,9 +1307,18 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
   if("IntersectionObserver" in window){
     new IntersectionObserver(([e]) => {
+      heard = true;
       onScreen = e.isIntersecting;
       if(armed) settle();
-    }).observe(film);
+    }).observe(sheet);
+    /* some embedded webviews never deliver a single entry. Rather than
+       leave a blank sheet sitting in the footer for good, give up on
+       being clever after a few seconds and just let the clip run. */
+    setTimeout(() => {
+      if(heard) return;
+      onScreen = true;
+      if(armed) settle();
+    }, 4000);
   }
   document.addEventListener("visibilitychange", () => { if(armed) settle() });
 })();
