@@ -1379,6 +1379,60 @@ let playNavMarks = () => {};
   }
   const rand = (a, b) => a + Math.random() * (b - a);
 
+  /* --- the sound of it ---
+     Synthesised rather than loaded: a keystroke is a few milliseconds of
+     filtered noise, which costs nothing to download and lands on exactly
+     the same tick as the character, so it can never drift out of sync
+     with the text the way a sample file would.
+
+     Browsers will not let a page make noise until the visitor has
+     interacted with it, so on a first landing this stays silent and the
+     typing just runs. Once any click, key or touch has happened the
+     context wakes and the rest of the session has sound. */
+  const canSound = !reduceMotion.matches && "AudioContext" in window;
+  let ctx = null, noise = null;
+  function wake(){
+    if(!canSound) return;
+    if(!ctx){
+      ctx = new AudioContext();
+      const n = ctx.sampleRate * 0.03;
+      noise = ctx.createBuffer(1, n, ctx.sampleRate);
+      const d = noise.getChannelData(0);
+      for(let k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
+    }
+    if(ctx.state === "suspended") ctx.resume().catch(() => {});
+  }
+  if(canSound)
+    ["pointerdown", "keydown", "touchstart"].forEach(ev =>
+      addEventListener(ev, wake, { passive:true }));
+
+  /* letters tick, the space is a shade duller and softer, a correction
+     is quieter still — and every one is jittered in pitch and level so a
+     run of them doesn't sound like a machine */
+  function key(kind){
+    if(!ctx || ctx.state !== "running") return;
+    const t0 = ctx.currentTime;
+    const src = ctx.createBufferSource();
+    src.buffer = noise;
+    src.playbackRate.value = rand(0.85, 1.2);
+    const band = ctx.createBiquadFilter();
+    band.type = "bandpass";
+    band.frequency.value = kind === "space" ? rand(900, 1200)
+                         : kind === "back"  ? rand(2200, 2800)
+                         : rand(1500, 2100);
+    band.Q.value = 0.9;
+    const amp = ctx.createGain();
+    const peak = kind === "space" ? rand(0.030, 0.045)
+               : kind === "back"  ? rand(0.018, 0.028)
+               : rand(0.038, 0.058);
+    amp.gain.setValueAtTime(0.0001, t0);
+    amp.gain.exponentialRampToValueAtTime(peak, t0 + 0.002);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t0 + rand(0.022, 0.038));
+    src.connect(band).connect(amp).connect(ctx.destination);
+    src.start(t0);
+    src.stop(t0 + 0.06);
+  }
+
   /* Giving every letter its own random delay is still a kind of
      evenness — the hand never settles into anything. Real typing comes
      in runs: a few characters rattle off at one pace, then the hand
@@ -1446,6 +1500,7 @@ let playNavMarks = () => {};
     const put = () => {
       if(n < tail.length){
         show(tail.slice(0, ++n).join(""));
+        key();
         setTimeout(put, letterGap());
         return;
       }
@@ -1454,10 +1509,11 @@ let playNavMarks = () => {};
     const take = () => {
       if(n > 0){
         show(tail.slice(0, --n).join(""));       // one keystroke at a time
+        key("back");
         setTimeout(take, rand(26, 58));
         return;
       }
-      setTimeout(() => { i++; show(); setTimeout(step, letterGap()); }, rand(45, 95));
+      setTimeout(() => { i++; show(); key(); setTimeout(step, letterGap()); }, rand(45, 95));
     };
     put();
     return true;
@@ -1469,6 +1525,7 @@ let playNavMarks = () => {};
     if(slips < maxSlips && i > 18 && Math.random() < 0.02 && fumble()) return;
     i++;
     show();
+    key(c === " " ? "space" : "letter");
     setTimeout(step, pauseAfter(c, i - 1));
   }
   setTimeout(step, rand(280, 420));    // after the hero has faded up
