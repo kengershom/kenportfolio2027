@@ -150,9 +150,9 @@ html.nav-intro .nav{
 }
 .nav__name:active{ transform:scale(.97) }
 /* whole numbers: on a fraction of a pixel every key edge inside gets
-   drawn across two. The screw runs a pixel larger because its artwork
-   only fills 92% of its own box, so 17px of box is 16px of ink — the
-   same as the mark, which is full bleed. */
+   drawn across two. Box sizes don't compare directly between the two
+   marks — this one is full bleed in its viewBox, the screw's artwork
+   fills only 92% of its own. */
 .kmark{ width:16px; height:16px; display:block }
 /* The mark draws itself in four frames, 0.1s apart: left stem, then
    centre, then top-right, then bottom-right. Each square is simply
@@ -203,7 +203,7 @@ body.is-sub .nav__name{ grid-column:2; justify-self:center }
 }
 /* a screw turns — the one rotation on this site that means something */
 .screw{
-  width:17px; height:17px; display:block;
+  width:22px; height:22px; display:block;
   transition:transform .45s var(--ease-out), color .18s ease;
 }
 /* driven home, then nudged back and forth a couple of degrees the way
@@ -276,6 +276,38 @@ body.menu-open .nav__items a{
   align-items:center; justify-content:center; text-align:center;
   padding:var(--pad);
 }
+/* A sketch drawing itself in behind the words, so the first screen isn't
+   a paragraph alone in a field. The clip is pencil on white paper, and
+   multiply is what makes that usable: 255 over the page's 243 is 243, so
+   the paper drops out completely and only the pencil darkens anything.
+   No panel appears, no edge, the grey stays exactly the grey. */
+/* deliberately no z-index here, and none on .hero either: any positioned
+   ancestor with a z-index of its own would open a stacking context, the
+   multiply would blend against that group instead of the page, and the
+   paper would come back as a white rectangle */
+.hero__film{
+  position:absolute; inset:0; overflow:hidden;
+  border-radius:var(--r); pointer-events:none;
+}
+.hero__film video{
+  display:block; width:100%; height:100%; object-fit:cover;
+  /* the opacity rides on the video itself, never on the wrapper: a
+     wrapper with opacity would isolate the blend, and the multiply would
+     stop at the wrapper instead of reaching the page behind it */
+  mix-blend-mode:multiply; opacity:0;
+  transition:opacity 1.6s var(--ease-out);
+}
+.hero__film video.is-in{ opacity:.8 }
+/* a tall phone screen against a landscape sketch crops it about three
+   times over, and what's left is one enormous cylinder with strokes to
+   match. Fit the whole drawing instead, then push it past the sides a
+   little so it still has some presence. */
+@media (max-width:780px){
+  .hero__film video{ object-fit:contain; transform:scale(1.5) }
+}
+/* z-index works on flex children even unpositioned, so the rest of the
+   hero can stand in front without being given a position of its own */
+.hero > *:not(.hero__film){ z-index:1 }
 /* a small nudge at the foot of the first screen, to say there is more
    below. It bobs rather than pulses, which reads as a direction rather
    than an alarm, and it steps aside the moment anyone starts scrolling. */
@@ -744,6 +776,13 @@ main.swapping{ opacity:0; filter:blur(3px) }
   <!-- ══════════ HERO ══════════ -->
   <header class="hero">
     <h1 class="vh">Ken Gershom — Industrial Designer, Bangalore</h1>
+    <!-- decoration only, and silent: it carries no information the line
+         below doesn't already give, so it stays out of the reading order -->
+    <div class="hero__film" aria-hidden="true">
+      <video src="img/hero-sketch.mp4" width="1568" height="1088"
+             autoplay muted loop playsinline preload="auto"
+             disablepictureinpicture tabindex="-1"></video>
+    </div>
     <p class="hero__intro">
       <!-- the full line, held invisible, so the box never resizes as it types -->
       <span class="hero__ghost" aria-hidden="true">Hi! 👋 I’m Ken, an Industrial Designer from Bangalore currently working at Exponent Energy, a deep-tech hardware startup helping build, design and scale one of the world’s fastest charging solutions for EVs.</span>
@@ -1249,6 +1288,52 @@ function renderProject(p, i){
 const REVEAL_SEL = ".sec__head, .pgrid > a, .about > *,"
                  + " .listen > *, #detail > *";
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+/* --- the sketch behind the hero --- */
+/* The clip holds the finished drawing for a second, wipes it, then draws
+   it back over two and a half. Entering at the wipe means the first thing
+   anyone sees is a blank sheet filling in, which is the same gesture as
+   the sentence typing itself out beside it. At full speed the whole cycle
+   is under four seconds, which is restless behind text, so it runs at
+   under half pace and takes about nine. */
+(() => {
+  const film = document.querySelector(".hero__film video");
+  if(!film) return;
+  const BLANK = 1.44;
+  film.playbackRate = .45;
+  let onScreen = true, armed = false;
+
+  /* one place decides whether it should be running: nothing to animate
+     once it has scrolled away, while the tab is in the background, or on
+     any page but this one — #index goes display:none on the sub pages,
+     which an observer reads as simply not on screen */
+  function settle(){
+    if(reduceMotion.matches || !onScreen || document.hidden) film.pause();
+    /* if autoplay is refused, fall back to frame zero: a still of the
+       finished sketch, rather than the blank sheet it entered on */
+    else film.play().catch(() => { film.currentTime = 0 });
+  }
+  function arm(){
+    if(armed) return;
+    armed = true;
+    /* frame zero is the finished sketch — the right thing to hold still on */
+    film.currentTime = reduceMotion.matches ? 0 : BLANK;
+    film.classList.add("is-in");
+    settle();
+  }
+  /* by the time this script runs the clip may already be loaded, and
+     loadeddata will never fire again */
+  if(film.readyState >= 2) arm();
+  else film.addEventListener("loadeddata", arm, { once:true });
+
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(([e]) => {
+      onScreen = e.isIntersecting;
+      if(armed) settle();
+    }).observe(film);
+  }
+  document.addEventListener("visibilitychange", () => { if(armed) settle() });
+})();
 
 /* --- nav menu: click toggles it where there is no hover --- */
 const menuBtn = document.querySelector(".nav__cta");
