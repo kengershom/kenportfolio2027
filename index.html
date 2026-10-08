@@ -149,9 +149,11 @@ html.nav-intro .nav{
   .nav__name:hover{ color:var(--ink) }
 }
 .nav__name:active{ transform:scale(.97) }
-/* a whole number: at 19.2px the mark's own box landed on a fraction of a
-   pixel, and every key edge inside it was drawn across two */
-.kmark{ width:20px; height:20px; display:block }
+/* whole numbers: on a fraction of a pixel every key edge inside gets
+   drawn across two. The screw runs a pixel larger because its artwork
+   only fills 92% of its own box, so 17px of box is 16px of ink — the
+   same as the mark, which is full bleed. */
+.kmark{ width:16px; height:16px; display:block }
 /* The mark draws itself in four frames, 0.1s apart: left stem, then
    centre, then top-right, then bottom-right. Each square is simply
    held invisible for its share of the run and snaps on when the hold
@@ -192,13 +194,16 @@ body.is-sub .nav__back{ opacity:1; transform:none; pointer-events:auto }
 .nav__back:active{ transform:scale(.96) }
 body.is-sub .nav__name{ grid-column:2; justify-self:center }
 .nav__cta{
-  display:inline-flex; align-items:center;
-  color:var(--nav-ink); padding:2px;
+  display:inline-flex; align-items:center; justify-content:center;
+  /* --nav-h is calculated from this 28px, and the back button is sized
+     to match it, so the box stays put however big the glyph inside is */
+  width:28px; height:28px;
+  color:var(--nav-ink); padding:0;
   background:none; border:0; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 /* a screw turns — the one rotation on this site that means something */
 .screw{
-  width:24px; height:24px; display:block;
+  width:17px; height:17px; display:block;
   transition:transform .45s var(--ease-out), color .18s ease;
 }
 /* driven home, then nudged back and forth a couple of degrees the way
