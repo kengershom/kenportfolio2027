@@ -706,13 +706,15 @@ main.swapping{ opacity:0; filter:blur(3px) }
     </svg>
   </a>
   <a class="nav__name" href="#" aria-label="Ken Gershom — home">
-    <svg class="kmark" viewBox="0 0 300 300" fill="currentColor" aria-hidden="true" focusable="false">
-      <rect x="0" y="0" width="101" height="101"/>
-      <rect x="0" y="99" width="101" height="102"/>
-      <rect x="0" y="199" width="101" height="101"/>
-      <rect x="99" y="99" width="102" height="102"/>
-      <rect x="199" y="0" width="101" height="101"/>
-      <rect x="199" y="199" width="101" height="101"/>
+    <!-- the order of these is the order they draw in: the stem, then the
+         centre, then the two on the right -->
+    <svg class="kmark" viewBox="0 0 124 124" fill="currentColor" aria-hidden="true" focusable="false">
+      <rect x="0"  y="0"  width="37" height="37" rx="10"/>
+      <rect x="0"  y="43" width="37" height="38" rx="10"/>
+      <rect x="0"  y="87" width="37" height="37" rx="10"/>
+      <rect x="43" y="43" width="38" height="38" rx="10"/>
+      <rect x="87" y="0"  width="37" height="37" rx="10"/>
+      <rect x="87" y="87" width="37" height="37" rx="10"/>
     </svg>
   </a>
   <div class="nav__menu">
