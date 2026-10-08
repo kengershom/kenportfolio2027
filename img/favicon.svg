@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
 <style>rect{fill:#000}@media (prefers-color-scheme:dark){rect{fill:#fff}}</style>
-<rect x="75" y="75" width="50.5" height="50.5"/><rect x="75" y="124.5" width="50.5" height="51"/><rect x="75" y="174.5" width="50.5" height="50.5"/><rect x="124.5" y="124.5" width="51" height="51"/><rect x="174.5" y="75" width="50.5" height="50.5"/><rect x="174.5" y="174.5" width="50.5" height="50.5"/>
+<g transform="translate(60,60)">
+<rect x="0" y="0" width="37" height="37" rx="11"/><rect x="0" y="41" width="37" height="38" rx="11"/><rect x="0" y="83" width="37" height="37" rx="11"/><rect x="41" y="41" width="38" height="38" rx="11"/><rect x="83" y="0" width="37" height="37" rx="11"/><rect x="83" y="83" width="37" height="37" rx="11"/>
+</g>
 </svg>
