@@ -149,7 +149,9 @@ html.nav-intro .nav{
   .nav__name:hover{ color:var(--ink) }
 }
 .nav__name:active{ transform:scale(.97) }
-.kmark{ width:19.2px; height:19.2px; display:block }
+/* a whole number: at 19.2px the mark's own box landed on a fraction of a
+   pixel, and every key edge inside it was drawn across two */
+.kmark{ width:20px; height:20px; display:block }
 /* The mark draws itself in four frames, 0.1s apart: left stem, then
    centre, then top-right, then bottom-right. Each square is simply
    held invisible for its share of the run and snaps on when the hold
