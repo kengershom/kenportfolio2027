@@ -429,10 +429,11 @@ body.menu-open .nav__items a{
   letter-spacing:-0.01em
 }
 @media (hover:hover) and (pointer:fine){
-  /* 5% landed on 242, all but identical to the 243 page behind the grid,
-     so the tile edge disappeared on hover. 3.5% sits at 246: nine steps
-     off the white it rests at, still clear of the background. */
-  .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 3.5%, var(--card)) }
+  /* The page behind the grid is 243, so anything from roughly 244 to 240
+     merges with it and the tile edge disappears. This sits at 238 —
+     under the background rather than above it, seventeen steps off the
+     white it rests at, five clear of the page. */
+  .pcard:hover .pcard__frame{ background:color-mix(in srgb, var(--ink) 6.5%, var(--card)) }
   .pcard:hover .pcard__tag{ opacity:1; transform:none }
   /* the object lifts off the tile a little, as if picked up */
   .pcard:hover .pcard__frame img{ transform:translateY(-5px) }
