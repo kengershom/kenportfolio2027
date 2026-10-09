@@ -537,7 +537,8 @@ footer{ perspective:1400px }
   mix-blend-mode:multiply; opacity:0;
   transition:opacity 1.6s var(--ease-out);
 }
-.foot__art.is-in{ opacity:.65 }
+/* .65 less thirty per cent of itself */
+.foot__art.is-in{ opacity:.46 }
 .foot__art video{ width:100%; height:auto; display:block }
 /* everything else rides over it */
 footer > *:not(.foot__art){ position:relative; z-index:1 }
